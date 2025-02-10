@@ -10,7 +10,7 @@ class Database
     private ?PDO $db = null; 
 
     private static string $host = 'localhost';
-    private static string $dbname = '';
+    private static string $dbname = 'eventbrite';
     private static string $user = 'postgres';
     private static string $pass = 'root';
 
