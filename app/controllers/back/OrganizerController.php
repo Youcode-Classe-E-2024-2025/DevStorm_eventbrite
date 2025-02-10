@@ -61,7 +61,31 @@ class OrganizerController extends Controller
         $stats = $ticket->getEventStats($eventId);
         $this->view('back/organizer/stats', ['stats' => $stats]);
     }
-   
+    public function eventStats($eventId)
+    {
+        $ticket = new Ticket();
+        $stats = $ticket->getEventStats($eventId);
+        $this->view('organizer/stats', ['stats' => $stats]);
+    }
 
-   
+    public function exportParticipants($eventId)
+    {
+        $ticket = new Ticket();
+        $participants = $ticket->getEventParticipants($eventId);
+        //more 
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="participants.csv"');
+        
+        $output = fopen('php://output', 'w');
+        fputcsv($output, ['Name', 'Email', 'Ticket Type', 'Purchase Date']);
+        
+        foreach ($participants as $participant) {
+            fputcsv($output, [
+                $participant['name'],
+                $participant['email'],
+                $participant['ticket_type'],
+                $participant['purchase_date']
+            ]);
+        }
+    }
 }
