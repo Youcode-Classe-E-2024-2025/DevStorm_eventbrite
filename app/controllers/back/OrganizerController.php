@@ -55,7 +55,12 @@ class OrganizerController extends Controller
         }
     }
 
-  
+    public function salesStats($eventId)
+    {
+        $ticket = new Ticket();
+        $stats = $ticket->getEventStats($eventId);
+        $this->view('back/organizer/stats', ['stats' => $stats]);
+    }
    
 
    
