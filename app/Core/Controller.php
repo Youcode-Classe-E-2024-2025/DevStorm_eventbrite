@@ -2,18 +2,17 @@
 
 namespace App\Core;
 
+use App\Core\View;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
 class Controller
 {
-    protected  $twig;
-    protected  $viewFolder;
+    public  $twig;
 
-    public function __construct( $viewFolder = 'front') {
-        $this->viewFolder = $viewFolder;
-        $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/../views/' . $this->viewFolder);
-        $this->twig = new \Twig\Environment($loader);
+    public function __construct()
+    {
+        $this->twig= View::getTwig();
     }
 
     public function view(string $view, array $data = [])
