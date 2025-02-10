@@ -14,11 +14,7 @@ class UserController extends Controller {
     {
         $security = new Security();
         $tokenCsrf = $security->Csrftoken();
-<<<<<<< HEAD
         $this->view('auth/register', ['Csrftoken' => $tokenCsrf]);
-=======
-        $this->view('front/register',['Csrftoken' => $tokenCsrf]);
->>>>>>> 4d1c8fe21405faa1242f5a557d0ef74bc33b9bc4
     }
 
     public function login(): void
