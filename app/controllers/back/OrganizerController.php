@@ -5,19 +5,37 @@ use App\Core\Controller;
 use App\Models\Event;
 use App\Models\Ticket;
 use App\Models\Promotion;
+use App\Models\Category; 
 
 class OrganizerController extends Controller 
 {
     public function dashboard()
     {
+        session_start();
+        //pour tester
+        $_SESSION['user_id'] = 1;
         $event = new Event();
         $events = $event->getEventsByOrganizer($_SESSION['user_id']);
-        $this->view('organizer/dashboard', ['events' => $events]);
+        $stats = [
+            'total_events' => count($events),
+            'total_tickets' => 0,
+            'total_revenue' => 0
+        ];
+        
+        $this->view('back/organizer/dashboard', [
+            'events' => $events,
+            'stats' => $stats
+        ]);
     }
 
     public function createEvent()
     {
-        $this->view('organizer/create-event');
+        $category = new Category();
+        $categories = $category->getAllCategories();
+        
+        $this->view('front/event/create-event', [
+            'categories' => $categories
+        ]);
     }
 
     public function handleCreateEvent()
@@ -29,22 +47,12 @@ class OrganizerController extends Controller
         $event->price = $_POST['price'];
         $event->capacity = $_POST['capacity'];
         $event->organizer_id = $_SESSION['user_id'];
-        
-        if ($event->save()) {
-            $this->redirect('/organizer/dashboard');
-        }
+        //more 
+       
     }
 
-    public function eventStats($eventId)
-    {
-        $ticket = new Ticket();
-        $stats = $ticket->getEventStats($eventId);
-        $this->view('organizer/stats', ['stats' => $stats]);
-    }
+  
+   
 
-    public function exportParticipants($eventId)
-    {
-        $ticket = new Ticket();
-        $participants = $ticket->getEventParticipants($eventId);
-    }
+   
 }
