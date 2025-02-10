@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Innovation Event 2025</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'clash': ['"Clash Display"', 'sans-serif'],
+                        'manrope': ['Manrope', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary': '#8B5CF6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .bg-gradient {
+            background: radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.15), transparent 60%);
+        }
+        .star {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+        }
+        .star-1 { top: 15%; right: 35%; }
+        .star-2 { top: 40%; right: 15%; }
+        .star-3 { bottom: 30%; right: 45%; }
+    </style>
+</head>
+<body class="bg-black min-h-screen">
+<!-- Navigation -->
+<nav class="fixed w-full z-50 bg-black/90 backdrop-blur-sm border-b border-white/10">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-20">
+            <!-- Logo -->
+            <a href="#" class="font-clash text-white text-2xl font-bold">
+                Event Hive
+            </a>
+
+            <!-- Navigation Links -->
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#" class="text-white font-manrope hover:text-primary transition-colors">Home</a>
+                <a href="#" class="text-white/80 font-manrope hover:text-primary transition-colors">About</a>
+                <a href="#" class="text-white/80 font-manrope hover:text-primary transition-colors">Speakers</a>
+                <a href="#" class="text-white/80 font-manrope hover:text-primary transition-colors">Gallery</a>
+                <a href="#" class="text-white/80 font-manrope hover:text-primary transition-colors">Contact</a>
+            </div>
+
+            <!-- CTA Button -->
+            <a href="/registerForm" class="hidden md:block border border-primary text-white font-manrope px-6 py-2 rounded-lg hover:bg-primary/10 transition-colors">
+                Login | Register
+            </a>
+
+            <!-- Mobile Menu Button -->
+            <button class="md:hidden text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<div class="relative min-h-screen overflow-hidden bg-[url('/assets/hero.jpg')] bg-cover bg-center bg-no-repeat pt-20">
+    <!-- Background gradient -->
+    <div class="absolute inset-0 bg-gradient"></div>
+
+    <!-- Decorative stars -->
+    <svg class="star star-1" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2L15 9L22 9L16 14L18 21L12 17L6 21L8 14L2 9L9 9L12 2Z" fill="white" opacity="0.5"/>
+    </svg>
+    <svg class="star star-2" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2L15 9L22 9L16 14L18 21L12 17L6 21L8 14L2 9L9 9L12 2Z" fill="#FF6B6B" opacity="0.5"/>
+    </svg>
+    <svg class="star star-3" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2L15 9L22 9L16 14L18 21L12 17L6 21L8 14L2 9L9 9L12 2Z" fill="white" opacity="0.5"/>
+    </svg>
+
+    <!-- Main content -->
+    <div class="container mx-auto px-4 py-16">
+        <div class="flex flex-col lg:flex-row items-center gap-12">
+            <!-- Left content -->
+            <div class="lg:w-1/2 space-y-6">
+                <p class="font-manrope text-white/80 text-lg">15-17 December National IT Hall</p>
+                <h1 class="font-clash text-white text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
+                    Tech Innovation Event 2025
+                </h1>
+                <p class="font-manrope text-white/70 text-lg max-w-xl">
+                    Tech Innovation Event 2024: Unveiling breakthrough technologies and networking opportunities for industry pioneers.
+                </p>
+                <div class="flex gap-4 pt-4">
+                    <button class="bg-primary hover:bg-primary/90 text-white font-manrope px-8 py-3 rounded-lg transition-colors">
+                        Buy Tickets
+                    </button>
+                    <button class="border border-white/20 hover:bg-white/10 text-white font-manrope px-8 py-3 rounded-lg transition-colors">
+                        See Schedule
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
