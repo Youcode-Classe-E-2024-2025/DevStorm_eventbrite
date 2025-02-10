@@ -23,6 +23,7 @@ class Router {
             if (preg_match("#^$routePattern$#", $uri, $matches)) {
                 array_shift($matches);
                 [$controllerClass, $action] = $controller;
+                
                 $controllerInstance = new $controllerClass();
                 call_user_func_array([$controllerInstance, $action], $matches);
                 return;
