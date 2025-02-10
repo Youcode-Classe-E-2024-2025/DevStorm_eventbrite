@@ -61,12 +61,20 @@ class OrganizerController extends Controller
         $stats = $ticket->getEventStats($eventId);
         $this->view('back/organizer/stats', ['stats' => $stats]);
     }
-    public function eventStats($eventId)
-    {
-        $ticket = new Ticket();
-        $stats = $ticket->getEventStats($eventId);
-        $this->view('organizer/stats', ['stats' => $stats]);
-    }
+ /**
+ * Display event statistics
+ */
+public function eventStats($eventId)
+{
+    $event = new Event();
+    $stats = $event->getEventStats($eventId);
+    
+    $this->view('front/event/stats', [
+        'stats' => $stats,
+        'event_id' => $eventId
+    ]);
+}
+
 
     public function exportParticipants($eventId)
     {
