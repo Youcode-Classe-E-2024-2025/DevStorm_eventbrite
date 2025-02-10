@@ -65,4 +65,5 @@ class Event extends Model
     return $query->fetchAll(PDO::FETCH_ASSOC);
 }
 
+
 }
