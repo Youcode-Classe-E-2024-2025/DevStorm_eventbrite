@@ -1,6 +1,14 @@
-CREATE DATABASE eventbrite IF NOT EXISTS;
+-- Remove the 'IF NOT EXISTS' part for CREATE DATABASE
+CREATE DATABASE eventbrite;
+--  ---------------------------------
 
-CREATE TABLE users IF NOT EXISTS(
+CREATE TABLE IF NOT EXISTS categories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) UNIQUE NOT NULL
+);
+
+-- Then, proceed with creating tables with 'IF NOT EXISTS'
+CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
@@ -10,8 +18,7 @@ CREATE TABLE users IF NOT EXISTS(
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
-CREATE TABLE events IF NOT EXISTS(
+CREATE TABLE IF NOT EXISTS events (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description TEXT,
@@ -28,8 +35,7 @@ CREATE TABLE events IF NOT EXISTS(
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
-CREATE TABLE event_images IF NOT EXISTS(
+CREATE TABLE IF NOT EXISTS event_images (
     id SERIAL PRIMARY KEY,
     event_id INT REFERENCES events(id),
     image_url VARCHAR(255) NOT NULL,
@@ -37,14 +43,7 @@ CREATE TABLE event_images IF NOT EXISTS(
 );
 
 
-
-CREATE TABLE categories IF NOT EXISTS(
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) UNIQUE NOT NULL
-);
-
-
-CREATE TABLE tickets IF NOT EXISTS(
+CREATE TABLE IF NOT EXISTS tickets (
     id SERIAL PRIMARY KEY,
     event_id INT REFERENCES events(id),
     user_id INT REFERENCES users(id),
@@ -56,8 +55,7 @@ CREATE TABLE tickets IF NOT EXISTS(
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
-CREATE TABLE payments IF NOT EXISTS(
+CREATE TABLE IF NOT EXISTS payments (
     id SERIAL PRIMARY KEY,
     ticket_id INT REFERENCES tickets(id),
     payment_method VARCHAR(50) CHECK (payment_method IN ('stripe', 'paypal')) NOT NULL,
@@ -67,8 +65,7 @@ CREATE TABLE payments IF NOT EXISTS(
     payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
-CREATE TABLE promotions IF NOT EXISTS(
+CREATE TABLE IF NOT EXISTS promotions (
     id SERIAL PRIMARY KEY,
     code VARCHAR(50) UNIQUE NOT NULL,
     discount_percentage INT CHECK (discount_percentage > 0 AND discount_percentage <= 100),
@@ -78,8 +75,7 @@ CREATE TABLE promotions IF NOT EXISTS(
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
-CREATE TABLE notifications IF NOT EXISTS(
+CREATE TABLE IF NOT EXISTS notifications (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id),
     message TEXT NOT NULL,
@@ -87,4 +83,3 @@ CREATE TABLE notifications IF NOT EXISTS(
     status VARCHAR(50) CHECK (status IN ('non lue', 'lue')) DEFAULT 'non lue',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
