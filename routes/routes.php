@@ -11,7 +11,7 @@ use App\Core\Router;
 $router = new Router();
 
 
-$router->get('/ev', [HomeController::class, 'index']);
+$router->get('/', [HomeController::class, 'index']);
 $router->get('/registerForm', [UserController::class, 'register']);
 $router->get('/register', [UserController::class, 'register']);
 $router->post('/register', [UserController::class, 'handleRegister']);
@@ -22,6 +22,6 @@ $router->get('/dashboard', [DashboardController::class, 'Dashboard']);
 
 
 
-$router->get('/', [EventController::class, 'index']);
+$router->get('/event', [EventController::class, 'index']);
 
 $router->dispatch();
