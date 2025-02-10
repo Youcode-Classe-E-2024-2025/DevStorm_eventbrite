@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Controllers\back;
 
 use App\Core\Controller;
@@ -8,84 +7,78 @@ use App\Core\Security;
 use App\Models\User;
 use App\Core\Auth;
 
-
 class UserController extends Controller {
 
     public function register(): void
     {
         $security = new Security();
         $tokenCsrf = $security->Csrftoken();
-        $this->view('register',['Csrftoken' => $tokenCsrf]);
+        $this->view('auth/register', ['Csrftoken' => $tokenCsrf]);
     }
+
     public function login(): void
     {
         $security = new Security();
         $tokenCsrf = $security->Csrftoken();
-        $this->view('register',['Csrftoken' => $tokenCsrf]);
+        $this->view('auth/login', ['Csrftoken' => $tokenCsrf]); // Changed from 'register' to 'login'
     }
 
     public function handleRegister(): void
     {
-        var_dump($_POST);
-
-        if (isset($_POST['submit'])) {
-            $csrfToken = $_POST['csrf_token'];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $security = new Security();
-            $CsrfCheck = $security->checkCsrfToken($csrfToken);
-            if (!$CsrfCheck) {
+            if (!$security->checkCsrfToken($_POST['csrf_token'])) {
                 header('Location: /register?error=invalid_csrf_token');
                 exit;
             }
-            $username = $_POST['name']; 
-            $email = $_POST['email'];
-            $password = $_POST['password'];
-            $role = $_POST['role'];
-
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
             $user = new User();
-            $user->username = $username;
-            $user->email = $email;
-            $user->password = $hashedPassword;
-            $user->role = $role;
-            $user->save();
-            
-            header('Location: /login');
+            $user->username = $_POST['name'];
+            $user->email = $_POST['email'];
+            $user->password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+            $user->role = $_POST['role'];
+
+            if ($user->save()) {
+                header('Location: /login?success=registration_complete');
+            } else {
+                header('Location: /register?error=registration_failed');
+            }
             exit;
         }
     }
 
     public function handleLogin(): void
     {
-        $csrfToken = $_POST['csrf_token'];
-        $security = new Security();
-        $CsrfCheck = $security->checkCsrfToken($csrfToken);
-        if (!$CsrfCheck) {
-            header('Location: /register?error=invalid_csrf_token');
-            exit;
-        }
-            $email = $_POST['email'];
-            $password = $_POST['password'];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $security = new Security();
+            if (!$security->checkCsrfToken($_POST['csrf_token'])) {
+                header('Location: /login?error=invalid_csrf_token');
+                exit;
+            }
 
             $user = new User();
-            $user->email = $email;
-            $user->password = $password;
+            $user->email = $_POST['email'];
+            $user->password = $_POST['password'];
 
-            if($user->login()) {
-                header('Location: /home');
+            if ($user->login()) {
+                header('Location: /dashboard');
             } else {
                 header('Location: /login?error=invalid_credentials');
             }
+            exit;
+        }
     }
 
-    public function logout(): void {
+    public function logout(): void 
+    {
         $session = new Session();
         $session->destroy();
-        header('Location: /register');
+        header('Location: /login');
+        exit;
     }
 
-
-   public function Home(): void{
-         $this->view('front/home');
-   }
+    public function Home(): void
+    {
+        $this->view('front/home');
+    }
 }
