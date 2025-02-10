@@ -1,7 +1,7 @@
 <?php
 
-use App\Controllers\back\UserController;
-use App\Controllers\back\DashboardController;
+use App\controllers\back\UserController;
+use App\controllers\back\DashboardController;
 
 use App\Core\Router;
 

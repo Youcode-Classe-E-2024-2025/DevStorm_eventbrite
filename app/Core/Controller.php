@@ -1,19 +1,28 @@
 <?php
+
 namespace App\Core;
 
+use App\Core\View;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
-class Controller {
-    protected $twig;
+class Controller
+{
+    public  $twig;
 
-    public function __construct() {
-        // Use the correct absolute path to Views directory
-        $loader = new FilesystemLoader(dirname(__DIR__) . '/Views');
-        $this->twig = new Environment($loader);
+    public function __construct()
+    {
+        $this->twig= View::getTwig();
     }
 
-    protected function view(string $path, array $data = []): void {
-        echo $this->twig->render($path . '.twig', $data);
+    public function view(string $view, array $data = [])
+    {
+        echo $this->twig->render($view . '.twig', $data); 
+    }
+
+    public function redirect(string $url)
+    {
+        header('Location: ' . $url);
+        exit;
     }
 }

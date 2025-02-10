@@ -1,5 +1,6 @@
 <?php
-namespace App\Controllers\back;
+
+namespace App\controllers\back;
 
 use App\Core\Controller;
 use App\Core\Session;
@@ -20,7 +21,7 @@ class UserController extends Controller {
     {
         $security = new Security();
         $tokenCsrf = $security->Csrftoken();
-        $this->view('auth/login', ['Csrftoken' => $tokenCsrf]); // Changed from 'register' to 'login'
+        $this->view('auth/login', ['Csrftoken' => $tokenCsrf]);
     }
 
     public function handleRegister(): void
