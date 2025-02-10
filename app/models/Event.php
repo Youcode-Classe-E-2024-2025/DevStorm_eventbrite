@@ -64,6 +64,29 @@ class Event extends Model
     $query->execute(['organizer_id' => $organizerId]);
     return $query->fetchAll(PDO::FETCH_ASSOC);
 }
+/**
+ * Gets comprehensive statistics for a specific event
+ * @param int $eventId The event ID
+ * @return array Statistics including sales, revenue, and attendance
+ */
+public function getEventStats($eventId)
+{
+    $db = \App\Core\Database::getInstance();
+    $query = $db->getConnection()->prepare("
+        SELECT 
+            COUNT(t.id) as total_tickets,
+            SUM(t.price) as total_revenue,
+            COUNT(CASE WHEN t.status = 'validé' THEN 1 END) as validated_tickets,
+            e.capacity
+        FROM events e
+        LEFT JOIN tickets t ON e.id = t.event_id
+        WHERE e.id = :event_id
+        GROUP BY e.id, e.capacity
+    ");
+    
+    $query->execute(['event_id' => $eventId]);
+    return $query->fetch(PDO::FETCH_ASSOC);
+}
 
 
 }
