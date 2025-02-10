@@ -27,6 +27,8 @@ $router->post('/organizer/event/create', [OrganizerController::class, 'handleCre
 $router->get('/organizer/event/stats/{id}', [OrganizerController::class, 'salesStats']);
 $router->get('/organizer/event/export/{id}', [OrganizerController::class, 'exportParticipants']);
 $router->get('/organizer/dashboard', [OrganizerController::class, 'dashboard']);
+$router->get('/event/{id}/stats', [OrganizerController::class, 'eventStats']);
+
 
 
 
