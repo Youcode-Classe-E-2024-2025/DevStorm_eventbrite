@@ -3,6 +3,7 @@
 use App\controllers\back\UserController;
 use App\controllers\back\DashboardController;
 use App\controllers\front\HomeController;
+use App\Controllers\front\EventController;
 
 
 use App\Core\Router;
@@ -21,5 +22,6 @@ $router->get('/dashboard', [DashboardController::class, 'Dashboard']);
 
 
 
+$router->get('/', [EventController::class, 'index']);
 
 $router->dispatch();
