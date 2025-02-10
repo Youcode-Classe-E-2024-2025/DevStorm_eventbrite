@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Organisateur | DevEvents</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'custom-purple': '#8B5CF6',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-black text-white">
+    <!-- Navigation -->
+    <nav class="border-b border-white/10 bg-black">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/" class="text-2xl font-bold text-custom-purple">DevEvents</a>
+                <div class="space-x-4">
+                    <a href="/organizer/event/create" class="bg-custom-purple text-white px-4 py-2 rounded-lg hover:bg-purple-700">Créer un événement</a>
+                    <a href="/logout" class="text-white hover:text-custom-purple">Déconnexion</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-8">Tableau de bord</h1>
+        
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-gray-900 p-6 rounded-lg">
+                <h3 class="text-lg mb-2">Total Événements</h3>
+                <p class="text-2xl font-bold text-custom-purple">{{ stats.total_events }}</p>
+            </div>
+            <div class="bg-gray-900 p-6 rounded-lg">
+                <h3 class="text-lg mb-2">Billets Vendus</h3>
+                <p class="text-2xl font-bold text-custom-purple">{{ stats.total_tickets }}</p>
+            </div>
+            <div class="bg-gray-900 p-6 rounded-lg">
+                <h3 class="text-lg mb-2">Revenus Totaux</h3>
+                <p class="text-2xl font-bold text-custom-purple">{{ stats.total_revenue }}€</p>
+            </div>
+        </div>
+
+        <!-- Events List -->
+        <div class="bg-gray-900 rounded-lg p-6">
+            <h2 class="text-2xl font-bold mb-6">Mes Événements</h2>
+            <div class="space-y-4">
+                {% for event in events %}
+                    <div class="bg-black p-4 rounded-lg flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold">{{ event.title }}</h3>
+                            <p class="text-gray-400">{{ event.date|date('d M Y • H:i') }}</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <a href="/event/{{ event.id }}/stats" class="text-custom-purple hover:text-purple-400">Statistiques</a>
+                            <a href="/event/{{ event.id }}/edit" class="text-custom-purple hover:text-purple-400">Modifier</a>
+                            <a href="/event/{{ event.id }}/export" class="text-custom-purple hover:text-purple-400">Exporter</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
