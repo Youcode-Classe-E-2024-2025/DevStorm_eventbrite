@@ -47,8 +47,12 @@ class OrganizerController extends Controller
         $event->price = $_POST['price'];
         $event->capacity = $_POST['capacity'];
         $event->organizer_id = $_SESSION['user_id'];
-        //more 
-       
+        $event->location = $_POST['location'];
+        $event->category_id = $_POST['category_id'];
+        
+        if ($event->save()) {
+            $this->redirect('/organizer/dashboard');
+        }
     }
 
   
