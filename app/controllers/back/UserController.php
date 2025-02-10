@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers\back;
+namespace App\controllers\back;
 
 use App\Core\Controller;
 use App\Core\Session;
