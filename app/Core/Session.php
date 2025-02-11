@@ -15,9 +15,16 @@ class Session {
 
     public static function destroy(): void
     {
-        session_start();
+        // session_start();
         session_unset();
         session_destroy();
+    }
+    
+    public static function start(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
     }
 
 
@@ -58,6 +65,7 @@ class Session {
         }
         return null;
     }
+
 
 
 }
