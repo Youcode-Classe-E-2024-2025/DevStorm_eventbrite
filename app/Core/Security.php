@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Core;
-session_start();
+// session_start();
 class Security {
 
     public static function hash($password)
@@ -15,9 +15,10 @@ class Security {
     }
 
     public static function Csrftoken(){
-        $token = bin2hex(random_bytes(32));
-        $_SESSION['csrf_token'] = $token;
-        return $token;
+        if (empty($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION['csrf_token'];
     }
 
 
