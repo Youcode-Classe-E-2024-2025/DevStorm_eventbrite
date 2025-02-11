@@ -1,6 +1,7 @@
 <?php
 namespace App\models;
 
+use App\Core\Database;
 use App\Core\Model;
 use PDO;
 
@@ -215,4 +216,21 @@ public function getEventParticipants($eventId)
          return $events;
        }
 
+       public static function read($id)
+       {
+           $db = Database::getInstance();
+           $sql = "SELECT * FROM events WHERE id = :id";
+           $query = $db->getConnection()->prepare($sql);
+           $query->bindParam(':id', $id);
+           $query->execute();
+           $row = $query->fetch();
+
+           $user=null;
+           if($row){
+               $organizer = User::read($row['organizer_id']) ?? new User();
+               $category = Category::read($row['category_id']) ?? new Category();
+               $event = new Event($row['id'], $row['title'], $row['description'],$row['date'],$row['price'],$row['capacity'],$organizer,$row['location'],$category,$row['status']);
+           }
+           return $event;
+       } 
 }

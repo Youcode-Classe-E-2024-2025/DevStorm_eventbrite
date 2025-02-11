@@ -24,4 +24,11 @@ class EventController extends Controller
             'categories' => $categories
         ]);
     }
+    public function show($id){
+        $event= Event::read($id);
+        // var_dump($event);
+        $this->view('front/event/details', [
+           'event'=>$event
+        ]);
+    }
 }

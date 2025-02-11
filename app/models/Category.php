@@ -8,8 +8,8 @@ use PDO;
 class Category extends Model
 {
     protected $table = 'categories';
-    protected $id;
-    protected $name;
+    public $id;
+    public $name;
     
     public function __construct($id=null,$name=null)
     {
