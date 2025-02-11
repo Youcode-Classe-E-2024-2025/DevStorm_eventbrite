@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails de l'événement - {{ event.title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'custom-purple': '#8B5CF6',
+                        'custom-green': '#34D399',
+                        'custom-red': '#F87171',
+                    },
+                    fontFamily: {
+                        'display': ['Poppins', 'sans-serif'],
+                        'body': ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-black text-white font-body">
+    <!-- Navigation -->
+    <nav class="border-b border-white/10 bg-black">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/" class="text-2xl font-bold text-custom-purple font-display">DevEvents</a>
+                <div class="space-x-4">
+                    <a href="/login" class="text-white hover:text-custom-purple transition-colors duration-300">Connexion</a>
+                    <a href="/register" class="bg-custom-purple text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors duration-300 font-medium">Inscription</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Event Hero Section -->
+    <section class="relative overflow-hidden bg-black">
+        <div class="absolute inset-0 bg-gradient-to-br from-custom-purple/20 to-transparent"></div>
+        <div class="container mx-auto px-4 py-16">
+            <div class="max-w-5xl">
+                <h1 class="text-5xl font-bold mb-4 font-display">{{ event.title }}</h1>
+                <p class="text-lg text-gray-400 mb-8">{{ event.description|slice(0,150) }}</p>
+                <img 
+                    src="{{ event.image_url|default('https://picsum.photos/1200/400') }}" 
+                    alt="{{ event.title }}" 
+                    class="w-full h-80 object-cover rounded-lg shadow-lg"
+                >
+            </div>
+        </div>
+    </section>
+
+    <!-- Event Details Section -->
+    <section class="container mx-auto px-4 py-16">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Left Column: Event Info -->
+            <div class="bg-gray-900 rounded-lg p-6 space-y-6">
+                <div>
+                    <h3 class="text-2xl font-bold mb-2">À propos de l'événement</h3>
+                    <p class="text-gray-400">{{ event.description }}</p>
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-bold mb-2">Organisateur</h3>
+                    <p class="text-gray-400">{{ event.organizer.username }} ({{ event.organizer.email }})</p>
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-bold mb-2">Catégorie</h3>
+                    <span class="bg-custom-purple text-white px-3 py-1 rounded-full text-sm">{{ event.category.name }}</span>
+                </div>
+            </div>
+
+            <!-- Right Column: Event Details -->
+            <div class="bg-gray-900 rounded-lg p-6 space-y-6">
+                <div>
+                    <h3 class="text-2xl font-bold mb-2">Date et lieu</h3>
+                    <p class="text-gray-400">Le {{ event.date|date('d M Y') }} à {{ event.location }}</p>
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-bold mb-2">Prix et capacité</h3>
+                    <p class="text-gray-400">Prix : {{ event.price }} € | Capacité : {{ event.capacity }}</p>
+                </div>
+
+                <div>
+                    <h3 class="text-2xl font-bold mb-2">Statut</h3>
+                    {% if event.status == 'actif' %}
+                        <span class="bg-custom-green text-white px-4 py-2 rounded-full">Disponible</span>
+                    {% else %}
+                        <span class="bg-custom-red text-white px-4 py-2 rounded-full">Indisponible</span>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <a 
+                        href="/reserve/{{ event.id }}" 
+                        class="block w-full bg-custom-purple text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition-colors duration-300 text-center font-medium"
+                        {% if event.status != 'actif' %}disabled{% endif %}
+                    >
+                        Réserver maintenant
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>
