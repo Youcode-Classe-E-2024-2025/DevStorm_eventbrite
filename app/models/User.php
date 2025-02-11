@@ -98,5 +98,12 @@ class User extends Model {
         $rows = $query->fetchAll();
         return self::toObjects($rows);
     }
+
+    function updateStatus($userId, $status) {
+            $db = Database::getInstance();
+            $stmt = $db->getConnection()->prepare("UPDATE users SET status = :status WHERE id = :id");
+            $stmt->execute(["status" => $status, "id" => $userId]);
+            $stmt->execute();
+        }
     
 }

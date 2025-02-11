@@ -134,6 +134,70 @@ public function getEventById($eventId)
     return $query->fetch(PDO::FETCH_ASSOC);
 }
 
+/**
+ * Update event details
+ */
+public function updateEvent($eventId, $data)
+{
+    $db = \App\Core\Database::getInstance();
+    $sql = "UPDATE events SET 
+            title = :title,
+            description = :description,
+            date = :date,
+            price = :price,
+            capacity = :capacity,
+            location = :location,
+            category_id = :category_id
+            WHERE id = :id";
+            
+    $stmt = $db->getConnection()->prepare($sql);
+    return $stmt->execute([
+        'id' => $eventId,
+        'title' => $data['title'],
+        'description' => $data['description'],
+        'date' => $data['date'],
+        'price' => $data['price'],
+        'capacity' => $data['capacity'],
+        'location' => $data['location'],
+        'category_id' => $data['category_id']
+    ]);
+}
+
+
+
+ /**
+ * Get all participants for an event
+ */
+public function getEventParticipants($eventId)
+{
+    $db = \App\Core\Database::getInstance();
+    $query = $db->getConnection()->prepare("
+        SELECT u.name, u.email, t.ticket_type, t.status
+        FROM tickets t
+        JOIN users u ON t.user_id = u.id
+        WHERE t.event_id = :event_id
+        
+    ");
+    
+    $query->execute(['event_id' => $eventId]);
+    return $query->fetchAll(PDO::FETCH_ASSOC);
+}
+
+        public function getAllEvents(){
+                $db = \App\Core\Database::getInstance();
+                $query = $db->getConnection()->prepare("SELECT events.id,  events.title AS event_name, users.name AS organizer_name, events.status, events.created_at 
+                    FROM events JOIN users ON users.id = events.organizer_id");
+                $query->execute();
+                return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        public function delete($id){
+        $db = \App\Core\Database::getInstance();
+        $query = $db->getConnection()->prepare("DELETE FROM events WHERE id = :id");
+        $query->execute(['id' => $id]);
+        }
+
+
 
     /**
      * create article objects 
@@ -145,9 +209,10 @@ public function getEventById($eventId)
         $events=[];
         foreach ($rows as $row) {
              $organizer = User::read($row['organizer_id']) ?? new User();
-             $category = Category::read($row['category_id']) ?? new Category();
+             $category = Category::read($row['category_id']) ?? new Categor();
              $events[] = new Event($row['id'], $row['title'], $row['description'],$row['date'],$row['price'],$row['capacity'],$organizer,$row['location'],$category,$row['status']);
          }
          return $events;
        }
+
 }
