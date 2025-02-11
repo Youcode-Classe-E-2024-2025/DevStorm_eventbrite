@@ -107,7 +107,7 @@ public function getEventStats($eventId)
             COUNT(t.id) as total_tickets,
             SUM(t.price) as total_revenue,
             COUNT(CASE WHEN t.status = 'validé' THEN 1 END) as validated_tickets,
-            e.capacity
+            e.capacity as capacity
         FROM events e
         LEFT JOIN tickets t ON e.id = t.event_id
         WHERE e.id = :event_id

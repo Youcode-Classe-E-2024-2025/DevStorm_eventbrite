@@ -23,7 +23,8 @@
             <div class="bg-gray-900 p-6 rounded-lg">
                 <h3 class="text-lg mb-2">Taux de Participation</h3>
                 <p class="text-2xl font-bold text-custom-purple">
-                    {{ (stats.validated_tickets / stats.capacity * 100)|round }}%
+                    {{ stats.capacity > 0 ? (stats.validated_tickets / stats.capacity * 100)|round ~ '%' : '0%' }}
+
                 </p>
             </div>
         </div>
