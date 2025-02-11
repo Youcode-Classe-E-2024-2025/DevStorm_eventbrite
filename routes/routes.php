@@ -3,8 +3,8 @@
 use App\controllers\back\UserController;
 use App\controllers\back\DashboardController;
 use App\controllers\front\HomeController;
-use App\Controllers\front\EventController;
-use App\Controllers\back\OrganizerController;
+use App\controllers\front\EventController;
+use App\controllers\back\OrganizerController;
 
 
 use App\Core\Router;

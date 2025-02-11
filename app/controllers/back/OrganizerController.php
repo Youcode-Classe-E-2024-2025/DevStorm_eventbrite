@@ -1,11 +1,11 @@
 <?php
-namespace App\Controllers\back;
+namespace App\controllers\back;
 
 use App\Core\Controller;
-use App\Models\Event;
-use App\Models\Ticket;
-use App\Models\Promotion;
-use App\Models\Category; 
+use App\models\Event;
+use App\models\Promotion;
+use App\models\Ticket;
+use App\models\Category; 
 
 class OrganizerController extends Controller 
 {
