@@ -21,6 +21,10 @@ $router->post('/login', [UserController::class, 'handleLogin']);
 $router->get('/logout', [UserController::class, 'logout']);
 $router->get('/dashboard', [DashboardController::class, 'Dashboard']);
 
+$router->get('/adminDashboard', [DashboardController::class, 'adminDashboard']);
+$router->get('/UpdateUserStatus', [DashboardController::class, 'UpdateUserStatus']);
+$router->get('/deleteEvent/{id}', [DashboardController::class, 'deleteEvent']);
+
 //organizer ROUTEs
 $router->get('/organizer/event/create', [OrganizerController::class, 'createEvent']);
 $router->post('/organizer/event/create', [OrganizerController::class, 'handleCreateEvent']);
