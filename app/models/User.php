@@ -70,5 +70,12 @@ class User extends Model {
         $query->execute();
         return $query->fetchAll();
     }
+
+    function updateStatus($userId, $status) {
+            $db = Database::getInstance();
+            $stmt = $db->getConnection()->prepare("UPDATE users SET status = :status WHERE id = :id");
+            $stmt->execute(["status" => $status, "id" => $userId]);
+            $stmt->execute();
+        }
     
 }

@@ -102,12 +102,8 @@
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ color }}-400 text-{{ color }}-900">{{ event.status }}</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <a href="#" class="text-primary hover:text-primary/80 mr-3">Edit</a>
-                    <button @click="confirmDelete(1)" class="text-red-500 hover:text-red-400 mr-3">Delete</button>
-                    <button @click="status = status === 'active' ? 'suspended' : 'active'"
-                            x-text="status === 'active' ? 'Suspend' : 'Activate'"
-                            class="text-yellow-500 hover:text-yellow-400">
-                    </button>
+                    <a href="/editEvent" class="text-primary hover:text-primary/80 mr-3">Edit</a>
+                    <a href="/deleteEvent" class="text-red-500 hover:text-red-400 mr-3">Delete</a>
                 </td>
             </tr>
             {% endfor %}
@@ -116,25 +112,38 @@
     </div>
 </div>
 
-<div x-data="{ showMessage: false, message: '' }" x-init="$watch('showMessage', value => { if(value) setTimeout(() => showMessage = false, 5000) })">
-    <div x-show="showMessage" class="fixed top-4 left-1/2 transform -translate-x-1/2 max-w-sm mx-auto p-4 bg-primary/20 text-white border border-primary/50 rounded-md">
-        <div class="flex justify-between items-center">
-            <span x-text="message"></span>
-            <button @click="showMessage = false" class="text-white font-bold">&times;</button>
-        </div>
+<div class="container mx-auto px-4 py-10">
+    <h1 class="text-4xl font-bold mb-6 text-primary font-clash">Admin Dashboard - Users</h1>
+
+    <div class="bg-white/10 shadow-md rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-white/20">
+            <thead class="bg-white/5">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">User Name</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Inscription Date</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Actions</th>
+            </tr>
+            </thead>
+            <tbody class="bg-white/5 divide-y divide-white/10">
+            {% for user in users %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{{ user.name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-white/70">{{ user.created_at|date("Y-m-d") }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        {% set color = user.status == "actif" ? "green" : (user.status == "suspended" ? "yellow" : (user.status == "deleted" ? "red" : "gray")) %}
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ color }}-400 text-{{ color }}-900">{{ user.status }}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <a href="/UpdateUserStatus?id={{ user.id }}&action=actif" class="text-green-600 hover:text-green-900 mr-3">actif</a>
+                        <a href="/UpdateUserStatus?id={{ user.id }}&action=suspend" class="text-yellow-600 hover:text-yellow-900 mr-3">Suspend</a>
+                        <a href="/UpdateUserStatus?id={{ user.id }}&action=delete" class="text-red-500 hover:text-red-400 mr-3">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
-
-<script>
-    function confirmDelete(eventId) {
-        if (confirm('Are you sure you want to delete this event?')) {
-            console.log('Deleting event with ID:', eventId);
-
-            const messageEl = document.querySelector('[x-data]').__x.$data;
-            messageEl.message = 'Event deleted successfully';
-            messageEl.showMessage = true;
-        }
-    }
-</script>
 </body>
 </html>
