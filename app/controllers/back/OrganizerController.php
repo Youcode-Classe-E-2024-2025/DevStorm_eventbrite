@@ -1,15 +1,18 @@
 <?php
-namespace App\controllers\back;
 
+namespace App\controllers\back;
 use App\Core\Controller;
 use App\models\Event;
 use App\models\Promotion;
 use App\models\Ticket;
 use App\models\Category; 
+use App\traits\PDFGenerator ; 
+use TCPDF; 
 
 class OrganizerController extends Controller 
 {
-    public function dashboard()
+
+        public function dashboard()
     {
         session_start();
         //pour tester
@@ -75,7 +78,22 @@ public function eventStats($eventId)
     ]);
 }
 
+//composer require tecnickcom/tcpdf
 
+use PDFGenerator;
+public function exportParticipantsPDF($eventId)
+    {    
+        $event = new Event();
+        $participants = $event->getEventParticipants($eventId);
+        $eventDetails = $event->getEventById($eventId);
+
+        $title = 'Participants - ' . $eventDetails['title'];
+        $header = ['Nom', 'Email', 'Type Billet', 'Status'];
+        $filename = 'participants_event_' . $eventId;
+
+        // Use the trait method
+        $this->generatePDF($title, $header, $participants, $filename);
+    }
 
     public function createPromoCode($eventId)
     {
@@ -104,6 +122,34 @@ public function eventStats($eventId)
             'event_id' => $eventId
         ]);
     }
-
+    public function editEvent($eventId)
+{
+    $event = new Event();
+    $category = new Category();
+    
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Handle form submission
+        $event->updateEvent($eventId, [
+            'title' => $_POST['title'],
+            'description' => $_POST['description'],
+            'date' => $_POST['date'],
+            'price' => $_POST['price'],
+            'capacity' => $_POST['capacity'],
+            'location' => $_POST['location'],
+            'category_id' => $_POST['category_id']
+        ]);
+        
+        $this->redirect('/organizer/dashboard');
+    }
+    
+    // Get event data for form
+    $eventData = $event->getEventById($eventId);
+    $categories = $category->getAllCategories();
+    
+    $this->view('front/event/edit-event', [
+        'event' => $eventData,
+        'categories' => $categories
+    ]);
+}
 
 }
