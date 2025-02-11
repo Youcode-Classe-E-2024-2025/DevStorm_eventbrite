@@ -11,11 +11,15 @@ class EventController extends Controller
     {
         $event = new Event();
         $category = new Category();
-        
-        $events = $event->getFeaturedEvents();
+        $uri=[];
+        $uri['search'] = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
+        $uri['category'] = isset($_GET['category']) ? htmlspecialchars($_GET['category']) : '';
+
+        $events = $event->getFeaturedEvents($uri['search'],$uri['category']);
         $categories = $category->getAllCategories();
         
         $this->view('front/event/index', [
+            'uri'=>$uri,
             'events' => $events,
             'categories' => $categories
         ]);

@@ -32,18 +32,31 @@ class Event extends Model
         $this->status = $status;
     }
 
-    public function getFeaturedEvents()
+    public function getFeaturedEvents($search = '', $category_id = '')
     {
         $db = \App\Core\Database::getInstance();
-        $query = $db->getConnection()->prepare("
-            SELECT e.*, c.name as category_name 
-            FROM events e 
-            JOIN categories c ON e.category_id = c.id 
-            WHERE e.status = 'actif' 
-            LIMIT 6
-        ");
-        $query->execute();
-        $rows=$query->fetchAll(PDO::FETCH_ASSOC);
+        $connection = $db->getConnection();
+
+        $query = "SELECT e.*, c.name AS category_name 
+                  FROM events e 
+                  JOIN categories c ON e.category_id = c.id 
+                  WHERE e.status = 'actif'";
+
+        $params = [];
+
+        if (!empty($category_id)) {
+            $query .= " AND e.category_id = :category_id";
+            $params[':category_id'] = $category_id;
+        }
+
+        if (!empty($search)) {
+            $query .= " AND e.title LIKE :search";
+            $params[':search'] = '%' . $search . '%';
+        }
+
+        $stmt = $connection->prepare($query);
+        $stmt->execute($params);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return self::toObjects($rows);
     }
 
@@ -129,6 +142,7 @@ public function getEventById($eventId)
      * @return array
      */
     private static function toObjects($rows){
+        $events=[];
         foreach ($rows as $row) {
              $organizer = User::read($row['organizer_id']) ?? new User();
              $category = Category::read($row['category_id']) ?? new Category();
