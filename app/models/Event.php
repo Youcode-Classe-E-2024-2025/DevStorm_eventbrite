@@ -209,7 +209,7 @@ public function getEventParticipants($eventId)
         $events=[];
         foreach ($rows as $row) {
              $organizer = User::read($row['organizer_id']) ?? new User();
-             $category = Category::read($row['category_id']) ?? new Categor();
+             $category = Category::read($row['category_id']) ?? new Category();
              $events[] = new Event($row['id'], $row['title'], $row['description'],$row['date'],$row['price'],$row['capacity'],$organizer,$row['location'],$category,$row['status']);
          }
          return $events;
