@@ -1,4 +1,4 @@
--- Remove the 'IF NOT EXISTS' part for CREATE DATABASE
+
 CREATE DATABASE eventbrite;
 --  ---------------------------------
 
