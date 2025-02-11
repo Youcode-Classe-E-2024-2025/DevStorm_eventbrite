@@ -1,20 +1,28 @@
 <?php
 
-namespace App\Models;
+namespace App\models;
 
 
 use App\Core\Database;
-use App\Core\model;
+use App\Core\Model;
 use App\Core\Session;
+use App\enums\Role;
 
-session_start();
 
 class User extends Model {
     protected $table = 'users';
     public $username;
     public $email;
     public $password;
-    public $role;
+    public  $role;
+
+    public function __construct($name=null,$email=null,$password=null,$role = Role::PARTICIPANT)
+    {
+        $this->username = $name;
+        $this->email = $email;
+        $this->password = $password;
+        $this->role = $role;
+    }
 
     public static function findByEmail($email){
         $db = Database::getInstance();
@@ -27,12 +35,12 @@ class User extends Model {
     public function save()
     {
         $db = Database::getInstance();
-        $query = $db->getConnection()->prepare("INSERT INTO " . $this->getTable() . " (username, email, password, role_id) VALUES (:username, :email, :password, :role)");
+        $query = $db->getConnection()->prepare("INSERT INTO " . $this->getTable() . " (name, email, password_hash, role) VALUES (:username, :email, :password, :role)");
         $query->bindParam(':username', $this->username);
         $query->bindParam(':email', $this->email);
         $query->bindParam(':password', $this->password);
-        $query->bindParam(':role', $this->role);
-        
+        $role_name = $this->role->value;
+        $query->bindParam(':role', $role_name);
         if ($query->execute()) {
             return $db->getConnection()->lastInsertId();
         } else {
@@ -48,10 +56,8 @@ class User extends Model {
         $query->bindParam(':email', $this->email);
         $query->execute();
         $user = $query->fetch();
-        
-        if ($user && password_verify($this->password, $user['password'])) {
-            $session = new Session();
-            $session->set('user_role', $user["role_id"]);
+        if ($user && password_verify($this->password, $user['password_hash'])) {
+            Session::set('user_role', $user["role"]);
             return $user;
         }
         return false;
