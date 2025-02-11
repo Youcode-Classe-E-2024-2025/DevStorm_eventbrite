@@ -34,6 +34,10 @@ $router->get('/event/{id}/promocode/create', [OrganizerController::class, 'creat
 $router->post('/event/{id}/promocode/create', [OrganizerController::class, 'createPromoCode']);
 $router->get('/event/{id}/promocodes', [OrganizerController::class, 'listPromoCodes']);
 
+//event
+$router->get('/event/{id}/edit', [OrganizerController::class, 'editEvent']);
+$router->post('/event/{id}/edit', [OrganizerController::class, 'editEvent']);
+$router->get('/event/{id}/export/pdf', [OrganizerController::class, 'exportParticipantsPDF']);
 
 
 
