@@ -29,6 +29,11 @@ $router->get('/organizer/event/export/{id}', [OrganizerController::class, 'expor
 $router->get('/organizer/dashboard', [OrganizerController::class, 'dashboard']);
 $router->get('/event/{id}/stats', [OrganizerController::class, 'eventStats']);
 
+//promocode
+$router->get('/event/{id}/promocode/create', [OrganizerController::class, 'createPromoCode']);
+$router->post('/event/{id}/promocode/create', [OrganizerController::class, 'createPromoCode']);
+$router->get('/event/{id}/promocodes', [OrganizerController::class, 'listPromoCodes']);
+
 
 
 

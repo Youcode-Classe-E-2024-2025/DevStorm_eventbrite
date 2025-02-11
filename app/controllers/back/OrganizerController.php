@@ -96,4 +96,23 @@ public function eventStats($eventId)
             ]);
         }
     }
+    public function createPromoCode($eventId)
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $promotion = new Promotion();
+            $result = $promotion->createPromotion([
+                'discount_percentage' => $_POST['discount_percentage'],
+                'valid_from' => $_POST['valid_from'],
+                'valid_until' => $_POST['valid_until']
+            ]);
+            
+            if ($result) {
+                $this->redirect('/event/' . $eventId . '/promocodes');
+            }
+        }
+        
+        $this->view('front/event/create-promocode', ['event_id' => $eventId]);
+    }
+   
+
 }
