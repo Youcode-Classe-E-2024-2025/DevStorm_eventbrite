@@ -2,6 +2,8 @@
 
 namespace App\Core;
 
+use App\enums\Role;
+
 class Validator
 {
     private $errors = [];
@@ -40,6 +42,21 @@ class Validator
             $this->errors['confirm_password'] = "Veuillez confirmer votre mot de passe.";
         } elseif ($password !== $confirm_password) {
             $this->errors['confirm_password'] = "Les mots de passe ne correspondent pas.";
+        }
+    }
+
+    // Validate Role
+    public function validateRole($role)
+    {
+        if (empty($role)) {
+            $this->errors['role'] = "Veuillez sélectionner un rôle.";
+        } else {
+            
+            $validRoles = array_map(function ($role) { return $role->value; }, Role::cases());
+            // var_dump($validRoles);die;
+            if (!in_array($role, $validRoles)) {
+                $this->errors['role'] = "Rôle invalide.";
+            }
         }
     }
 
