@@ -29,7 +29,22 @@ class Promotion extends Model
     {
         return strtoupper(uniqid('PROMO_'));
     }
-
+    /**
+ * Get all promotions for a specific event
+ * @param int $eventId The event ID
+ * @return array List of promotions
+ */
+public function getPromotionsByEvent()
+{
+    $db = \App\Core\Database::getInstance();
+    $query = $db->getConnection()->prepare("
+        SELECT * FROM promotions 
+        ORDER BY created_at DESC
+    ");
+    
+    $query->execute();
+    return $query->fetchAll(PDO::FETCH_ASSOC);
+}
 
 
 }
