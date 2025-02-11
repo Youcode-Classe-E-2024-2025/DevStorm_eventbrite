@@ -65,4 +65,16 @@ class Event extends Model
     return $query->fetchAll(PDO::FETCH_ASSOC);
 }
 
+        public function getAllEvents(){
+                $db = \App\Core\Database::getInstance();
+                $query = $db->getConnection()->prepare("SELECT events.title AS event_name, users.name AS organizer_name, events.status, events.created_at 
+                    FROM events JOIN users ON users.id = events.organizer_id");
+                $query->execute();
+                return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+
+
+
+
 }
