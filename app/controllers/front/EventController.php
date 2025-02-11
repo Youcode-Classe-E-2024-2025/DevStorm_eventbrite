@@ -1,7 +1,9 @@
 <?php
 namespace App\controllers\front;
 
+use App\Core\Auth;
 use App\Core\Controller;
+use App\enums\Role;
 use App\models\Event;
 use App\models\Category;
 
@@ -30,5 +32,11 @@ class EventController extends Controller
         $this->view('front/event/details', [
            'event'=>$event
         ]);
+    }
+    public function reserve($id){
+        Auth::requireAuth(Role::PARTICIPANT);
+        echo "reserve $id";
+        
+
     }
 }
