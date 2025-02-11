@@ -1,0 +1,64 @@
+{% extends 'layout.twig' %}
+
+{% block title %}Panier de réservations {% endblock %}
+
+{% block content %}
+    <!-- Navigation -->
+    <nav class="border-b border-white/10 bg-black">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/" class="text-2xl font-bold text-custom-purple font-display">DevEvents</a>
+                <div class="space-x-4">
+                    <a href="/login" class="text-white hover:text-custom-purple transition-colors duration-300">Connexion</a>
+                    <a href="/register" class="bg-custom-purple text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors duration-300 font-medium">Inscription</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cart Section -->
+    <section class="container mx-auto px-4 py-16">
+        <h1 class="text-3xl font-bold mb-8 text-center font-display">Votre panier de réservations</h1>
+
+        {% if reservations|length == 0 %}
+            <div class="bg-gray-900 rounded-lg p-6 text-center">
+                <p class="text-lg text-gray-400">Votre panier est vide. Ajoutez des événements pour commencer.</p>
+            </div>
+        {% else %}
+            <div class="space-y-6">
+                {% for reservation in reservations %}
+                    <div class="bg-gray-900 rounded-lg p-6 flex items-center justify-between">
+                        <!-- Event Info -->
+                        <div>
+                            <h2 class="text-xl font-bold">{{ reservation.event.title }}</h2>
+                            <p class="text-gray-400">Le {{ reservation.event.date|date('d M Y') }} à {{ reservation.event.location }}</p>
+                            <p class="text-sm text-gray-400">Prix : {{ reservation.event.price }} €</p>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex justify-center gap-4 flex-wrap">
+                            <a 
+                                href="/reservation/confirm/{{ reservation.id }}" 
+                                class="bg-custom-green text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-300"
+                            >
+                                Confirmer
+                            </a>
+                            <a 
+                                href="/reservation/cancel/{{ reservation.id }}" 
+                                class="bg-custom-red text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors duration-300"
+                            >
+                                Annuler
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <!-- Total Price -->
+                <div class="bg-gray-900 rounded-lg p-6 text-center">
+                    <h3 class="text-2xl font-bold mb-2">Total à payer</h3>
+                    <p class="text-3xl font-bold text-custom-purple">{{ total_price }} €</p>
+                </div>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}
