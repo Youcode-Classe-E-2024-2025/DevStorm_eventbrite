@@ -3,8 +3,8 @@
 use App\controllers\back\UserController;
 use App\controllers\back\DashboardController;
 use App\controllers\front\HomeController;
-use App\Controllers\front\EventController;
-use App\Controllers\back\OrganizerController;
+use App\controllers\front\EventController;
+use App\controllers\back\OrganizerController;
 
 
 use App\Core\Router;
@@ -31,6 +31,17 @@ $router->post('/organizer/event/create', [OrganizerController::class, 'handleCre
 $router->get('/organizer/event/stats/{id}', [OrganizerController::class, 'salesStats']);
 $router->get('/organizer/event/export/{id}', [OrganizerController::class, 'exportParticipants']);
 $router->get('/organizer/dashboard', [OrganizerController::class, 'dashboard']);
+$router->get('/event/{id}/stats', [OrganizerController::class, 'eventStats']);
+
+//promocode
+$router->get('/event/{id}/promocode/create', [OrganizerController::class, 'createPromoCode']);
+$router->post('/event/{id}/promocode/create', [OrganizerController::class, 'createPromoCode']);
+$router->get('/event/{id}/promocodes', [OrganizerController::class, 'listPromoCodes']);
+
+//event
+$router->get('/event/{id}/edit', [OrganizerController::class, 'editEvent']);
+$router->post('/event/{id}/edit', [OrganizerController::class, 'editEvent']);
+$router->get('/event/{id}/export/pdf', [OrganizerController::class, 'exportParticipantsPDF']);
 
 
 

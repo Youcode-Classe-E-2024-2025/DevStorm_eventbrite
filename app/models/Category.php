@@ -1,18 +1,44 @@
 <?php
-namespace App\Models;
+namespace App\models;
 
 use App\Core\Model;
+use App\Core\Database;
 use PDO;
 
 class Category extends Model
 {
     protected $table = 'categories';
+    protected $id;
+    protected $name;
+    
+    public function __construct($id=null,$name=null)
+    {
+        $this->id = $id;
+        $this->name = $name;
+    }
 
     public function getAllCategories()
     {
-        $db = \App\Core\Database::getInstance();
+        $db =Database::getInstance();
         $query = $db->getConnection()->prepare("SELECT * FROM categories ORDER BY name");
         $query->execute();
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public static function read($id)
+    {
+        $db = Database::getInstance();
+        $sql = "SELECT * FROM categories WHERE id = :id";
+        $query = $db->getConnection()->prepare($sql);
+        $query->bindParam(':id', $id);
+        $query->execute();
+        $data = $query->fetch();
+        $category=null;
+        if($data){
+            $category = new Category($data['id'],$data['name']);
+           
+        }
+        return $category;
+    } 
+
 }
