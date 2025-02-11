@@ -18,6 +18,10 @@ class UserController extends Controller
 
     public function login(): void
     {
+        if (Auth::isLoggedIn()){
+            $this->redirect("/");
+        }
+        // var_dump($_SESSION);die;
         $security = new Security();
         $tokenCsrf = $security->Csrftoken();
         $this->view(
@@ -32,6 +36,9 @@ class UserController extends Controller
 
     public function register(): void
     {
+        if (Auth::isLoggedIn()){
+            $this->redirect("/");
+        }
         $security = new Security();
         $tokenCsrf = $security->Csrftoken();
         $this->view(
@@ -113,7 +120,7 @@ class UserController extends Controller
 
             if ($user) {
 
-                Session::setData('user', $user);
+                Auth::login($user);
                 Session::setFlashMessage('green', 'Login successful. Welcome back! ' . $user['name']);
 
                 if ($user['role'] === Role::ADMIN->value) {
