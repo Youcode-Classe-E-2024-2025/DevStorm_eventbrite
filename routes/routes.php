@@ -46,6 +46,9 @@ $router->get('/event/{id}/export/pdf', [OrganizerController::class, 'exportParti
 
 
 
-$router->get('/event', [EventController::class, 'index']);
+$router->get('/events', [EventController::class, 'index']);
+$router->get('/event/{id}', [EventController::class, 'show']);
+
+$router->get('/reserve/{id}', [EventController::class, 'reserve']);
 
 $router->dispatch();
