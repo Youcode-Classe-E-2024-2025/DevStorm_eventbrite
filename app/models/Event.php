@@ -151,6 +151,7 @@ public function updateEvent($eventId, $data)
 }
 
 
+
  /**
  * Get all participants for an event
  */
@@ -168,6 +169,23 @@ public function getEventParticipants($eventId)
     $query->execute(['event_id' => $eventId]);
     return $query->fetchAll(PDO::FETCH_ASSOC);
 }
+
+        public function getAllEvents(){
+                $db = \App\Core\Database::getInstance();
+                $query = $db->getConnection()->prepare("SELECT events.id,  events.title AS event_name, users.name AS organizer_name, events.status, events.created_at 
+                    FROM events JOIN users ON users.id = events.organizer_id");
+                $query->execute();
+                return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        public function delete($id){
+        $db = \App\Core\Database::getInstance();
+        $query = $db->getConnection()->prepare("DELETE FROM events WHERE id = :id");
+        $query->execute(['id' => $id]);
+        }
+
+
+
     /**
      * create article objects 
      * 
@@ -182,4 +200,5 @@ public function getEventParticipants($eventId)
          }
          return $events;
        }
+
 }
