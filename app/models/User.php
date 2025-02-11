@@ -11,6 +11,7 @@ use App\enums\Role;
 
 class User extends Model {
     protected $table = 'users';
+    public $id;
     public $username;
     public $email;
     public $password;
@@ -23,6 +24,22 @@ class User extends Model {
         $this->password = $password;
         $this->role = $role;
     }
+    public static function read($id)
+    {
+        $db = Database::getInstance();
+        $sql = "SELECT * FROM users WHERE id = :id";
+        $query = $db->getConnection()->prepare($sql);
+        $query->bindParam(':id', $id);
+        $query->execute();
+        $data = $query->fetch();
+
+        $user=null;
+        if($data){
+            $user = new User($data['name'],$data['email'],'',Role::from($data['role']));
+            $user->id = $data['id'];
+        }
+        return $user;
+    } 
 
     public static function findByEmail($email){
         $db = Database::getInstance();
