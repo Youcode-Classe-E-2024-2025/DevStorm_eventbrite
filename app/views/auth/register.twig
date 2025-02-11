@@ -1,116 +1,112 @@
 {% extends 'layout.twig' %}
 
-{% block title %}Créer un compte - DevStorm Events{% endblock %}
+{% block title %}Connexion - Events Hint{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-    <div class="sm:mx-auto sm:w-full sm:max-w-md">
-        <img class="mx-auto h-12 w-auto" src="/assets/images/logo.png" alt="DevStorm Events">
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Créer votre compte
-        </h2>
-        <p class="mt-2 text-center text-sm text-gray-600">
-            Rejoignez notre communauté d'organisateurs et participants
-        </p>
-    </div>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <form class="space-y-6" action="/register" method="POST">
-                <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700">
-                        Nom complet
-                    </label>
-                    <div class="mt-1">
-                        <input id="name" name="name" type="text" required 
-                               class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500">
-                    </div>
-                </div>
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #000000;
+            color: #FFFFFF;
+        }
+        .title {
+            font-family: 'Clash Display', sans-serif;
+        }
+        .hidden { display: none; }
+    </style>
 
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700">
-                        Email
-                    </label>
-                    <div class="mt-1">
-                        <input id="email" name="email" type="email" required 
-                               class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500">
-                    </div>
-                </div>
+    <div class="min-h-screen bg-black flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div class="sm:mx-auto sm:w-full sm:max-w-md">
+            <h1 class="mt-6 text-center text-3xl font-extrabold title text-white">Events Hint</h1>
+            <h2 class="mt-6 text-center text-3xl font-extrabold title text-white" id="form-title">
+                Crée votre compte
+            </h2>
+        </div>
 
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700">
-                        Mot de passe
-                    </label>
-                    <div class="mt-1">
-                        <input id="password" name="password" type="password" required 
-                               class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500">
-                    </div>
-                </div>
+        <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+            <div class="bg-white/10 py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                <form id="signup-form" class="space-y-6" action="/register" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ Csrftoken }}">
 
-                <div>
-                    <label for="role" class="block text-sm font-medium text-gray-700">
-                        Type de compte
-                    </label>
-                    <div class="mt-1">
-                        <select id="role" name="role" required 
-                                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500">
-                            <option value="participant">Participant</option>
-                            <option value="organizer">Organisateur</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="flex items-center">
-                    <input id="terms" name="terms" type="checkbox" required
-                           class="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded">
-                    <label for="terms" class="ml-2 block text-sm text-gray-900">
-                        J'accepte les <a href="#" class="text-orange-600 hover:text-orange-500">conditions d'utilisation</a>
-                    </label>
-                </div>
-
-                <div>
-                    <button type="submit" 
-                            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
-                        Créer mon compte
-                    </button>
-                </div>
-            </form>
-
-            <div class="mt-6">
-                <div class="relative">
-                    <div class="absolute inset-0 flex items-center">
-                        <div class="w-full border-t border-gray-300"></div>
-                    </div>
-                    <div class="relative flex justify-center text-sm">
-                        <span class="px-2 bg-white text-gray-500">
-                            Ou continuer avec
-                        </span>
-                    </div>
-                </div>
-
-                <div class="mt-6 grid grid-cols-2 gap-3">
                     <div>
-                        <a href="#" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                            <img class="h-5 w-5" src="/assets/images/google.svg" alt="Google">
-                        </a>
+                        <label for="name" class="block text-sm font-medium text-white/80">
+                            Nom
+                        </label>
+                        <div class="mt-1">
+                            <input id="name" name="name" type="text" required
+                                   class="appearance-none block w-full px-3 py-2 border border-white/10 rounded-md shadow-sm bg-black text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                        </div>
                     </div>
-                    <div>
-                        <a href="#" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                            <img class="h-5 w-5" src="/assets/images/facebook.svg" alt="Facebook">
-                        </a>
-                    </div>
-                </div>
-            </div>
 
-            <div class="mt-6 text-center text-sm">
-                <p class="text-gray-600">
-                    Déjà inscrit ?
-                    <a href="/login" class="font-medium text-orange-600 hover:text-orange-500">
-                        Connectez-vous
-                    </a>
-                </p>
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-white/80">
+                            Email
+                        </label>
+                        <div class="mt-1">
+                            <input id="signup-email" name="email" type="email" required
+                                   class="appearance-none block w-full px-3 py-2 border border-white/10 rounded-md shadow-sm bg-black text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-white/80">
+                            Mot de passe
+                        </label>
+                        <div class="mt-1">
+                            <input id="signup-password" name="password" type="password" required
+                                   class="appearance-none block w-full px-3 py-2 border border-white/10 rounded-md shadow-sm bg-black text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="role" class="block text-sm font-medium text-white/80">
+                            Rôle
+                        </label>
+                        <div class="mt-1">
+                            <select id="role" name="role" required
+                                    class="block w-full px-3 py-2 border border-white/10 rounded-md bg-black text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500">
+                                <option value="organizer">Organisateur</option>
+                                <option value="participant">Participant</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <button type="button"
+                                class="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-black bg-gray-100 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/>
+                            </svg>
+                            Inscrit avec Google
+                        </button>
+                        <button type="button"
+                                class="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-800 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                            Inscrit avec Facebook
+                        </button>
+                    </div>
+
+                    <div>
+                        <button type="submit"
+                                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                            S'inscrire
+                        </button>
+                    </div>
+                </form>
+
+                <div class="mt-6 text-center text-sm">
+                    <p class="text-white/70">
+                        <a href="/login" id="toggle-form" class="font-medium text-purple-600 hover:text-purple-500">
+                            Vous avez déja un compte ?
+                        </a>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}
