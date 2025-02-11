@@ -32,5 +32,12 @@ class DashboardController extends Controller{
         }
     }
 
+    public function deleteEvent($id){
+        $event = new Event();
+        $event->delete($id);
+        $this->adminDashboard();
+    }
+
+
 
 }
