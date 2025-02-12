@@ -233,4 +233,48 @@ public function getEventParticipants($eventId)
            }
            return $event;
        } 
+
+        public function addReservation($userId): bool
+        {
+        if (!$this->isOpenForReservations()) {
+            return false;
+        }
+
+        if (!$this->hasAvailableSpots()) {
+            return false; 
+        }
+
+        $ticket = new Ticket(null, $this, User::read($userId), 'payant', $this->price, null, 'réservé');
+        if (!$ticket->save()) {
+            return false; 
+        }
+        return true; 
+    }
+
+    /**
+     * Checks if the event is open for reservations.
+     *
+     * @return bool True if the event is open for reservations, false otherwise.
+     */
+    public function isOpenForReservations(): bool
+    {
+        return $this->status === 'actif';
+    }
+
+    /**
+     * Checks if the event has available spots.
+     *
+     * @return bool True if there are available spots, false otherwise.
+     */
+    private function hasAvailableSpots(): bool
+    {
+        $db = Database::getInstance();
+        $sql = "SELECT COUNT(*) AS reserved_count FROM tickets WHERE event_id = :event_id";
+        $stmt = $db->getConnection()->prepare($sql);
+        $stmt->execute([':event_id' => $this->id]);
+        $reservedCount = $stmt->fetch(PDO::FETCH_ASSOC)['reserved_count'];
+
+        return $reservedCount < $this->capacity;
+    }
+
 }
