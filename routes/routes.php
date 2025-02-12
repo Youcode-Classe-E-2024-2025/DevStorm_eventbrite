@@ -32,6 +32,8 @@ $router->get('/deleteTag/{id}', [DashboardController::class, 'deleteTag']);
 $router->post('/addCategory', [DashboardController::class, 'AddCategory']);
 $router->post('/addTag', [DashboardController::class, 'addTag']);
 
+$router->get('/google-login', [UserController::class, 'handleGoogleAuth']);
+
 //organizer ROUTEs
 $router->get('/organizer/event/create', [OrganizerController::class, 'createEvent']);
 $router->post('/organizer/event/create', [OrganizerController::class, 'handleCreateEvent']);
