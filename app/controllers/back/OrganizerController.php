@@ -55,22 +55,7 @@ class OrganizerController extends Controller
         ]);
     }
 
-    public function handleCreateEvent()
-    {
-        $event = new Event();
-        $event->title = $_POST['title'];
-        $event->description = $_POST['description'];
-        $event->date = $_POST['date'];
-        $event->price = $_POST['price'];
-        $event->capacity = $_POST['capacity'];
-        $event->organizer_id = $_SESSION['user_id'];
-        $event->location = $_POST['location'];
-        $event->category_id = $_POST['category_id'];
-        
-        if ($event->save()) {
-            $this->redirect('/organizer/dashboard');
-        }
-    }
+   
 
     public function salesStats($eventId)
     {

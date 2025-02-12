@@ -18,6 +18,8 @@ class Event extends Model
     public $location;
     public $category;
     public $status = 'en attente';
+    public $image_url;
+    public $video_url;
 
     public function __construct($id=null,$title=null,$description=null,$date=null,$price = null,$capacity = null,$organizer = null,$location = null,$category = null,$status = null)
     {
@@ -61,12 +63,13 @@ class Event extends Model
         return self::toObjects($rows);
     }
 
+   
     public function save()
     {
         $db = \App\Core\Database::getInstance();
-        $sql = "INSERT INTO events (title, description, date, price, capacity, organizer_id, location, category_id, status) 
-                VALUES (:title, :description, :date, :price, :capacity, :organizer_id, :location, :category_id, :status)";
-        
+        $sql = "INSERT INTO events (title, description, date, price, capacity, organizer_id, location, category_id, status, image_url, video_url) 
+            VALUES (:title, :description, :date, :price, :capacity, :organizer_id, :location, :category_id, :status, :image_url, :video_url)";
+    
         $stmt = $db->getConnection()->prepare($sql);
         return $stmt->execute([
             'title' => $this->title,
@@ -74,10 +77,12 @@ class Event extends Model
             'date' => $this->date,
             'price' => $this->price,
             'capacity' => $this->capacity,
-            'organizer_id' => $this->organizer->id,
+            'organizer_id' => $this->$organizer,
             'location' => $this->location,
-            'category_id' => $this->category->id,
-            'status' => $this->status
+            'category_id' => $this->category_id,
+            'status' => $this->status,
+            'image_url' => $this->image_url ?? null,
+            'video_url' => $this->video_url ?? null
         ]);
     }
     public function getEventsByOrganizer($organizerId)
