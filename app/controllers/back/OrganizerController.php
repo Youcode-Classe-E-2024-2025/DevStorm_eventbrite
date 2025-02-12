@@ -188,6 +188,16 @@ public function exportParticipantsPDF($eventId)
         $this->view('front/event/create-promocode', ['event_id' => $eventId]);
     }
     
+    public function listPromoCodes($eventId)
+    {
+        $promotion = new Promotion();
+        $promoCodes = $promotion->getPromotionsByEvent($eventId);
+        
+        $this->view('front/event/list-promocodes', [
+            'promoCodes' => $promoCodes,
+            'event_id' => $eventId
+        ]);
+    }
     
    
     public function editEvent($eventId)
