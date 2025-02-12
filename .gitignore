@@ -3,3 +3,5 @@ vendor
 test
 
 composer.lock
+
+public\public\assets
