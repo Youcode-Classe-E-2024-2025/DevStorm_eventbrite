@@ -6,6 +6,7 @@ use App\Core\Session;
 use App\Models\Event;
 use App\Models\User;
 use App\Models\Category;
+use App\Models\Tag;
 
 class DashboardController extends Controller{
 
@@ -13,10 +14,12 @@ class DashboardController extends Controller{
         $event = new Event();
         $user = new User();
         $category = new Category();
+        $tag = new Tag();
+        $tags = $tag->getAllTags();
         $categories = $category->getAllCategories();
         $users = $user->fetchAll();
         $events = $event->getAllEvents();
-        $this->view('front/adminDashboard',['events'=>$events,'users'=>$users,'categories'=>$categories]);
+        $this->view('front/adminDashboard',['events'=>$events,'users'=>$users,'categories'=>$categories,'tags'=>$tags]);
     }
 
     public function UpdateUserStatus(){
@@ -38,6 +41,12 @@ class DashboardController extends Controller{
     public function deleteEvent($id){
         $event = new Event();
         $event->delete($id);
+        $this->adminDashboard();
+    }
+
+    public function deleteCategory($id){
+        $Category = new Category();
+        $Category->delete($id);
         $this->adminDashboard();
     }
 

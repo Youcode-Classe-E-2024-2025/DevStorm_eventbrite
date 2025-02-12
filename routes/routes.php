@@ -23,6 +23,7 @@ $router->get('/dashboard', [DashboardController::class, 'Dashboard']);
 $router->get('/adminDashboard', [DashboardController::class, 'adminDashboard']);
 $router->get('/UpdateUserStatus', [DashboardController::class, 'UpdateUserStatus']);
 $router->get('/deleteEvent/{id}', [DashboardController::class, 'deleteEvent']);
+$router->get('/deleteCategory/{id}', [DashboardController::class, 'deleteCategory']);
 
 //organizer ROUTEs
 $router->get('/organizer/event/create', [OrganizerController::class, 'createEvent']);
