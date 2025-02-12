@@ -18,8 +18,11 @@ class Event extends Model
     public $location;
     public $category;
     public $status = 'en attente';
+    public $image_url;
+    public $video_url;
 
-    public function __construct($id=null,$title=null,$description=null,$date=null,$price = null,$capacity = null,$organizer = null,$location = null,$category = null,$status = null)
+    public function __construct($id=null,$title=null,$description=null,$date=null,$price = null,$capacity = null,$organizer = null,$location = null,$category = null,$status = null,$image_url = null,
+    $video_url = null)
     {
         $this->id = $id;
         $this->title = $title;
@@ -31,6 +34,8 @@ class Event extends Model
         $this->location = $location;
         $this->category = $category;
         $this->status = $status;
+        $this->image_url = $image_url;
+        $this->video_url = $video_url;
     }
 
     public function getFeaturedEvents($search = '', $category_id = '')
@@ -61,12 +66,13 @@ class Event extends Model
         return self::toObjects($rows);
     }
 
+   
     public function save()
     {
         $db = \App\Core\Database::getInstance();
-        $sql = "INSERT INTO events (title, description, date, price, capacity, organizer_id, location, category_id, status) 
-                VALUES (:title, :description, :date, :price, :capacity, :organizer_id, :location, :category_id, :status)";
-        
+        $sql = "INSERT INTO events (title, description, date, price, capacity, organizer_id, location, category_id, status, image_url, video_url) 
+            VALUES (:title, :description, :date, :price, :capacity, :organizer_id, :location, :category_id, :status, :image_url, :video_url)";
+
         $stmt = $db->getConnection()->prepare($sql);
         return $stmt->execute([
             'title' => $this->title,
@@ -77,7 +83,9 @@ class Event extends Model
             'organizer_id' => $this->organizer->id,
             'location' => $this->location,
             'category_id' => $this->category->id,
-            'status' => $this->status
+            'status' => $this->status,
+            'image_url' => $this->image_url ?? null,
+            'video_url' => $this->video_url ?? null
         ]);
     }
     public function getEventsByOrganizer($organizerId)
@@ -211,7 +219,8 @@ public function getEventParticipants($eventId)
         foreach ($rows as $row) {
              $organizer = User::read($row['organizer_id']) ?? new User();
              $category = Category::read($row['category_id']) ?? new Category();
-             $events[] = new Event($row['id'], $row['title'], $row['description'],$row['date'],$row['price'],$row['capacity'],$organizer,$row['location'],$category,$row['status']);
+             $events[] = new Event($row['id'], $row['title'], $row['description'],$row['date'],$row['price'],$row['capacity'],$organizer,$row['location'],$category,$row['status'],$row['image_url'],
+             $row['video_url']);
          }
          return $events;
        }

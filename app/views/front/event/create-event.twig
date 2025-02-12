@@ -99,17 +99,26 @@
                 <div class="bg-gray-900 p-6 rounded-lg space-y-6">
                     <h2 class="text-xl font-semibold">Médias</h2>
                     
-                    <div>
-                        <label class="block mb-2">Image principale</label>
-                        <input type="file" name="image" accept="image/*" 
-                               class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:border-custom-purple">
-                    </div>
-                    
-                    <div>
-                        <label class="block mb-2">Vidéo promotionnelle (URL YouTube)</label>
-                        <input type="url" name="video_url" 
-                               class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:border-custom-purple">
-                    </div>
+            <div>
+                <label for="image" class="block text-sm font-medium text-gray-300">Image de l'événement</label>
+                <input type="file" id="image" name="image" accept="image/*" class="mt-1 block w-full text-sm text-gray-300
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-full file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-custom-purple file:text-white
+                    hover:file:bg-purple-700">
+            </div>
+            
+            <div>
+                <label for="video" class="block text-sm font-medium text-gray-300">Vidéo promotionnelle</label>
+                <input type="file" id="video" name="video" accept="video/*" class="mt-1 block w-full text-sm text-gray-300
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-full file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-custom-purple file:text-white
+                    hover:file:bg-purple-700">
+            </div>
+
                 </div>
                 
                 <!-- Submit -->

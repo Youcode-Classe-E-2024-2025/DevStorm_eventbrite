@@ -13,12 +13,14 @@ class User extends Model {
     protected $table = 'users';
     public $id;
     public $username;
+
     public $email;
     public $password;
     public $role;
     public $avatar;
+    public $status;
 
-    public function __construct($id=null,$name=null,$email=null,$password=null,$role = Role::PARTICIPANT,$avatar=null)
+    public function __construct($id=null,$name=null,$email=null,$password=null,$role = Role::PARTICIPANT,$avatar=null,$status=null)
     {
         $this->id=$id;
         $this->username = $name;
@@ -26,6 +28,7 @@ class User extends Model {
         $this->password = $password;
         $this->role = $role;
         $this->avatar = $avatar;
+        $this->status = $status;
     }
     public static function read($id)
     {
@@ -38,7 +41,7 @@ class User extends Model {
 
         $user=null;
         if($data){
-            $user = new User($data['id'],$data['name'],$data['email'],'',Role::from($data['role']),$data['avatar']);
+            $user = new User($data['id'],$data['name'],$data['email'],'',Role::from($data['role']),$data['avatar'],$data['status']);
         }
         return $user;
     } 
@@ -86,7 +89,7 @@ class User extends Model {
     private static function toObjects($rows){
         $users=[];
         foreach ($rows as $row) {
-             $users[] =  new User($row['id'],$row['name'],$row['email'],'',Role::from($row['role']),$row['avatar']);
+             $users[] =  new User($row['id'],$row['name'],$row['email'],'',Role::from($row['role']),$row['avatar'],$row['status']);
          }
          return $users;
        }

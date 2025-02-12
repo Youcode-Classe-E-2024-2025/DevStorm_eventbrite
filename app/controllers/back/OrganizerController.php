@@ -2,9 +2,11 @@
 
 namespace App\controllers\back;
 use App\Core\Controller;
+use App\Core\Session;
 use App\models\Event;
 use App\models\Promotion;
 use App\models\Ticket;
+use App\models\User;
 use App\models\Category; 
 use App\traits\PDFGenerator ; 
 use TCPDF; 
@@ -16,9 +18,9 @@ class OrganizerController extends Controller
     {
         // session_start();
         //pour tester
-        $_SESSION['user_id'] = 2;
+        
         $event = new Event();
-        $events = $event->getEventsByOrganizer($_SESSION['user_id']);
+        $events = $event->getEventsByOrganizer(Session::getUser()['id']);
         $total_tickets = 0;
         $total_revenue = 0;
         $validated_tickets=0;
@@ -57,20 +59,66 @@ class OrganizerController extends Controller
 
     public function handleCreateEvent()
     {
-        $event = new Event();
-        $event->title = $_POST['title'];
-        $event->description = $_POST['description'];
-        $event->date = $_POST['date'];
-        $event->price = $_POST['price'];
-        $event->capacity = $_POST['capacity'];
-        $event->organizer_id = $_SESSION['user_id'];
-        $event->location = $_POST['location'];
-        $event->category_id = $_POST['category_id'];
-        
-        if ($event->save()) {
-            $this->redirect('/organizer/dashboard');
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $event = new Event();
+            
+            $imageUploadDir = 'assets/images/';
+            $videoUploadDir = 'assets/videos/';
+    
+            // Handle image upload
+            if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+                $imageInfo = pathinfo($_FILES['image']['name']);
+                $imageExtension = strtolower($imageInfo['extension']);
+                $allowedImageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+                
+                if (in_array($imageExtension, $allowedImageExtensions)) {
+                    $newImageName = uniqid() . '.' . $imageExtension;
+                    $imagePath = $imageUploadDir . $newImageName;
+                    
+                    if (move_uploaded_file($_FILES['image']['tmp_name'], $imagePath)) {
+                        $event->image_url = $imagePath;
+                    }
+                }
+            }
+    
+            // Handle video upload
+            if (isset($_FILES['video']) && $_FILES['video']['error'] == 0) {
+                $videoInfo = pathinfo($_FILES['video']['name']);
+                $videoExtension = strtolower($videoInfo['extension']);
+                $allowedVideoExtensions = ['mp4', 'mov', 'avi'];
+                
+                if (in_array($videoExtension, $allowedVideoExtensions)) {
+                    $newVideoName = uniqid() . '.' . $videoExtension;
+                    $videoPath = $videoUploadDir . $newVideoName;
+                    
+                    if (move_uploaded_file($_FILES['video']['tmp_name'], $videoPath)) {
+                        $event->video_url = $videoPath;
+                    }
+                }
+            }
+    
+            // Set other event properties
+            $event->title = $_POST['title'];
+            $event->description = $_POST['description'];
+            $event->date = $_POST['date'];
+            $event->price = $_POST['price'];
+            $event->capacity = $_POST['capacity'];
+            $event->location = $_POST['location'];
+            $event->category = Category::read($_POST['category_id']) ;
+            $event->status = 'en attente';
+            $event->organizer = User::read(Session::getUser()['id']);
+    // var_dump($event);die;
+            if ($event->save()) {
+                header('Location: /organizer/dashboard');
+                exit;
+            } else {
+                $_SESSION['error'] = "Erreur lors de la création de l'événement";
+                header('Location: /organizer/event/create');
+                exit;
+            }
         }
     }
+    
 
     public function salesStats($eventId)
     {

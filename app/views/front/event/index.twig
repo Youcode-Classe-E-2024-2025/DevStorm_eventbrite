@@ -94,7 +94,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for event in events %}
                 <div class="bg-gray-900 rounded-lg overflow-hidden">
-                    <img src="{{ event.image_url|default('https://picsum.photos/400/200') }}" class="w-full h-48 object-cover" alt="{{ event.title }}">
+                    <img src="/{{ event.image_url }}" class="w-full h-48 object-cover" alt="{{ event.title }}">
                     <div class="p-6">
                         <span class="bg-custom-purple text-white px-3 py-1 rounded-full text-sm">{{ event.category.name }}</span>
                         <h3 class="text-xl font-bold mt-4">{{ event.title }}</h3>
