@@ -198,31 +198,63 @@ public function getEventById($eventId)
 /**
  * Update event details
  */
+public function updateEventTags($eventId, $newTags)
+{
+    $db = Database::getInstance();
+    $connection = $db->getConnection();
+    
+    try {
+        $connection->beginTransaction();
+        
+        // Remove existing tags
+        $sql = "DELETE FROM event_tags WHERE event_id = :event_id";
+        $stmt = $connection->prepare($sql);
+        $stmt->execute(['event_id' => $eventId]);
+        
+        // Add new tags
+        $sql = "INSERT INTO event_tags (event_id, tag_id) VALUES (:event_id, :tag_id)";
+        $stmt = $connection->prepare($sql);
+        
+        foreach ($newTags as $tagId) {
+            $stmt->execute([
+                'event_id' => $eventId,
+                'tag_id' => $tagId
+            ]);
+        }
+        
+        $connection->commit();
+        return true;
+    } catch (\Exception $e) {
+        $connection->rollBack();
+        return false;
+    }
+}
+public function getEventTags($eventId)
+{
+    $db = Database::getInstance();
+    $sql = "SELECT tag_id FROM event_tags WHERE event_id = :event_id";
+    $stmt = $db->getConnection()->prepare($sql);
+    $stmt->execute(['event_id' => $eventId]);
+    return $stmt->fetchAll(PDO::FETCH_COLUMN);
+}
 public function updateEvent($eventId, $data)
 {
     $db = \App\Core\Database::getInstance();
-    $sql = "UPDATE events SET 
-            title = :title,
-            description = :description,
-            date = :date,
-            price = :price,
-            capacity = :capacity,
-            location = :location,
-            category_id = :category_id
-            WHERE id = :id";
-            
+    
+    $updateFields = [];
+    $params = ['id' => $eventId];
+    
+    foreach ($data as $key => $value) {
+        $updateFields[] = "$key = :$key";
+        $params[$key] = $value;
+    }
+    
+    $sql = "UPDATE events SET " . implode(', ', $updateFields) . " WHERE id = :id";
+    
     $stmt = $db->getConnection()->prepare($sql);
-    return $stmt->execute([
-        'id' => $eventId,
-        'title' => $data['title'],
-        'description' => $data['description'],
-        'date' => $data['date'],
-        'price' => $data['price'],
-        'capacity' => $data['capacity'],
-        'location' => $data['location'],
-        'category_id' => $data['category_id']
-    ]);
+    return $stmt->execute($params);
 }
+
 
 
 
