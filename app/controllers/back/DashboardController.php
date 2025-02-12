@@ -2,10 +2,12 @@
 
 namespace App\controllers\back;
 use App\Core\Controller;
+use App\Core\Security;
 use App\Core\Session;
 use App\Models\Event;
 use App\Models\User;
 use App\Models\Category;
+use App\Models\Tag;
 
 class DashboardController extends Controller{
 
@@ -13,10 +15,12 @@ class DashboardController extends Controller{
         $event = new Event();
         $user = new User();
         $category = new Category();
+        $tag = new Tag();
+        $tags = $tag->getAllTags();
         $categories = $category->getAllCategories();
         $users = $user->fetchAll();
         $events = $event->getAllEvents();
-        $this->view('front/adminDashboard',['events'=>$events,'users'=>$users,'categories'=>$categories]);
+        $this->view('front/adminDashboard',['events'=>$events,'users'=>$users,'categories'=>$categories,'tags'=>$tags]);
     }
 
     public function UpdateUserStatus(){
@@ -41,6 +45,30 @@ class DashboardController extends Controller{
         $this->adminDashboard();
     }
 
+    public function deleteCategory($id){
+        $Category = new Category();
+        $Category->delete($id);
+        $this->adminDashboard();
+    }
+
+    public function AddCategory(){
+        $categoryname = Security::XSS($_POST['categoryName']);
+        $Category = new Category(null, $categoryname);
+        $Category->create();
+        $this->adminDashboard();
+    }
+    public function deleteTag($id){
+        $Tag = new Tag();
+        $Tag->delete($id);
+        $this->adminDashboard();
+    }
+
+    public function AddTag(){
+        $tagName = Security::XSS($_POST['tagName']);
+        $Tag = new Tag(null,$tagName);
+        $Tag->create();
+        $this->adminDashboard();
+    }
 
 
 }

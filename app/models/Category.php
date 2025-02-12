@@ -39,6 +39,24 @@ class Category extends Model
            
         }
         return $category;
-    } 
+    }
+
+    public function delete($id){
+        $db = Database::getInstance();
+        $sql = "DELETE FROM categories WHERE id = :id";
+        $query = $db->getConnection()->prepare($sql);
+        $query->bindParam(':id', $id);
+        $query->execute();
+    }
+
+    public function create(){
+        $db = Database::getInstance();
+        $sql = "INSERT INTO categories (name) VALUES (:name)";
+        $query = $db->getConnection()->prepare($sql);
+        $query->bindParam(':name', $this->name);
+        $query->execute(); // Execute the query
+    }
+
+
 
 }
