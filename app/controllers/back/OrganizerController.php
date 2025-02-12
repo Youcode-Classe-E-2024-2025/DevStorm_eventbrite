@@ -169,34 +169,9 @@ public function exportParticipantsPDF($eventId)
         // Use the trait method
         $this->generatePDF($title, $header, $participants, $filename);
     }
-
-    public function createPromoCode($eventId)
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $promotion = new Promotion();
-            $result = $promotion->createPromotion([
-                'discount_percentage' => $_POST['discount_percentage'],
-                'valid_from' => $_POST['valid_from'],
-                'valid_until' => $_POST['valid_until']
-            ]);
-            
-            if ($result) {
-                $this->redirect('/event/' . $eventId . '/promocodes');
-            }
-        }
-        
-        $this->view('front/event/create-promocode', ['event_id' => $eventId]);
-    }
-    public function listPromoCodes($eventId)
-    {
-        $promotion = new Promotion();
-        $promoCodes = $promotion->getPromotionsByEvent();
-        
-        $this->view('front/event/list-promocodes', [
-            'promoCodes' => $promoCodes,
-            'event_id' => $eventId
-        ]);
-    }
+    
+    
+   
     public function editEvent($eventId)
     {
         $event = new Event();
