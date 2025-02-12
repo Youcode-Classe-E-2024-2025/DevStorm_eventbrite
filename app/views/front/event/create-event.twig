@@ -92,7 +92,17 @@
                                 {% endfor %}
                             </select>
                         </div>
-                    </div>
+                    </div><div>
+    <label class="block mb-2">Tags</label>
+    <select name="tags[]" multiple 
+            class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:border-custom-purple">
+        {% for tag in tags %}
+            <option value="{{ tag.id }}">{{ tag.name }}</option>
+        {% endfor %}
+    </select>
+    <p class="text-sm text-gray-400 mt-1">Maintenez Ctrl (Cmd sur Mac) pour sélectionner plusieurs tags</p>
+</div>
+
                 </div>
                 
                 <!-- Media -->
