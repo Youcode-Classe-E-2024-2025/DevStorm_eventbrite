@@ -57,5 +57,11 @@ class DashboardController extends Controller{
         $Category->create();
         $this->adminDashboard();
     }
+    public function deleteTag($id){
+        $Tag = new Tag();
+        $Tag->delete($id);
+        $this->adminDashboard();
+    }
+
 
 }

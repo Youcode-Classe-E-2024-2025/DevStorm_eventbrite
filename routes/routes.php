@@ -25,6 +25,8 @@ $router->get('/UpdateUserStatus', [DashboardController::class, 'UpdateUserStatus
 $router->get('/deleteEvent/{id}', [DashboardController::class, 'deleteEvent']);
 $router->get('/deleteCategory/{id}', [DashboardController::class, 'deleteCategory']);
 
+$router->get('/deleteTag/{id}', [DashboardController::class, 'deleteTag']);
+
 $router->post('/addCategory', [DashboardController::class, 'AddCategory']);
 
 //organizer ROUTEs
