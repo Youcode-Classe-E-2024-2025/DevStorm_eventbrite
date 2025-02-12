@@ -14,7 +14,7 @@ class OrganizerController extends Controller
 
         public function dashboard()
     {
-        session_start();
+        // session_start();
         //pour tester
         $_SESSION['user_id'] = 2;
         $event = new Event();

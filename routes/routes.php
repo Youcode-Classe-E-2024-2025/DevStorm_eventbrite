@@ -5,8 +5,7 @@ use App\controllers\back\DashboardController;
 use App\controllers\front\HomeController;
 use App\controllers\front\EventController;
 use App\controllers\back\OrganizerController;
-
-
+use App\controllers\front\CartController;
 use App\Core\Router;
 
 $router = new Router();
@@ -48,6 +47,8 @@ $router->get('/event/{id}/export/pdf', [OrganizerController::class, 'exportParti
 
 $router->get('/events', [EventController::class, 'index']);
 $router->get('/event/{id}', [EventController::class, 'show']);
+
+$router->get('/cart', [CartController::class, 'index']);
 
 $router->get('/reserve/{id}', [EventController::class, 'reserve']);
 
