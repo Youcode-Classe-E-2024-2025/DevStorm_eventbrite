@@ -83,3 +83,22 @@ CREATE TABLE IF NOT EXISTS notifications (
     status VARCHAR(50) CHECK (status IN ('non lue', 'lue')) DEFAULT 'non lue',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE IF NOT EXISTS tags (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) UNIQUE NOT NULL
+);
+CREATE TABLE IF NOT EXISTS event_tags (
+    event_id INT REFERENCES events(id) ON DELETE CASCADE,
+    tag_id INT REFERENCES tags(id) ON DELETE CASCADE,
+    PRIMARY KEY (event_id, tag_id)
+);
+
+CREATE TABLE IF NOT EXISTS tags (
+                                    id SERIAL PRIMARY KEY,
+                                    name VARCHAR(255) UNIQUE NOT NULL
+    );
+CREATE TABLE IF NOT EXISTS event_tags (
+                                          event_id INT REFERENCES events(id) ON DELETE CASCADE,
+    tag_id INT REFERENCES tags(id) ON DELETE CASCADE,
+    PRIMARY KEY (event_id, tag_id)
+    );
