@@ -4,4 +4,5 @@ test
 
 composer.lock
 
-public\public\assets
+public/assets/images
+public/assets/videos
