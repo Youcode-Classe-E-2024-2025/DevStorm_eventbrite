@@ -2,9 +2,11 @@
 
 namespace App\controllers\back;
 use App\Core\Controller;
+use App\Core\Session;
 use App\models\Event;
 use App\models\Promotion;
 use App\models\Ticket;
+use App\models\User;
 use App\models\Category; 
 use App\traits\PDFGenerator ; 
 use TCPDF; 
@@ -16,9 +18,9 @@ class OrganizerController extends Controller
     {
         // session_start();
         //pour tester
-        $_SESSION['user_id'] = 2;
+        
         $event = new Event();
-        $events = $event->getEventsByOrganizer($_SESSION['user_id']);
+        $events = $event->getEventsByOrganizer(Session::getUser()['id']);
         $total_tickets = 0;
         $total_revenue = 0;
         $validated_tickets=0;
@@ -102,10 +104,10 @@ class OrganizerController extends Controller
             $event->price = $_POST['price'];
             $event->capacity = $_POST['capacity'];
             $event->location = $_POST['location'];
-            $event->category_id = $_POST['category_id'];
+            $event->category = Category::read($_POST['category_id']) ;
             $event->status = 'en attente';
-            $event->organizer = $_SESSION['user_id'];
-    
+            $event->organizer = User::read(Session::getUser()['id']);
+    // var_dump($event);die;
             if ($event->save()) {
                 header('Location: /organizer/dashboard');
                 exit;
