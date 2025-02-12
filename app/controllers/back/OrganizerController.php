@@ -263,6 +263,26 @@ public function exportParticipantsPDF($eventId)
             'selectedTags' => $selectedTags
         ]);
     }
+    //delete event 
+    public function deleteEvent($id)
+    {
+        header('Content-Type: application/json');
+        $event = new Event();
+        
+        if ($event->canDeleteEvent($id)) {
+            $success = $event->deleteEvent($id);
+            echo json_encode([
+                'success' => $success,
+                'message' => $success ? 'Event deleted successfully' : 'Failed to delete event'
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => "L'événement ne peut pas être supprimé car il a des participants ou n'est pas terminé"
+            ]);
+        }
+        exit;
+    }
     
 
 }
