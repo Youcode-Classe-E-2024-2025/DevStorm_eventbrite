@@ -18,6 +18,10 @@ class UserController extends Controller
 
     public function login(): void
     {
+        if (Auth::isLoggedIn()){
+            $this->redirect("/");
+        }
+        // var_dump($_SESSION);die;
         $security = new Security();
         $tokenCsrf = $security->Csrftoken();
         $this->view(
@@ -32,6 +36,9 @@ class UserController extends Controller
 
     public function register(): void
     {
+        if (Auth::isLoggedIn()){
+            $this->redirect("/");
+        }
         $security = new Security();
         $tokenCsrf = $security->Csrftoken();
         $this->view(
@@ -47,14 +54,15 @@ class UserController extends Controller
     public function handleRegister(): void
     {
 
-        $security = new Security();
-        if (!$security->checkCsrfToken($_POST['csrf_token'])) {
-            header('Location: /register?error=invalid_csrf_token');
-            exit;
+        if (!Security::checkCsrfToken($_POST['csrf_token'])) {
+            Session::setFlashMessage('red', 'CSRF token validation failed. Possible CSRF attack.');
+            Security::Csrftoken();
+            $this->redirect('/register');
         }
 
         $name = Security::XSS($_POST['name']);
         $email = Security::XSS($_POST['email']);
+        $role = Security::XSS($_POST['role']);
         $password = $_POST['password'];
         // $confirm_password = $_POST['confirm_password'];
 
@@ -65,10 +73,11 @@ class UserController extends Controller
         $validator->validateString($name, 'name');
         $validator->validateEmail($email);
         $validator->validatePassword($password);
+        $validator->validateRole($role);
         // $validator->validateConfirmPassword($password, $confirm_password);
 
         if ($validator->isValid()) {
-            $this->userModel = new User($name, $email, password_hash($password, PASSWORD_BCRYPT), Role::PARTICIPANT);
+            $this->userModel = new User('',$name, $email, password_hash($password, PASSWORD_BCRYPT),Role::from($role));
             if ($this->userModel->save()) {
                 Session::setFlashMessage('green', 'Registration successful. Please login.');
                 $this->redirect('/login');
@@ -77,7 +86,7 @@ class UserController extends Controller
                 $this->redirect('/register');
             }
         } else {
-
+            Session::setFlashMessage('red', 'Registration failed. All feild are required');
             $_SESSION['errors'] = $validator->getErrors();
             $_SESSION['old'] = [
                 'name' => $name,
@@ -106,17 +115,19 @@ class UserController extends Controller
         $validator->validatePassword($password);
 
         if ($validator->isValid()) {
-            $this->userModel = new User('',$email, $password);
+            $this->userModel = new User('','',$email, $password);
             $user = $this->userModel->login();
 
             if ($user) {
 
-                Session::setData('user', $user);
+                Auth::login($user);
                 Session::setFlashMessage('green', 'Login successful. Welcome back! ' . $user['name']);
 
                 if ($user['role'] === Role::ADMIN->value) {
                     $this->redirect('/admin/dashboard');
-                } else {
+                } else if($user['role']===Role::ORGANISATEUR->value) {
+                    $this->redirect('/organizer/dashboard');
+                }else{
                     $this->redirect('/');
                 }
             } else {
@@ -142,9 +153,6 @@ class UserController extends Controller
         exit;
     }
 
-    public function Home(): void
-    {
-        $this->view('front/home');
-    }
+
 
 }
