@@ -55,6 +55,19 @@ class Promotion extends Model
         }
     }
     
-    
+    public function getPromotionsByEvent($eventId)
+    {
+        $db = \App\Core\Database::getInstance();
+        $query = $db->getConnection()->prepare("
+            SELECT p.* 
+            FROM promotions p
+            JOIN event_promotions ep ON p.id = ep.promotion_id
+            WHERE ep.event_id = :event_id
+            ORDER BY p.created_at DESC
+        ");
+        
+        $query->execute(['event_id' => $eventId]);
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 
