@@ -6,6 +6,10 @@ use App\controllers\back\ErrorController;
 use App\controllers\front\HomeController;
 use App\controllers\front\EventController;
 use App\controllers\back\OrganizerController;
+<<<<<<< HEAD
+=======
+use App\controllers\back\PaimentController;
+>>>>>>> dfb0c8942ccc4055d0d0827fbc787eb69a1859c5
 use App\controllers\front\CartController;
 use App\Core\Router;
 
@@ -31,6 +35,11 @@ $router->get('/deleteTag/{id}', [DashboardController::class, 'deleteTag']);
 $router->post('/addCategory', [DashboardController::class, 'AddCategory']);
 $router->post('/addTag', [DashboardController::class, 'addTag']);
 
+<<<<<<< HEAD
+=======
+$router->get('/google-login', [UserController::class, 'handleGoogleAuth']);
+
+>>>>>>> dfb0c8942ccc4055d0d0827fbc787eb69a1859c5
 //organizer ROUTEs
 $router->get('/organizer/event/create', [OrganizerController::class, 'createEvent']);
 $router->post('/organizer/event/create', [OrganizerController::class, 'handleCreateEvent']);
@@ -63,5 +72,13 @@ $router->get('/reserve/{id}', [EventController::class, 'reserve']);
 $router->get('/404', [ErrorController::class, '_404']);
 $router->get('/403', [ErrorController::class, '_403']);
 
+<<<<<<< HEAD
+=======
+// paiment
+$router->post('/checkout/{id}', [PaimentController::class, 'checkout']);
+$router->get('/paiment/success', [PaimentController::class, 'paimentSuccess']);
+$router->get('/paiment/cancel', [PaimentController::class, 'paimentCancel']);
+
+>>>>>>> dfb0c8942ccc4055d0d0827fbc787eb69a1859c5
 
 $router->dispatch();

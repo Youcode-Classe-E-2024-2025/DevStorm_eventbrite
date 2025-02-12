@@ -102,6 +102,7 @@ CREATE TABLE IF NOT EXISTS event_tags (
     tag_id INT REFERENCES tags(id) ON DELETE CASCADE,
     PRIMARY KEY (event_id, tag_id)
     );
+<<<<<<< HEAD
 
 
 CREATE TABLE IF NOT EXISTS event_promotions (
@@ -111,3 +112,5 @@ CREATE TABLE IF NOT EXISTS event_promotions (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(event_id, promotion_id)
 ); 
+=======
+>>>>>>> dfb0c8942ccc4055d0d0827fbc787eb69a1859c5
