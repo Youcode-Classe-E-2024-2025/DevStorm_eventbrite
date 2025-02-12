@@ -68,13 +68,19 @@ class Event extends Model
 
    
     public function save()
-    {
-        $db = \App\Core\Database::getInstance();
+{
+    $db = Database::getInstance();
+    $connection = $db->getConnection();
+    
+    try {
+        $connection->beginTransaction();
+        
         $sql = "INSERT INTO events (title, description, date, price, capacity, organizer_id, location, category_id, status, image_url, video_url) 
-            VALUES (:title, :description, :date, :price, :capacity, :organizer_id, :location, :category_id, :status, :image_url, :video_url)";
-
-        $stmt = $db->getConnection()->prepare($sql);
-        return $stmt->execute([
+                VALUES (:title, :description, :date, :price, :capacity, :organizer_id, :location, :category_id, :status, :image_url, :video_url) 
+                RETURNING id";
+        
+        $stmt = $connection->prepare($sql);
+        $result = $stmt->execute([
             'title' => $this->title,
             'description' => $this->description,
             'date' => $this->date,
@@ -87,7 +93,53 @@ class Event extends Model
             'image_url' => $this->image_url ?? null,
             'video_url' => $this->video_url ?? null
         ]);
+        
+        if ($result) {
+            $this->id = $stmt->fetchColumn();
+            $connection->commit();
+            return $this->id;
+        }
+        
+        $connection->rollBack();
+        return false;
+        
+    } catch (\Exception $e) {
+        $connection->rollBack();
+        throw $e;
     }
+}
+
+public function addEventTags($tags)
+{
+    if (!$this->id || empty($tags)) {
+        return false;
+    }
+    
+    $db = Database::getInstance();
+    $connection = $db->getConnection();
+    
+    try {
+        $connection->beginTransaction();
+        
+        $sql = "INSERT INTO event_tags (event_id, tag_id) VALUES (:event_id, :tag_id)";
+        $stmt = $connection->prepare($sql);
+        
+        foreach ($tags as $tagId) {
+            $stmt->execute([
+                'event_id' => $this->id,
+                'tag_id' => $tagId
+            ]);
+        }
+        
+        $connection->commit();
+        return true;
+        
+    } catch (\Exception $e) {
+        $connection->rollBack();
+        return false;
+    }
+}
+
     public function getEventsByOrganizer($organizerId)
 {
     $db = \App\Core\Database::getInstance();

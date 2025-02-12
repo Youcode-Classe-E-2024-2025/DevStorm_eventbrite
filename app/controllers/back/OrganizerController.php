@@ -8,6 +8,7 @@ use App\models\Promotion;
 use App\models\Ticket;
 use App\models\User;
 use App\models\Category; 
+use App\models\Tag; 
 use App\traits\PDFGenerator ; 
 use TCPDF; 
 
@@ -51,9 +52,14 @@ class OrganizerController extends Controller
     {
         $category = new Category();
         $categories = $category->getAllCategories();
+
+        $tag = new Tag();
+        $tags = $tag->getAllTags();
+    
         
         $this->view('front/event/create-event', [
-            'categories' => $categories
+            'categories' => $categories,
+            'tags' => $tags
         ]);
     }
 
@@ -104,20 +110,26 @@ class OrganizerController extends Controller
             $event->price = $_POST['price'];
             $event->capacity = $_POST['capacity'];
             $event->location = $_POST['location'];
-            $event->category = Category::read($_POST['category_id']) ;
+            $event->category = Category::read($_POST['category_id']);
             $event->status = 'en attente';
             $event->organizer = User::read(Session::getUser()['id']);
-    // var_dump($event);die;
-            if ($event->save()) {
-                header('Location: /organizer/dashboard');
-                exit;
-            } else {
-                $_SESSION['error'] = "Erreur lors de la création de l'événement";
+    
+            try {
+                $eventId = $event->save();
+                if ($eventId) {
+                    if (isset($_POST['tags']) && is_array($_POST['tags'])) {
+                        $event->addEventTags($_POST['tags']);
+                    }
+                    
+                    header('Location: /organizer/dashboard');
+                    exit;
+                }
+            } catch (\Exception $e) {
+                $_SESSION['error'] = "Error creating event: " . $e->getMessage();
                 header('Location: /organizer/event/create');
                 exit;
             }
-        }
-    }
+        }    }
     
 
     public function salesStats($eventId)
