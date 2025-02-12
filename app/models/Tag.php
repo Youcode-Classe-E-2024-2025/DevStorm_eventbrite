@@ -32,5 +32,12 @@ class Tag extends Model
         $query->bindParam(':id', $id);
         $query->execute();
     }
+    public function create(){
+        $db = Database::getInstance();
+        $sql = "INSERT INTO tags (name) VALUES (:name)";
+        $query = $db->getConnection()->prepare($sql);
+        $query->bindParam(':name',$this->name);
+        $query->execute();
+    }
 
 }

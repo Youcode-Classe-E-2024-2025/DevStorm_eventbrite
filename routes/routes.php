@@ -28,6 +28,7 @@ $router->get('/deleteCategory/{id}', [DashboardController::class, 'deleteCategor
 $router->get('/deleteTag/{id}', [DashboardController::class, 'deleteTag']);
 
 $router->post('/addCategory', [DashboardController::class, 'AddCategory']);
+$router->post('/addTag', [DashboardController::class, 'addTag']);
 
 //organizer ROUTEs
 $router->get('/organizer/event/create', [OrganizerController::class, 'createEvent']);
