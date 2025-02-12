@@ -129,7 +129,8 @@ class OrganizerController extends Controller
                 header('Location: /organizer/event/create');
                 exit;
             }
-        }    }
+        }    
+    }
     
 
     public function salesStats($eventId)
@@ -197,33 +198,61 @@ public function exportParticipantsPDF($eventId)
         ]);
     }
     public function editEvent($eventId)
-{
-    $event = new Event();
-    $category = new Category();
-    
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Handle form submission
-        $event->updateEvent($eventId, [
-            'title' => $_POST['title'],
-            'description' => $_POST['description'],
-            'date' => $_POST['date'],
-            'price' => $_POST['price'],
-            'capacity' => $_POST['capacity'],
-            'location' => $_POST['location'],
-            'category_id' => $_POST['category_id']
-        ]);
+    {
+        $event = new Event();
+        $category = new Category();
+        $tag = new Tag();
         
-        $this->redirect('/organizer/dashboard');
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Base event data
+            $updateData = [
+                'title' => $_POST['title'],
+                'description' => $_POST['description'],
+                'date' => $_POST['date'],
+                'price' => $_POST['price'],
+                'capacity' => $_POST['capacity'],
+                'location' => $_POST['location'],
+                'category_id' => $_POST['category_id']
+            ];
+    
+            // Handle image upload
+            if (!empty($_FILES['image']['name'])) {
+                $newImageName = uniqid() . '_' . $_FILES['image']['name'];
+                move_uploaded_file($_FILES['image']['tmp_name'], 'assets/images/' . $newImageName);
+                $updateData['image_url'] = 'assets/images/' . $newImageName;
+            }
+            
+            // Handle video upload
+            if (!empty($_FILES['video']['name'])) {
+                $newVideoName = uniqid() . '_' . $_FILES['video']['name'];
+                move_uploaded_file($_FILES['video']['tmp_name'], 'assets/videos/' . $newVideoName);
+                $updateData['video_url'] = 'assets/videos/' . $newVideoName;
+            }
+    
+            // Update event data
+            $event->updateEvent($eventId, $updateData);
+            
+            // Update tags if present
+            if (isset($_POST['tags'])) {
+                $event->updateEventTags($eventId, $_POST['tags']);
+            }
+            
+            $this->redirect('/organizer/dashboard');
+        }
+        
+        // Get all necessary data for the form
+        $eventData = $event->getEventById($eventId);
+        $categories = $category->getAllCategories();
+        $tags = $tag->getAllTags();
+        $selectedTags = $event->getEventTags($eventId);
+        
+        $this->view('front/event/edit-event', [
+            'event' => $eventData,
+            'categories' => $categories,
+            'tags' => $tags,
+            'selectedTags' => $selectedTags
+        ]);
     }
     
-    // Get event data for form
-    $eventData = $event->getEventById($eventId);
-    $categories = $category->getAllCategories();
-    
-    $this->view('front/event/edit-event', [
-        'event' => $eventData,
-        'categories' => $categories
-    ]);
-}
 
 }

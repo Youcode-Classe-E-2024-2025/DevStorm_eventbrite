@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Organisateur | DevEvents</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -18,7 +19,8 @@
     </script>
 </head>
 <body class="bg-black text-white">
-    <!-- Navigation -->
+    <!-- Navigation remains the same -->
+    
     <nav class="border-b border-white/10 bg-black">
         <div class="container mx-auto px-4 py-4">
             <div class="flex justify-between items-center">
@@ -30,11 +32,11 @@
             </div>
         </div>
     </nav>
-
     <!-- Dashboard Content -->
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold mb-8">Tableau de bord</h1>
         
+        <!-- Stats Overview remains the same -->
         <!-- Stats Overview -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div class="bg-gray-900 p-6 rounded-lg">
@@ -51,26 +53,90 @@
             </div>
         </div>
 
-        <!-- Events List -->
+        <!-- Enhanced Events List -->
         <div class="bg-gray-900 rounded-lg p-6">
             <h2 class="text-2xl font-bold mb-6">Mes Événements</h2>
-            <div class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {% for event in events %}
-                    <div class="bg-black p-4 rounded-lg flex justify-between items-center">
-                        <div>
-                            <h3 class="font-bold">{{ event.title }}</h3>
-                            <p class="text-gray-400">{{ event.date|date('d M Y • H:i') }}</p>
+                    <div class="bg-black rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300">
+                        <!-- Media Section -->
+                        <div class="relative h-48">
+                            {% if event.image_url %}
+                                <img src="/{{ event.image_url }}" alt="{{ event.title }}" 
+                                     class="w-full h-full object-cover">
+                            {% endif %}
+                            {% if event.video_url %}
+                                <button class="absolute bottom-2 right-2 bg-custom-purple p-2 rounded-full"
+                                        onclick="playVideo('/{{ event.video_url }}')">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                            {% endif %}
                         </div>
-                        <div class="flex space-x-2">
-                            <a href="/event/{{ event.id }}/stats" class="text-custom-purple hover:text-purple-400">Statistiques</a>
-                            <a href="/event/{{ event.id }}/edit" class="text-custom-purple hover:text-purple-400">Modifier</a>
-  <a href="/event/{{ event.id }}/export/pdf" class="text-custom-purple hover:text-purple-400">Export PDF</a>
-                               <a href="/event/{{ event.id }}/promocode/create" class="text-custom-purple hover:text-purple-400">Créer Promo</a
+
+                        <!-- Event Info -->
+                        <div class="p-4">
+                            <h3 class="font-bold text-xl mb-2">{{ event.title }}</h3>
+                            <p class="text-gray-400 mb-2">
+                                <i class="far fa-calendar-alt mr-2"></i>
+                                {{ event.date|date('d M Y • H:i') }}
+                            </p>
+                            <p class="text-gray-400 mb-4">
+                                <i class="fas fa-users mr-2"></i>
+                                {{ event.capacity }} places
+                            </p>
+
+                            <!-- Action Buttons -->
+                            <div class="flex flex-wrap gap-2">
+                                <a href="/event/{{ event.id }}/stats" 
+                                   class="flex-1 text-center bg-gray-800 px-3 py-2 rounded-lg hover:bg-gray-700">
+                                    <i class="fas fa-chart-bar mr-2"></i>Stats
+                                </a>
+                                <a href="/event/{{ event.id }}/edit" 
+                                   class="flex-1 text-center bg-gray-800 px-3 py-2 rounded-lg hover:bg-gray-700">
+                                    <i class="fas fa-edit mr-2"></i>Modifier
+                                </a>
+                                <a href="/event/{{ event.id }}/export/pdf" 
+                                   class="flex-1 text-center bg-gray-800 px-3 py-2 rounded-lg hover:bg-gray-700">
+                                    <i class="fas fa-file-pdf mr-2"></i>PDF
+                                </a>
+                                <a href="/event/{{ event.id }}/promocode/create" 
+                                   class="flex-1 text-center bg-custom-purple px-3 py-2 rounded-lg hover:bg-purple-700">
+                                    <i class="fas fa-tag mr-2"></i>Promo
+                                </a>
+                            </div>
                         </div>
                     </div>
                 {% endfor %}
             </div>
         </div>
     </div>
+
+    <!-- Video Modal -->
+    <div id="videoModal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center">
+        <div class="relative w-full max-w-4xl">
+            <button onclick="closeVideo()" class="absolute -top-10 right-0 text-white">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+            <video id="videoPlayer" controls class="w-full rounded-lg">
+                <source src="" type="video/mp4">
+            </video>
+        </div>
+    </div>
+
+    <script>
+        function playVideo(url) {
+            const modal = document.getElementById('videoModal');
+            const player = document.getElementById('videoPlayer');
+            player.src = url;
+            modal.classList.remove('hidden');
+        }
+
+        function closeVideo() {
+            const modal = document.getElementById('videoModal');
+            const player = document.getElementById('videoPlayer');
+            player.pause();
+            modal.classList.add('hidden');
+        }
+    </script>
 </body>
 </html>
