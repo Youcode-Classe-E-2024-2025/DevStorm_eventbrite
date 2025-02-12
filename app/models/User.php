@@ -7,6 +7,10 @@ use App\Core\Database;
 use App\Core\Model;
 use App\Core\Session;
 use App\enums\Role;
+<<<<<<< HEAD
+=======
+use PDO;
+>>>>>>> dfb0c8942ccc4055d0d0827fbc787eb69a1859c5
 
 
 class User extends Model {
@@ -44,7 +48,11 @@ class User extends Model {
             $user = new User($data['id'],$data['name'],$data['email'],'',Role::from($data['role']),$data['avatar'],$data['status']);
         }
         return $user;
+<<<<<<< HEAD
     } 
+=======
+    }
+>>>>>>> dfb0c8942ccc4055d0d0827fbc787eb69a1859c5
 
     public function save()
     {
@@ -68,7 +76,11 @@ class User extends Model {
     {
         $db = Database::getInstance();
         $query = $db->getConnection()->prepare("SELECT * FROM " . $this->getTable() . " WHERE email = :email");
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> dfb0c8942ccc4055d0d0827fbc787eb69a1859c5
         $query->bindParam(':email', $this->email);
         $query->execute();
         $user = $query->fetch();
@@ -81,18 +93,30 @@ class User extends Model {
     }
 
     /**
+<<<<<<< HEAD
      * create  objects 
      * 
+=======
+     * create  objects
+     *
+>>>>>>> dfb0c8942ccc4055d0d0827fbc787eb69a1859c5
      * @param array $rows
      * @return array
      */
     private static function toObjects($rows){
         $users=[];
         foreach ($rows as $row) {
+<<<<<<< HEAD
              $users[] =  new User($row['id'],$row['name'],$row['email'],'',Role::from($row['role']),$row['avatar'],$row['status']);
          }
          return $users;
        }
+=======
+            $users[] =  new User($row['id'],$row['name'],$row['email'],'',Role::from($row['role']),$row['avatar'],$row['status']);
+        }
+        return $users;
+    }
+>>>>>>> dfb0c8942ccc4055d0d0827fbc787eb69a1859c5
 
     public function fetchAll(){
         $db = Database::getInstance();
@@ -102,6 +126,7 @@ class User extends Model {
         return self::toObjects($rows);
     }
 
+<<<<<<< HEAD
     function updateStatus($userId, $status) {
             $db = Database::getInstance();
             $stmt = $db->getConnection()->prepare("UPDATE users SET status = :status WHERE id = :id");
@@ -109,4 +134,19 @@ class User extends Model {
             $stmt->execute();
         }
     
+=======
+    public function updateStatus($userId, $status) {
+        $db = Database::getInstance();
+        $stmt = $db->getConnection()->prepare("UPDATE users SET status = :status WHERE id = :id");
+        $stmt->execute(["status" => $status, "id" => $userId]);
+        $stmt->execute();
+    }
+    public function getUserByEmail($email){
+        $db = Database::getInstance();
+        $stmt = $db->getConnection()->prepare("SELECT * FROM users WHERE email = :email");
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_OBJ);
+    }
+>>>>>>> dfb0c8942ccc4055d0d0827fbc787eb69a1859c5
 }

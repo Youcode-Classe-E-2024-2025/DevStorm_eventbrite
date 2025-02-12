@@ -318,7 +318,11 @@ public function getEventParticipants($eventId)
            $query->execute();
            $row = $query->fetch();
 
+<<<<<<< HEAD
            $user=null;
+=======
+           $event=null;
+>>>>>>> dfb0c8942ccc4055d0d0827fbc787eb69a1859c5
            if($row){
                $organizer = User::read($row['organizer_id']) ?? new User();
                $category = Category::read($row['category_id']) ?? new Category();

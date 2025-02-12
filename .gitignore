@@ -3,6 +3,10 @@ vendor
 test
 
 composer.lock
+<<<<<<< HEAD
 
+=======
+.env
+>>>>>>> dfb0c8942ccc4055d0d0827fbc787eb69a1859c5
 public/assets/images
 public/assets/videos

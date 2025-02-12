@@ -47,7 +47,27 @@ class Ticket extends Model
         $rows = $stmt->fetchAll();
         return self::toObjects($rows);
     }
+<<<<<<< HEAD
 
+=======
+    public static function read($id)
+    {
+        $db = Database::getInstance();
+        $sql = "SELECT * FROM tickets WHERE id = :id";
+        $query = $db->getConnection()->prepare($sql);
+        $query->bindParam(':id', $id);
+        $query->execute();
+        $row = $query->fetch();
+
+        $ticket=null;
+        if($row){
+            $user = User::read($row['user_id']) ?? new User();
+            $event = Event::read($row['event_id']) ?? new Event();
+            $ticket = new Ticket($row['id'],$event,$user,$row['ticket_type'],$row['price'],$row['qr_code'],$row['status']);
+        }
+        return $ticket;
+    } 
+>>>>>>> dfb0c8942ccc4055d0d0827fbc787eb69a1859c5
     private static function toObjects($rows)
     {
         $tickets = [];
