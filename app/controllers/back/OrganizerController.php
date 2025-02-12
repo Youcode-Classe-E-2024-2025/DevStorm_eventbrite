@@ -55,7 +55,68 @@ class OrganizerController extends Controller
         ]);
     }
 
-   
+    public function handleCreateEvent()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $event = new Event();
+            
+            $imageUploadDir = 'public/assets/images/';
+            $videoUploadDir = 'public/assets/videos/';
+    
+            // Handle image upload
+            if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+                $imageInfo = pathinfo($_FILES['image']['name']);
+                $imageExtension = strtolower($imageInfo['extension']);
+                $allowedImageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+                
+                if (in_array($imageExtension, $allowedImageExtensions)) {
+                    $newImageName = uniqid() . '.' . $imageExtension;
+                    $imagePath = $imageUploadDir . $newImageName;
+                    
+                    if (move_uploaded_file($_FILES['image']['tmp_name'], $imagePath)) {
+                        $event->image_url = $imagePath;
+                    }
+                }
+            }
+    
+            // Handle video upload
+            if (isset($_FILES['video']) && $_FILES['video']['error'] == 0) {
+                $videoInfo = pathinfo($_FILES['video']['name']);
+                $videoExtension = strtolower($videoInfo['extension']);
+                $allowedVideoExtensions = ['mp4', 'mov', 'avi'];
+                
+                if (in_array($videoExtension, $allowedVideoExtensions)) {
+                    $newVideoName = uniqid() . '.' . $videoExtension;
+                    $videoPath = $videoUploadDir . $newVideoName;
+                    
+                    if (move_uploaded_file($_FILES['video']['tmp_name'], $videoPath)) {
+                        $event->video_url = $videoPath;
+                    }
+                }
+            }
+    
+            // Set other event properties
+            $event->title = $_POST['title'];
+            $event->description = $_POST['description'];
+            $event->date = $_POST['date'];
+            $event->price = $_POST['price'];
+            $event->capacity = $_POST['capacity'];
+            $event->location = $_POST['location'];
+            $event->category_id = $_POST['category_id'];
+            $event->status = 'en attente';
+            $event->organizer = $_SESSION['user_id'];
+    
+            if ($event->save()) {
+                header('Location: /organizer/dashboard');
+                exit;
+            } else {
+                $_SESSION['error'] = "Erreur lors de la création de l'événement";
+                header('Location: /organizer/event/create');
+                exit;
+            }
+        }
+    }
+    
 
     public function salesStats($eventId)
     {
