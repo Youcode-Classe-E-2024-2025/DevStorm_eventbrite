@@ -25,4 +25,12 @@ class Tag extends Model
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function delete($id){
+        $db = Database::getInstance();
+        $sql = "DELETE FROM tags WHERE id = :id";
+        $query = $db->getConnection()->prepare($sql);
+        $query->bindParam(':id', $id);
+        $query->execute();
+    }
+
 }
