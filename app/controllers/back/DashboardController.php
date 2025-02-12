@@ -2,6 +2,7 @@
 
 namespace App\controllers\back;
 use App\Core\Controller;
+use App\Core\Security;
 use App\Core\Session;
 use App\Models\Event;
 use App\Models\User;
@@ -50,6 +51,11 @@ class DashboardController extends Controller{
         $this->adminDashboard();
     }
 
-
+    public function AddCategory(){
+        $categoryname = Security::XSS($_POST['categoryName']);
+        $Category = new Category(null, $categoryname);
+        $Category->create();
+        $this->adminDashboard();
+    }
 
 }
