@@ -3,6 +3,6 @@ vendor
 test
 
 composer.lock
-
+.env
 public/assets/images
 public/assets/videos

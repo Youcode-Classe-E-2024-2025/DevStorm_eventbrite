@@ -37,12 +37,9 @@
 
                         <!-- Actions -->
                         <div class="flex justify-center gap-4 flex-wrap">
-                            <a 
-                                href="/reservation/confirm/{{ reservation.id }}" 
-                                class="bg-custom-green text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-300"
-                            >
-                                Confirmer
-                            </a>
+                            <form action="/checkout/{{ reservation.id }}" method="POST">
+                                <button class="bg-custom-green text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-300" type="submit" id="checkout-button">Checkout</button>
+                            </form>
                             <a 
                                 href="/reservation/cancel/{{ reservation.id }}" 
                                 class="bg-custom-red text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors duration-300"

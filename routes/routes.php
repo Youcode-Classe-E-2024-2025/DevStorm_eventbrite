@@ -6,6 +6,7 @@ use App\controllers\back\ErrorController;
 use App\controllers\front\HomeController;
 use App\controllers\front\EventController;
 use App\controllers\back\OrganizerController;
+use App\controllers\back\PaimentController;
 use App\controllers\front\CartController;
 use App\Core\Router;
 
@@ -62,6 +63,11 @@ $router->get('/reserve/{id}', [EventController::class, 'reserve']);
 // error
 $router->get('/404', [ErrorController::class, '_404']);
 $router->get('/403', [ErrorController::class, '_403']);
+
+// paiment
+$router->post('/checkout/{id}', [PaimentController::class, 'checkout']);
+$router->get('/paiment/success', [PaimentController::class, 'paimentSuccess']);
+$router->get('/paiment/cancel', [PaimentController::class, 'paimentCancel']);
 
 
 $router->dispatch();
