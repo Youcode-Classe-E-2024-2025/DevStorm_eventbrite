@@ -140,15 +140,22 @@ class OrganizerController extends Controller
         $this->view('back/organizer/stats', ['stats' => $stats]);
     }
  /**
- * Display event statistics
+ * Display event statistics je change this methode par des nuoveuax statistics
  */
 public function eventStats($eventId)
 {
     $event = new Event();
     $stats = $event->getEventStats($eventId);
+    $promotions = $event->getEventPromotions($eventId);
+    $salesData = $event->getSalesData($eventId);
     
     $this->view('front/event/stats', [
-        'stats' => $stats,
+        'stats' => array_merge($stats, [
+            'promotions' => $promotions,
+            'sales_dates' => array_column($salesData, 'date'),
+            'sales_data' => array_column($salesData, 'count'),
+            'ticket_types_data' => $event->getTicketTypeDistribution($eventId)
+        ]),
         'event_id' => $eventId
     ]);
 }
