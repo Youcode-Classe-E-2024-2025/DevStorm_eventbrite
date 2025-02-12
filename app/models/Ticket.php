@@ -58,6 +58,29 @@ class Ticket extends Model
         }
         return $tickets;
     }
+    public function save(): bool
+    {
+        $sql = "INSERT INTO tickets (event_id, user_id, ticket_type, price, qr_code, status) 
+                VALUES (:event_id, :user_id, :ticket_type, :price, :qr_code, :status)";
 
+        $db = Database::getInstance();
+        $stmt = $db->getConnection()->prepare($sql);
+
+        $params = [
+            ':event_id' => $this->event->id,
+            ':user_id' => $this->user->id,
+            ':ticket_type' => $this->ticket_type,
+            ':price' => $this->price,
+            ':qr_code' => $this->qr_code,
+            ':status' => $this->status,
+        ];
+    
+        if ($stmt->execute($params)) {
+            $this->id = $db->getConnection()->lastInsertId();
+            return true;
+        }
+    
+        return false;
+    }
 
 }

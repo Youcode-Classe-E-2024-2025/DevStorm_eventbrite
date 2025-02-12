@@ -2,6 +2,7 @@
 
 use App\controllers\back\UserController;
 use App\controllers\back\DashboardController;
+use App\controllers\back\ErrorController;
 use App\controllers\front\HomeController;
 use App\controllers\front\EventController;
 use App\controllers\back\OrganizerController;
@@ -57,5 +58,10 @@ $router->get('/event/{id}', [EventController::class, 'show']);
 $router->get('/cart', [CartController::class, 'index']);
 
 $router->get('/reserve/{id}', [EventController::class, 'reserve']);
+
+// error
+$router->get('/404', [ErrorController::class, '_404']);
+$router->get('/403', [ErrorController::class, '_403']);
+
 
 $router->dispatch();
