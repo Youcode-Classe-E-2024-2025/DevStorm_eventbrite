@@ -153,6 +153,55 @@ class UserController extends Controller
         exit;
     }
 
+    public function handleGoogleAuth()
+    {
+
+            $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . '/../../../');
+            $dotenv->load();
+
+            $client = new Google_Client();
+            $client->setClientId($_ENV['GOOGLE_CLIENT_ID']);
+            $client->setClientSecret($_ENV['GOOGLE_CLIENT_SECRET']);
+            $client->setRedirectUri($_ENV['GOOGLE_REDIRECT_URI']);
+            $client->addScope("email");
+            $client->addScope("profile");
+
+            if (!isset($_GET['code'])) {
+                header("Location: " . filter_var($client->createAuthUrl(), FILTER_SANITIZE_URL));
+                exit();
+            }
+
+            $token = $client->fetchAccessTokenWithAuthCode($_GET['code']);
+
+            if (isset($token['error'])) {
+                throw new Exception("Google authentication failed: " . htmlspecialchars($token['error_description']));
+            }
+
+            $client->setAccessToken($token['access_token']);
+            $google_oauth = new Google_Service_Oauth2($client);
+            $google_account = $google_oauth->userinfo->get();
+
+            $email = $google_account->email;
+            $name = $google_account->name;
+            $avatar = $google_account->picture;
+            $role = Role::PARTICIPANT->value; // Assuming default role
+
+            $userModel = new User();
+            $user = $userModel->getUserByEmail($email);
+            if (!$user) {
+
+                $randomPassword = bin2hex(random_bytes(8));
+                $user = new User('', $name, $email, password_hash($randomPassword, PASSWORD_BCRYPT), Role::from($role), $avatar);
+                if (!$user->save()) {
+                    Session::setFlashMessage('red', 'Registration failed. Please try again.');
+                    $this->redirect('/register');
+                }
+            }
+            Auth::login($user);
+            header("Location: /");
+            exit();
+    }
+
 
 
 }
