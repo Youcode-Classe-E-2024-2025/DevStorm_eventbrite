@@ -60,8 +60,8 @@ class OrganizerController extends Controller
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $event = new Event();
             
-            $imageUploadDir = 'public/assets/images/';
-            $videoUploadDir = 'public/assets/videos/';
+            $imageUploadDir = 'assets/images/';
+            $videoUploadDir = 'assets/videos/';
     
             // Handle image upload
             if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
