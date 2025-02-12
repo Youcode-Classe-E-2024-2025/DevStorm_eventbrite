@@ -4,13 +4,25 @@
     <meta charset="UTF-8">
     <title>Modifier l'événement | DevEvents</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'custom-purple': '#8B5CF6',
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 <body class="bg-black text-white">
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold text-custom-purple mb-8">Modifier l'événement</h1>
         
-        <form method="POST" class="max-w-2xl space-y-6">
+        <form method="POST" enctype="multipart/form-data" class="max-w-2xl space-y-6">
             <div class="bg-gray-900 p-6 rounded-lg space-y-4">
+                <!-- Existing fields -->
                 <div>
                     <label class="block mb-2">Titre</label>
                     <input type="text" name="title" value="{{ event.title }}" required 
@@ -56,6 +68,38 @@
                             </option>
                         {% endfor %}
                     </select>
+                </div>
+
+                <!-- New fields for media -->
+                <div>
+                    <label class="block mb-2">Image de l'événement</label>
+                    {% if event.image_url %}
+                        <img src="{{ event.image_url }}" alt="Current event image" class="w-32 h-32 object-cover mb-2">
+                    {% endif %}
+                    <input type="file" name="image" accept="image/*" 
+                           class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg">
+                </div>
+
+                <div>
+                    <label class="block mb-2">Vidéo de l'événement</label>
+                    {% if event.video_url %}
+                        <video src="{{ event.video_url }}" class="w-64 mb-2" controls></video>
+                    {% endif %}
+                    <input type="file" name="video" accept="video/*" 
+                           class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg">
+                </div>
+
+                <!-- Tags selection -->
+                <div>
+                    <label class="block mb-2">Tags</label>
+                    <select name="tags[]" multiple class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg">
+                        {% for tag in tags %}
+                            <option value="{{ tag.id }}" {% if tag.id in selectedTags %}selected{% endif %}>
+                                {{ tag.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <p class="text-sm text-gray-400 mt-1">Maintenez Ctrl (Cmd sur Mac) pour sélectionner plusieurs tags</p>
                 </div>
                 
                 <button type="submit" class="w-full bg-custom-purple text-white py-2 rounded-lg hover:bg-purple-700">
