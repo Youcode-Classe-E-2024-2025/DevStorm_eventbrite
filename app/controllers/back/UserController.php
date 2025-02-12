@@ -9,12 +9,9 @@ use App\models\User;
 use App\Core\Auth;
 use App\Core\Validator;
 use App\enums\Role;
-<<<<<<< HEAD
-=======
 use Exception;
 use Google_Client;
 use Google_Service_Oauth2;
->>>>>>> dfb0c8942ccc4055d0d0827fbc787eb69a1859c5
 
 class UserController extends Controller
 {
@@ -72,11 +69,7 @@ class UserController extends Controller
         $password = $_POST['password'];
         // $confirm_password = $_POST['confirm_password'];
 
-<<<<<<< HEAD
-        //  Validator  
-=======
         //  Validator
->>>>>>> dfb0c8942ccc4055d0d0827fbc787eb69a1859c5
         $validator = new Validator();
 
         // validation
@@ -164,8 +157,6 @@ class UserController extends Controller
     }
 
 
-<<<<<<< HEAD
-=======
     /**
      * @throws RandomException
      * @throws \Google\Service\Exception
@@ -221,6 +212,5 @@ class UserController extends Controller
     }
 
 
->>>>>>> dfb0c8942ccc4055d0d0827fbc787eb69a1859c5
 
 }

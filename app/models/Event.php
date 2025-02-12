@@ -164,19 +164,104 @@ public function getEventStats($eventId)
     $db = \App\Core\Database::getInstance();
     $query = $db->getConnection()->prepare("
         SELECT 
+            e.title,
+            e.capacity,
+            e.price as base_price,
             COUNT(t.id) as total_tickets,
             SUM(t.price) as total_revenue,
             COUNT(CASE WHEN t.status = 'validé' THEN 1 END) as validated_tickets,
-            e.capacity as capacity
+            COUNT(CASE WHEN t.purchase_date >= NOW() - INTERVAL '24 HOURS' THEN 1 END) as tickets_last_24h,
+            ROUND(AVG(t.price), 2) as average_ticket_price,
+            (e.capacity - COUNT(t.id)) as available_seats
         FROM events e
         LEFT JOIN tickets t ON e.id = t.event_id
         WHERE e.id = :event_id
-        GROUP BY e.id, e.capacity
+        GROUP BY e.id, e.title, e.capacity, e.price
     ");
     
     $query->execute(['event_id' => $eventId]);
-    return $query->fetch(PDO::FETCH_ASSOC);
+    $stats = $query->fetch(PDO::FETCH_ASSOC);
+    
+    // Get promotions using existing Promotion model
+    $promotion = new Promotion();
+    $stats['promotions'] = $promotion->getPromotionsByEvent($eventId);
+    
+    // Get ticket types distribution
+    $stats['ticket_types'] = $this->getTicketTypeStats($eventId);
+    
+    return $stats;
 }
+
+private function getTicketTypeStats($eventId)
+{
+    $db = \App\Core\Database::getInstance();
+    $query = $db->getConnection()->prepare("
+        SELECT 
+            ticket_type,
+            COUNT(*) as count
+        FROM tickets
+        WHERE event_id = :event_id
+        GROUP BY ticket_type
+    ");
+    
+    $query->execute(['event_id' => $eventId]);
+    return $query->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+public function getEventPromotions($eventId)
+{
+    $db = \App\Core\Database::getInstance();
+    $query = $db->getConnection()->prepare("
+        SELECT p.* 
+        FROM promotions p
+        JOIN event_promotions ep ON p.id = ep.promotion_id
+        WHERE ep.event_id = :event_id
+        ORDER BY p.created_at DESC
+    ");
+    
+    $query->execute(['event_id' => $eventId]);
+    return $query->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+public function getSalesData($eventId)
+{
+    $db = \App\Core\Database::getInstance();
+    $query = $db->getConnection()->prepare("
+        SELECT 
+            DATE(purchase_date) as date,
+            COUNT(*) as count
+        FROM tickets
+        WHERE event_id = :event_id
+        GROUP BY DATE(purchase_date)
+        ORDER BY date DESC
+        LIMIT 7
+    ");
+    
+    $query->execute(['event_id' => $eventId]);
+    return $query->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
+public function getTicketTypeDistribution($eventId)
+{
+    $db = \App\Core\Database::getInstance();
+    $query = $db->getConnection()->prepare("
+        SELECT 
+            ticket_type,
+            COUNT(*) as count
+        FROM tickets
+        WHERE event_id = :event_id
+        GROUP BY ticket_type
+    ");
+    
+    $query->execute(['event_id' => $eventId]);
+    $distribution = $query->fetchAll(PDO::FETCH_ASSOC);
+    
+    return array_column($distribution, 'count');
+}
+
 
 /**
  * Get event by ID with category information
@@ -318,11 +403,8 @@ public function getEventParticipants($eventId)
            $query->execute();
            $row = $query->fetch();
 
-<<<<<<< HEAD
            $user=null;
-=======
            $event=null;
->>>>>>> dfb0c8942ccc4055d0d0827fbc787eb69a1859c5
            if($row){
                $organizer = User::read($row['organizer_id']) ?? new User();
                $category = Category::read($row['category_id']) ?? new Category();

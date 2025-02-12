@@ -47,9 +47,6 @@ class Ticket extends Model
         $rows = $stmt->fetchAll();
         return self::toObjects($rows);
     }
-<<<<<<< HEAD
-
-=======
     public static function read($id)
     {
         $db = Database::getInstance();
@@ -67,7 +64,6 @@ class Ticket extends Model
         }
         return $ticket;
     } 
->>>>>>> dfb0c8942ccc4055d0d0827fbc787eb69a1859c5
     private static function toObjects($rows)
     {
         $tickets = [];
