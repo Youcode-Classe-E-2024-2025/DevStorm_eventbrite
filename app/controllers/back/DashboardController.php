@@ -63,5 +63,12 @@ class DashboardController extends Controller{
         $this->adminDashboard();
     }
 
+    public function AddTag(){
+        $tagName = Security::XSS($_POST['tagName']);
+        $Tag = new Tag(null,$tagName);
+        $Tag->create();
+        $this->adminDashboard();
+    }
+
 
 }
