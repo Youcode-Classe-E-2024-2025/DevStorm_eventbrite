@@ -12,11 +12,7 @@ class Database
     private static string $host = 'localhost';
     private static string $dbname = 'eventbrite';
     private static string $user = 'postgres';
-<<<<<<< HEAD
-    private static string $pass = '1234';
-=======
     private static string $pass = 'root';
->>>>>>> dfb0c8942ccc4055d0d0827fbc787eb69a1859c5
 
     private function __construct() {}
 
