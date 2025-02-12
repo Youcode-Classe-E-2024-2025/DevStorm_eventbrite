@@ -456,4 +456,39 @@ public function getEventParticipants($eventId)
         return $reservedCount < $this->capacity;
     }
 
+
+
+    //new methode can delete event avec des conditions
+    public function canDeleteEvent($eventId)
+{
+    $db = \App\Core\Database::getInstance();
+    
+    // Check if event has passed and has no participants
+    $query = $db->getConnection()->prepare("
+        SELECT 
+            e.id,
+            e.date < NOW() as is_past,
+            COUNT(t.id) as ticket_count
+        FROM events e
+        LEFT JOIN tickets t ON e.id = t.event_id
+        WHERE e.id = :event_id
+        GROUP BY e.id, e.date
+    ");
+    
+    $query->execute(['event_id' => $eventId]);
+    $result = $query->fetch(PDO::FETCH_ASSOC);
+    
+    return ($result['is_past'] || $result['ticket_count'] == 0);
+}
+
+public function deleteEvent($eventId)
+{
+    if ($this->canDeleteEvent($eventId)) {
+        $db = \App\Core\Database::getInstance();
+        $query = $db->getConnection()->prepare("DELETE FROM events WHERE id = :event_id");
+        return $query->execute(['event_id' => $eventId]);
+    }
+    return false;
+}
+
 }
