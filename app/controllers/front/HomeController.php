@@ -13,6 +13,6 @@ class HomeController extends Controller{
         } else {
             $avatar = '';
         }
-        $this->view('front/home',["avatar"=>$avatar]);
+        $this->view('front/home',["avatar"=>$avatar,"user"=>$user]);
     }
 }
