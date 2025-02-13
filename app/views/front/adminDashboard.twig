@@ -23,6 +23,7 @@
             }
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             background-color: black;
@@ -78,6 +79,14 @@
 </nav>
 
 <div class="container mx-auto px-4 py-24">
+
+    <div class="container mx-auto px-4 py-10">
+        <h1 class="text-4xl font-bold mb-6 text-primary font-clash">Event Statistics</h1>
+        <div class="bg-white/10 p-6 rounded-lg shadow-md">
+            <canvas id="eventStatsChart" class="w-full h-[400px]"></canvas>
+        </div>
+    </div>
+
     <h1 class="text-4xl font-bold mb-6 text-primary font-clash">Admin Dashboard - Events</h1>
 
     <div class="bg-white/10 shadow-md rounded-lg overflow-hidden">
@@ -102,7 +111,7 @@
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ color }}-400 text-{{ color }}-900">{{ event.status }}</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <a href="/editEvent" class="text-primary hover:text-primary/80 mr-3">Edit</a>
+                    <a href="/event/{{ event.id }}/edit" class="text-primary hover:text-primary/80 mr-3">Edit</a>
                     <a href="/deleteEvent/{{ event.id }}" class="text-red-500 hover:text-red-400 mr-3">Delete</a>
                 </td>
             </tr>
@@ -207,6 +216,162 @@
         </div>
     </form>
 </div>
+<script>
+    // Chart.js configuration
+    const stats = {
+        total_tickets: {{ stats.total_tickets }},
+        total_revenue: {{ stats.total_revenue }},
+        validated_tickets: {{ stats.validated_tickets }},
+        capacity: {{ stats.capacity }}
+    };
+
+    const ctx = document.getElementById('eventStatsChart').getContext('2d');
+
+    const gradientFill = ctx.createLinearGradient(0, 0, 0, 400);
+    gradientFill.addColorStop(0, 'rgba(139, 92, 246, 0.5)');
+    gradientFill.addColorStop(1, 'rgba(139, 92, 246, 0.1)');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Total Tickets', 'Validated Tickets', 'Capacity', 'Revenue'],
+            datasets: [
+                {
+                    label: 'Ticket Stats',
+                    data: [stats.total_tickets, stats.validated_tickets, stats.capacity, null],
+                    borderColor: '#8B5CF6',
+                    backgroundColor: gradientFill,
+                    fill: true,
+                    yAxisID: 'y',
+                    tension: 0.4,
+                    pointRadius: 6,
+                    pointBackgroundColor: '#8B5CF6',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                },
+                {
+                    label: 'Revenue',
+                    data: [null, null, null, stats.total_revenue],
+                    borderColor: '#10B981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                    fill: true,
+                    yAxisID: 'y1',
+                    tension: 0.4,
+                    pointRadius: 6,
+                    pointBackgroundColor: '#10B981',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        color: 'white',
+                        font: {
+                            family: '"Manrope", sans-serif',
+                            size: 14
+                        }
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Event Statistics Overview',
+                    color: 'white',
+                    font: {
+                        size: 20,
+                        family: '"Clash Display", sans-serif',
+                        weight: 'bold'
+                    }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleFont: {
+                        family: '"Clash Display", sans-serif',
+                        size: 14
+                    },
+                    bodyFont: {
+                        family: '"Manrope", sans-serif',
+                        size: 12
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: 'white',
+                        font: {
+                            family: '"Manrope", sans-serif',
+                            size: 12
+                        }
+                    },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                },
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: 'Number of Tickets',
+                        color: 'white',
+                        font: {
+                            family: '"Clash Display", sans-serif',
+                            size: 14
+                        }
+                    },
+                    ticks: {
+                        color: 'white',
+                        font: {
+                            family: '"Manrope", sans-serif',
+                            size: 12
+                        }
+                    },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: 'Revenue',
+                        color: 'white',
+                        font: {
+                            family: '"Clash Display", sans-serif',
+                            size: 14
+                        }
+                    },
+                    ticks: {
+                        color: 'white',
+                        font: {
+                            family: '"Manrope", sans-serif',
+                            size: 12
+                        },
+                        callback: function(value, index, values) {
+                            return '$' + value;
+                        }
+                    },
+                    grid: {
+                        drawOnChartArea: false,
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
+            }
+        }
+    });
+</script>
+
 
 </body>
 </html>

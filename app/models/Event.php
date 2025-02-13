@@ -370,4 +370,15 @@ public function getEventParticipants($eventId)
         return $reservedCount < $this->capacity;
     }
 
+
+    public function getAllEventStats()
+    {
+        $db = \App\Core\Database::getInstance();
+        $query = $db->getConnection()->prepare("SELECT COUNT(t.id) as total_tickets,  SUM(t.price) as total_revenue,
+            COUNT(CASE WHEN t.status = 'validé' THEN 1 END) as validated_tickets,  e.capacity as capacity  FROM events e  LEFT JOIN tickets t ON e.id = t.event_id GROUP BY e.id, e.capacity
+    ");
+        $query->execute();
+        return $query->fetch(PDO::FETCH_ASSOC);
+    }
+
 }
