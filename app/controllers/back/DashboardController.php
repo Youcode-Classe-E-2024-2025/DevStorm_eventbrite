@@ -20,7 +20,8 @@ class DashboardController extends Controller{
         $categories = $category->getAllCategories();
         $users = $user->fetchAll();
         $events = $event->getAllEvents();
-        $this->view('front/adminDashboard',['events'=>$events,'users'=>$users,'categories'=>$categories,'tags'=>$tags]);
+        $stats = $event->getAllEventStats();
+        $this->view('front/adminDashboard',['events'=>$events,'users'=>$users,'categories'=>$categories,'tags'=>$tags, 'stats'=>$stats]);
     }
 
     public function UpdateUserStatus(){

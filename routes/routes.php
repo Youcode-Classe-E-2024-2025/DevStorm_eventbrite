@@ -33,6 +33,8 @@ $router->get('/deleteTag/{id}', [DashboardController::class, 'deleteTag']);
 $router->post('/addCategory', [DashboardController::class, 'AddCategory']);
 $router->post('/addTag', [DashboardController::class, 'addTag']);
 
+$router->get('/google-login', [UserController::class, 'handleGoogleAuth']);
+
 //organizer ROUTEs
 $router->get('/organizer/event/create', [OrganizerController::class, 'createEvent']);
 $router->post('/organizer/event/create', [OrganizerController::class, 'handleCreateEvent']);
@@ -41,6 +43,7 @@ $router->get('/organizer/event/export/{id}', [OrganizerController::class, 'expor
 $router->get('/organizer/dashboard', [OrganizerController::class, 'dashboard']);
 $router->get('/event/{id}/stats', [OrganizerController::class, 'eventStats']);
 
+$router->get('/event/{id}/delete', [OrganizerController::class, 'deleteEvent']);
 //promocode
 $router->get('/event/{id}/promocode/create', [OrganizerController::class, 'createPromoCode']);
 $router->post('/event/{id}/promocode/create', [OrganizerController::class, 'createPromoCode']);

@@ -2,10 +2,17 @@
 namespace App\controllers\front;
 
 use App\Core\Controller;
+use App\Core\Session;
 
 class HomeController extends Controller{
 
     public function index(){
-        $this->view('front/home');
+        $user = Session::getUser();
+        if ($user && isset($user->avatar)) {
+            $avatar = $user->avatar;
+        } else {
+            $avatar = '';
+        }
+        $this->view('front/home',["avatar"=>$avatar]);
     }
 }
