@@ -4,30 +4,100 @@
     <meta charset="UTF-8">
     <title>Statistiques de l'événement | DevEvents</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-black text-white">
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold text-custom-purple mb-8">Statistiques de l'événement</h1>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Main Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div class="bg-gray-900 p-6 rounded-lg">
                 <h3 class="text-lg mb-2">Billets Vendus</h3>
                 <p class="text-2xl font-bold text-custom-purple">{{ stats.total_tickets }}</p>
+                <div class="text-sm text-gray-400 mt-2">+{{ stats.tickets_last_24h }} dernières 24h</div>
             </div>
             
             <div class="bg-gray-900 p-6 rounded-lg">
                 <h3 class="text-lg mb-2">Revenus Totaux</h3>
                 <p class="text-2xl font-bold text-custom-purple">{{ stats.total_revenue }}€</p>
+                <div class="text-sm text-gray-400 mt-2">Moyenne: {{ stats.average_ticket_price }}€/billet</div>
             </div>
             
             <div class="bg-gray-900 p-6 rounded-lg">
-                <h3 class="text-lg mb-2">Taux de Participation</h3>
-                <p class="text-2xl font-bold text-custom-purple">
-                    {{ stats.capacity > 0 ? (stats.validated_tickets / stats.capacity * 100)|round ~ '%' : '0%' }}
-
-                </p>
+                <h3 class="text-lg mb-2">Places Disponibles</h3>
+                <p class="text-2xl font-bold text-custom-purple">{{ stats.available_seats }}</p>
+                <div class="text-sm text-gray-400 mt-2">sur {{ stats.total_capacity }} places</div>
             </div>
         </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-gray-900 p-6 rounded-lg">
+                <h3 class="text-lg mb-4">Ventes par Jour</h3>
+                <canvas id="salesChart" height="200"></canvas>
+            </div>
+            
+            <div class="bg-gray-900 p-6 rounded-lg">
+                <h3 class="text-lg mb-4">Types de Billets Vendus</h3>
+                <canvas id="ticketTypesChart" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Detailed Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
+            <div class="bg-gray-900 p-6 rounded-lg">
+                <h3 class="text-lg mb-4">Codes Promo Actifs</h3>
+                <div class="space-y-3">
+                    {% for promo in stats.promotions %}
+                    <div class="flex justify-between items-center">
+                        <span>{{ promo.code }}</span>
+                        <span class="text-custom-purple">{{ promo.uses }} utilisations</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            
+        </div>
     </div>
+
+    <script>
+        // Sales Chart
+        const salesCtx = document.getElementById('salesChart').getContext('2d');
+        new Chart(salesCtx, {
+            type: 'line',
+            data: {
+                labels: {{ stats.sales_dates|json_encode|raw }},
+                datasets: [{
+                    label: 'Ventes',
+                    data: {{ stats.sales_data|json_encode|raw }},
+                    borderColor: '#8B5CF6',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Ticket Types Chart
+        const typesCtx = document.getElementById('ticketTypesChart').getContext('2d');
+        new Chart(typesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Standard', 'VIP', 'Groupe'],
+                datasets: [{
+                    data: {{ stats.ticket_types_data|json_encode|raw }},
+                    backgroundColor: ['#8B5CF6', '#4C1D95', '#C4B5FD']
+                }]
+            }
+        });
+    </script>
 </body>
 </html>
