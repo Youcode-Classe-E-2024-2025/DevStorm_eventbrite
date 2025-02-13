@@ -140,15 +140,22 @@ class OrganizerController extends Controller
         $this->view('back/organizer/stats', ['stats' => $stats]);
     }
  /**
- * Display event statistics
+ * Display event statistics je change this methode par des nuoveuax statistics
  */
 public function eventStats($eventId)
 {
     $event = new Event();
     $stats = $event->getEventStats($eventId);
+    $promotions = $event->getEventPromotions($eventId);
+    $salesData = $event->getSalesData($eventId);
     
     $this->view('front/event/stats', [
-        'stats' => $stats,
+        'stats' => array_merge($stats, [
+            'promotions' => $promotions,
+            'sales_dates' => array_column($salesData, 'date'),
+            'sales_data' => array_column($salesData, 'count'),
+            'ticket_types_data' => $event->getTicketTypeDistribution($eventId)
+        ]),
         'event_id' => $eventId
     ]);
 }
@@ -175,6 +182,8 @@ public function exportParticipantsPDF($eventId)
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $promotion = new Promotion();
             $result = $promotion->createPromotion([
+
+                'event_id' => $eventId,
                 'discount_percentage' => $_POST['discount_percentage'],
                 'valid_from' => $_POST['valid_from'],
                 'valid_until' => $_POST['valid_until']
@@ -187,16 +196,17 @@ public function exportParticipantsPDF($eventId)
         
         $this->view('front/event/create-promocode', ['event_id' => $eventId]);
     }
+    
     public function listPromoCodes($eventId)
     {
         $promotion = new Promotion();
-        $promoCodes = $promotion->getPromotionsByEvent();
-        
+        $promoCodes = $promotion->getPromotionsByEvent($eventId);
         $this->view('front/event/list-promocodes', [
             'promoCodes' => $promoCodes,
             'event_id' => $eventId
         ]);
     }
+
     public function editEvent($eventId)
     {
         $event = new Event();
@@ -252,6 +262,26 @@ public function exportParticipantsPDF($eventId)
             'tags' => $tags,
             'selectedTags' => $selectedTags
         ]);
+    }
+    //delete event 
+    public function deleteEvent($id)
+    {
+        header('Content-Type: application/json');
+        $event = new Event();
+        
+        if ($event->canDeleteEvent($id)) {
+            $success = $event->deleteEvent($id);
+            echo json_encode([
+                'success' => $success,
+                'message' => $success ? 'Event deleted successfully' : 'Failed to delete event'
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => "L'événement ne peut pas être supprimé car il a des participants ou n'est pas terminé"
+            ]);
+        }
+        exit;
     }
     
 
