@@ -4,10 +4,10 @@ namespace App\controllers\back;
 use App\Core\Controller;
 use App\Core\Security;
 use App\Core\Session;
-use App\Models\Event;
-use App\Models\User;
-use App\Models\Category;
-use App\Models\Tag;
+use App\models\Event;
+use App\models\User;
+use App\models\Category;
+use App\models\Tag;
 
 class DashboardController extends Controller{
 

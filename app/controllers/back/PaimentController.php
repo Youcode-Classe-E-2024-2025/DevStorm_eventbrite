@@ -34,6 +34,9 @@ class PaimentController extends Controller
           'mode' => 'payment',
           'success_url' => $domain . '/paiment/success',
           'cancel_url' => $domain . '/paiment/cancel',
+          'metadata' => [ // Include ticket ID in metadata
+            'ticket_id' => $item->id, 
+           ],
         ]);
         
         header("HTTP/1.1 303 See Other");

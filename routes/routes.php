@@ -7,6 +7,7 @@ use App\controllers\front\HomeController;
 use App\controllers\front\EventController;
 use App\controllers\back\OrganizerController;
 use App\controllers\back\PaimentController;
+use App\controllers\back\WebhookController;
 use App\controllers\front\CartController;
 use App\Core\Router;
 
@@ -69,5 +70,7 @@ $router->post('/checkout/{id}', [PaimentController::class, 'checkout']);
 $router->get('/paiment/success', [PaimentController::class, 'paimentSuccess']);
 $router->get('/paiment/cancel', [PaimentController::class, 'paimentCancel']);
 
+// Webhook route
+$router->post('/webhook/stripe', [WebhookController::class, 'handleWebhook']);
 
 $router->dispatch();
