@@ -99,4 +99,11 @@ class Ticket extends Model
         return false;
     }
 
+    public static function updateStatus($ticket_id,$status){
+        $db = Database::getInstance();
+        $sql="UPDATE tickets SET status = :status WHERE id = :id ";
+        $params=['id'=>$ticket_id , 'status'=> $status];
+        $query=$db->getConnection()->prepare($sql);
+        $query->execute($params);
+    }
 }

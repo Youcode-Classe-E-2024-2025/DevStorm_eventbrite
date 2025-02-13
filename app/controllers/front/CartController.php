@@ -19,10 +19,6 @@ class CartController extends Controller{
         $this->view('front/cart',['reservations'=>$reservations ,'total_price'=> $total_price]);
     }
 
-    public function confirmReservation($id){
-        echo "comfirm $id"; // TODO:
-    }
-
     public function cancelReservation($id){
         echo "cancel $id"; // TODO:
     } 

@@ -61,6 +61,7 @@ $router->get('/events', [EventController::class, 'index']);
 $router->get('/event/{id}', [EventController::class, 'show']);
 
 $router->get('/cart', [CartController::class, 'index']);
+$router->post('/reservation/cancel/{id}', [CartController::class, 'cancelReservation']);
 
 $router->get('/reserve/{id}', [EventController::class, 'reserve']);
 
