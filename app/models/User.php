@@ -7,6 +7,7 @@ use App\Core\Database;
 use App\Core\Model;
 use App\Core\Session;
 use App\enums\Role;
+
 use PDO;
 
 
@@ -69,7 +70,6 @@ class User extends Model {
     {
         $db = Database::getInstance();
         $query = $db->getConnection()->prepare("SELECT * FROM " . $this->getTable() . " WHERE email = :email");
-
         $query->bindParam(':email', $this->email);
         $query->execute();
         $user = $query->fetch();
