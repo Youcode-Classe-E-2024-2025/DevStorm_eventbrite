@@ -20,7 +20,26 @@ class CartController extends Controller{
     }
 
     public function cancelReservation($id){
-        echo "cancel $id"; // TODO:
+
+        if (empty($id) || !is_numeric($id)) {
+            $this->redirect('/404');
+        }
+        $ticket = Ticket::read($id);
+        if (!$ticket) {
+            Session::setFlashMessage('red','reservation not found.');
+            $this->redirect('/cart');
+        }
+        if($ticket->status == 'validé'){
+            Session::setFlashMessage('red','cannot cancel , reservation already paid.');
+            $this->redirect('/cart');
+        }
+       if( $ticket->delete()){
+        Session::setFlashMessage('green',' reservation canceled .');
+        $this->redirect('/cart');
+       }else{
+        Session::setFlashMessage('red','cancel reservation  failed.');
+        $this->redirect('/cart');
+       }
     } 
 
 }
