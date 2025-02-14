@@ -1,0 +1,47 @@
+<nav class="fixed w-full z-50 bg-black/90 backdrop-blur-sm border-b border-white/10">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-20">
+            <!-- Logo -->
+            <a href="#" class="font-clash text-white text-2xl font-bold">
+                Event Hive
+            </a>
+
+            <!-- Navigation Links -->
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#" class="text-white font-manrope hover:text-primary transition-colors">Home</a>
+                <a href="/events" class="text-white/80 font-manrope hover:text-primary transition-colors">Events</a>
+                <a href="#" class="text-white/80 font-manrope hover:text-primary transition-colors">About</a>
+                <a href="#" class="text-white/80 font-manrope hover:text-primary transition-colors">Gallery</a>
+                <a href="#" class="text-white/80 font-manrope hover:text-primary transition-colors">Contact</a>
+                <a href="/adminDashboard" class="text-white/80 font-manrope hover:text-primary transition-colors">Dashboard</a>
+            </div>
+
+            <!-- CTA Button -->
+            <div class="flex gap-5">
+                {% if user %}
+                <a href="/login" class="hidden md:block border border-primary text-white font-manrope px-6 py-2 rounded-lg hover:bg-primary/10 transition-colors">
+                    Login
+                </a><a href="/register" class="hidden md:block border border-primary text-white font-manrope px-6 py-2 rounded-lg hover:bg-primary/10 transition-colors">
+                    Register
+                </a>
+                {% else %}
+                    <div class="hidden md:flex items-center space-x-2">
+
+                        <a href="/logout" class="border border-primary text-white font-manrope px-6 py-2 rounded-lg hover:bg-primary/10 transition-colors">
+                            logout
+                        </a>
+                        <div class="w-8 h-8 rounded-full overflow-hidden">
+                            <img src="{{ avatar ? avatar : '' }}" class="w-full h-full object-cover" />
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            <!-- Mobile Menu Button -->
+            <button class="md:hidden text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+    </div>
+</nav>
