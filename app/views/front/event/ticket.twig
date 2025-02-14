@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate PDF</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+</head>
+<body>
+
+<main class="w-screen h-screen flex flex-col">
+    <section class="w-full flex-grow bg-white flex items-center justify-center p-4">
+        <div id="ticket" class="flex w-full max-w-3xl text-zinc-50 h-64">
+            <!-- Your ticket HTML content goes here -->
+            <div class="h-full bg-purple-800 flex items-center justify-center px-8 rounded-l-3xl">
+                <img src="{{ticket.event.qr_code}}" alt="" style="width: 140px;  border: white .2rem solid;">
+            </div>
+            <div class="relative h-full flex flex-col items-center border-dashed justify-between border-2 bg-purple-800 border-zinc-50">
+                <div class="absolute rounded-full w-8 h-8 bg-white -top-5"></div>
+                <div class="absolute rounded-full w-8 h-8 bg-white -bottom-5"></div>
+            </div>
+            <div class="h-full py-8 px-10 bg-zinc-900 flex-grow rounded-r-3xl flex flex-col">
+                <div class="flex w-full justify-between items-center">
+                    <div class="flex flex-col items-start">
+                        <span class="text-4xl font-bold text-purple-400">{{ ticket.event.title}} </span>
+                        <span class="text-zinc-500 text-sm">{{ticket.event.category.name}}</span>
+                    </div>
+                    <div class="flex flex-col items-end">
+                        <span class="text-xs text-zinc-400">Location</span>
+                        <span class="font-mono text-purple-400">{{ ticket.event.location}}</span>
+                    </div>
+                </div>
+                <div class="flex w-full mt-4 justify-between">
+                    <div class="flex flex-col">
+                        <span class="text-xs text-zinc-400">Date Time</span>
+                        <span class="font-mono">{{ ticket.event.date|date}}</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-zinc-400">Ticket Type</span>
+                        <span class="font-mono text-purple-400">{{ ticket.ticket_type}}</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-zinc-400">Price</span>
+                        <span class="font-mono">${{ ticket.event.price}}</span>
+                    </div>
+                </div>
+                <div class="flex w-full mt-auto justify-between">
+                    <div class="flex flex-col">
+                        <span class="text-xs text-zinc-400">Holder Name</span>
+                        <span class="font-mono">{{ ticket.user.username}}</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-zinc-400">Event ID</span>
+                        <span class="font-mono text-purple-400">#{{ ticket.event.id}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <button onclick="generatePDF()" class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">Download as PDF</button>
+</main>
+
+<script>
+    function generatePDF() {
+        const ticketElement = document.getElementById('ticket'); // Select the ticket container
+
+        // Use html2pdf.js to generate PDF from the HTML content
+        html2pdf()
+    .from(ticketElement)
+    .save("event-{{ ticket.event.id}}-ticket.pdf")
+    .catch((error) => {
+        console.error("Error generating PDF:", error);
+    });
+ // Save the generated PDF
+    }
+</script>
+
+</body>
+</html>

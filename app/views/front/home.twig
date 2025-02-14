@@ -61,54 +61,7 @@
 </head>
 <body class="bg-black min-h-screen">
 <!-- Navigation -->
-<nav class="fixed w-full z-50 bg-black/90 backdrop-blur-sm border-b border-white/10">
-    <div class="container mx-auto px-4">
-        <div class="flex items-center justify-between h-20">
-            <!-- Logo -->
-            <a href="#" class="font-clash text-white text-2xl font-bold">
-                Event Hive
-            </a>
-
-            <!-- Navigation Links -->
-            <div class="hidden md:flex items-center space-x-8">
-                <a href="#" class="text-white font-manrope hover:text-primary transition-colors">Home</a>
-                <a href="/events" class="text-white/80 font-manrope hover:text-primary transition-colors">Events</a>
-                <a href="#" class="text-white/80 font-manrope hover:text-primary transition-colors">About</a>
-                <a href="#" class="text-white/80 font-manrope hover:text-primary transition-colors">Gallery</a>
-                <a href="/contact" class="text-white/80 font-manrope hover:text-primary transition-colors">Contact</a>
-                <a href="/adminDashboard" class="text-white/80 font-manrope hover:text-primary transition-colors">Dashboard</a>
-            </div>
-
-            <!-- CTA Button -->
-            <div class="flex gap-5">
-                {% if not user %}
-                <a href="/login" class="hidden md:block border border-primary text-white font-manrope px-6 py-2 rounded-lg hover:bg-primary/10 transition-colors">
-                    Login
-                </a><a href="/register" class="hidden md:block border border-primary text-white font-manrope px-6 py-2 rounded-lg hover:bg-primary/10 transition-colors">
-                    Register
-                </a>
-                {% else %}
-                    <div class="hidden md:flex items-center space-x-2">
-
-                        <a href="/logout" class="border border-primary text-white font-manrope px-6 py-2 rounded-lg hover:bg-primary/10 transition-colors">
-                            logout
-                        </a>
-                        <div class="w-8 h-8 rounded-full overflow-hidden">
-                            <img src="{{ avatar ? avatar : '' }}" class="w-full h-full object-cover" />
-                        </div>
-                    </div>
-                {% endif %}
-            </div>
-            <!-- Mobile Menu Button -->
-            <button class="md:hidden text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-            </button>
-        </div>
-    </div>
-</nav>
-
+{% include 'layouts/nav.twig' %}
 <div class="relative min-h-screen overflow-hidden bg-[url('/assets/hero.jpg')] bg-cover bg-center bg-no-repeat pt-20">
 
     <!-- Decorative stars -->
@@ -179,11 +132,54 @@
     <!-- Event Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
         <!-- Card 1 -->
-        <div class="relative rounded-3xl overflow-hidden">
-            <img src="../../../public/assets/Event1.webp" alt="Event" class="w-full h-[400px] object-cover">
+        <div class="relative rounded-3xl overflow-hidden group">
+            <img
+                    src="../../../public/assets/Event1.webp"
+                    alt="Event"
+                    class="w-full h-[400px] object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+            <div class="absolute top-4 left-4">
+                <div class="bg-yellow-400 text-black font-bold py-1 px-3 rounded-full flex items-center space-x-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-black">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    <span>PROMO</span>
+                </div>
+            </div>
             <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">
-                <span class="text-sm uppercase tracking-wider">MEMORABLE EXPERIENCE</span>
+                <span class="text-sm uppercase tracking-wider text-amber-300">MEMORABLE EXPERIENCE</span>
                 <h3 class="text-2xl font-bold mt-2">Unforgettable Moments at Eventive 2024</h3>
+            </div>
+            <div class="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <button class="p-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-500">
+                        <path d="M3 6h18"></path>
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    </svg>
+                </button>
+                <button class="p-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500">
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                    </svg>
+                </button>
+                <button class="p-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                </button>
+                <button class="p-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-purple-500">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                </button>
             </div>
         </div>
 

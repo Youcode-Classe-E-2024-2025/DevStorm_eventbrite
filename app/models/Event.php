@@ -452,7 +452,7 @@ public function getEventParticipants($eventId)
             COUNT(CASE WHEN t.status = 'validé' THEN 1 END) as validated_tickets,
             e.capacity as capacity
         FROM events e
-        LEFT JOIN tickets t ON e.id = t.event_id
+         JOIN tickets t ON e.id = t.event_id
         GROUP BY e.id, e.capacity
     ");
 
@@ -469,13 +469,15 @@ public function getEventParticipants($eventId)
 
     public function findAll($limit, $offset, $organizer_id = null) {
         $db = Database::getInstance();
-        $sql = "SELECT * FROM events";
+        $sql = "SELECT e.*, c.name as category_name 
+                FROM events e 
+                JOIN categories c ON e.category_id = c.id";
         
         if ($organizer_id) {
-            $sql .= " WHERE organizer_id = :organizer_id";
+            $sql .= " WHERE e.organizer_id = :organizer_id";
         }
         
-        $sql .= " ORDER BY date DESC LIMIT :limit OFFSET :offset";
+        $sql .= " ORDER BY e.date DESC LIMIT :limit OFFSET :offset";
         
         $stmt = $db->getConnection()->prepare($sql);
         
@@ -486,8 +488,8 @@ public function getEventParticipants($eventId)
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return self::toObjects($rows);
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
     public function count($organizer_id = null) {

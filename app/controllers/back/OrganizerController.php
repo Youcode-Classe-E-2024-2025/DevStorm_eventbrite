@@ -298,6 +298,8 @@ public function exportParticipantsPDF($eventId)
     }
     //pagination
     public function getEvents($page = 1) {
+        header('Content-Type: application/json');
+        
         $event = new Event();
         $organizer_id = Session::getUser()['id'];
         
@@ -308,20 +310,12 @@ public function exportParticipantsPDF($eventId)
         $totalEvents = $event->count($organizer_id);
         $totalPages = ceil($totalEvents / $limit);
         
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
-            echo json_encode([
-                'events' => $events,
-                'currentPage' => (int)$page,
-                'totalPages' => $totalPages
-            ]);
-            exit;
-        }
-        
-        return [
+        echo json_encode([
             'events' => $events,
             'currentPage' => (int)$page,
             'totalPages' => $totalPages
-        ];
+        ]);
+        exit;
     }
     
 

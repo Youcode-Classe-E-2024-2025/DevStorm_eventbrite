@@ -13,15 +13,21 @@ class DashboardController extends Controller{
 
     public function adminDashboard(){
         $event = new Event();
-        $user = new User();
+        $User = new User();
         $category = new Category();
         $tag = new Tag();
         $tags = $tag->getAllTags();
         $categories = $category->getAllCategories();
-        $users = $user->fetchAll();
+        $users = $User->fetchAll();
         $events = $event->getAllEvents();
         $stats = $event->getAllEventStats();
-        $this->view('front/adminDashboard',['events'=>$events,'users'=>$users,'categories'=>$categories,'tags'=>$tags, 'stats'=>$stats]);
+        $user = Session::getUser();
+        if ($user && isset($user->avatar)) {
+            $avatar = $user->avatar;
+        } else {
+            $avatar = '';
+        }
+        $this->view('front/adminDashboard',['events'=>$events,'user'=>$user,"avatar"=>$avatar,'users'=>$users,'categories'=>$categories,'tags'=>$tags, 'stats'=>$stats]);
     }
 
     public function UpdateUserStatus(){
@@ -42,9 +48,13 @@ class DashboardController extends Controller{
 
     public function updateEventStatus():void{
         $event = new Event();
+        $user = new User();
         $status  = $_POST['status'];
         $id = $_POST['event_id'];
         $event->UpdateStatus($status,$id);
+        $userr = $user->getUserByEvent($id);
+        $organizer_email = $userr->email;
+        $user->sendEmail($organizer_email,$status);
         $this->adminDashboard();
     }
 

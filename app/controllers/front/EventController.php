@@ -12,6 +12,13 @@ class EventController extends Controller
 {
     public function index()
     {
+
+        $user = Session::getUser();
+        if ($user && isset($user->avatar)) {
+            $avatar = $user->avatar;
+        } else {
+            $avatar = '';
+        }
         $event = new Event();
         $category = new Category();
         $uri=[];
@@ -24,14 +31,20 @@ class EventController extends Controller
         $this->view('front/event/index', [
             'uri'=>$uri,
             'events' => $events,
-            'categories' => $categories
+            'categories' => $categories,
+            'green' =>Session::getFlashMessage('green'),
+            'red' => Session::getFlashMessage('red'),
+            "avatar"=>$avatar,
+            "user"=>$user
         ]);
     }
     public function show($id){
         $event= Event::read($id);
         // var_dump($event);
         $this->view('front/event/details', [
-           'event'=>$event
+           'event'=>$event,
+           'green' =>Session::getFlashMessage('green'),
+            'red' => Session::getFlashMessage('red')
         ]);
     }
     public function reserve($id){

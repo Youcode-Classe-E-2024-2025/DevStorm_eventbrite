@@ -12,9 +12,7 @@ class View
     public static function getTwig()
     {
         if (!self::$twig) {
-            
-            $loader = new FilesystemLoader(__DIR__ . '/../views'); 
-
+            $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/../views');
             self::$twig = new Environment($loader , [
                 'debug' => true,
                 'cache' => false, 

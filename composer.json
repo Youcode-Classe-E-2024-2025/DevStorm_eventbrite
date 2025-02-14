@@ -20,7 +20,8 @@
         "stripe/stripe-php": "^16.5",
         "google/apiclient": "^2.18",
         "stripe/stripe-php": "^16.5",
-        "google/apiclient": "^2.18"
+        "google/apiclient": "^2.18",
+        "phpmailer/phpmailer": "^6.9"
 
     },
     "require-dev": {
