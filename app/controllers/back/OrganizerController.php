@@ -283,6 +283,33 @@ public function exportParticipantsPDF($eventId)
         }
         exit;
     }
+    //pagination
+    public function getEvents($page = 1) {
+        $event = new Event();
+        $organizer_id = Session::getUser()['id'];
+        
+        $limit = 6;
+        $offset = ($page - 1) * $limit;
+        
+        $events = $event->findAll($limit, $offset, $organizer_id);
+        $totalEvents = $event->count($organizer_id);
+        $totalPages = ceil($totalEvents / $limit);
+        
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+            echo json_encode([
+                'events' => $events,
+                'currentPage' => (int)$page,
+                'totalPages' => $totalPages
+            ]);
+            exit;
+        }
+        
+        return [
+            'events' => $events,
+            'currentPage' => (int)$page,
+            'totalPages' => $totalPages
+        ];
+    }
     
 
 }
