@@ -37,24 +37,21 @@
 
                         <!-- Actions -->
                         <div class="flex justify-center gap-4 flex-wrap">
+                        {% if reservation.status != 'validé' %}
                             <form action="/checkout/{{ reservation.id }}" method="POST">
                                 <button class="bg-custom-green text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-300" type="submit" id="checkout-button">Checkout</button>
                             </form>
-                            <a 
-                                href="/reservation/cancel/{{ reservation.id }}" 
-                                class="bg-custom-red text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors duration-300"
-                            >
-                                Annuler
-                            </a>
+                           <form action="/reservation/cancel/{{ reservation.id }}" method="POST">
+                                <button class="bg-custom-red text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors duration-300" type="submit" id="cancel-button">Annuler</button>
+                            </form>
+                        {% else %}
+                        <button class="bg-custom-purple text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors duration-300" type="button" 
+                        onclick="alert('ticket-{{ reservation.id }}')"
+                        id="get-ticket-button" >Ticket</button>
+                        {% endif %}
                         </div>
                     </div>
                 {% endfor %}
-
-                <!-- Total Price -->
-                <div class="bg-gray-900 rounded-lg p-6 text-center">
-                    <h3 class="text-2xl font-bold mb-2">Total à payer</h3>
-                    <p class="text-3xl font-bold text-custom-purple">{{ total_price }} €</p>
-                </div>
             </div>
         {% endif %}
     </section>

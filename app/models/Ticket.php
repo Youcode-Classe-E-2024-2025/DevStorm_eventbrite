@@ -99,4 +99,19 @@ class Ticket extends Model
         return false;
     }
 
+    public function delete(){
+        $db = Database::getInstance();
+        $sql="DELETE FROM tickets WHERE id = :id ";
+        $params=['id'=>$this->id];
+        $query=$db->getConnection()->prepare($sql);
+        return $query->execute($params);
+    }
+
+    public static function updateStatus($ticket_id,$status){
+        $db = Database::getInstance();
+        $sql="UPDATE tickets SET status = :status WHERE id = :id ";
+        $params=['id'=>$ticket_id , 'status'=> $status];
+        $query=$db->getConnection()->prepare($sql);
+        $query->execute($params);
+    }
 }
