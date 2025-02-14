@@ -13,12 +13,12 @@ class DashboardController extends Controller{
 
     public function adminDashboard(){
         $event = new Event();
-        $user = new User();
+        $User = new User();
         $category = new Category();
         $tag = new Tag();
         $tags = $tag->getAllTags();
         $categories = $category->getAllCategories();
-        $users = $user->fetchAll();
+        $users = $User->fetchAll();
         $events = $event->getAllEvents();
         $stats = $event->getAllEventStats();
         $this->view('front/adminDashboard',['events'=>$events,'users'=>$users,'categories'=>$categories,'tags'=>$tags, 'stats'=>$stats]);
