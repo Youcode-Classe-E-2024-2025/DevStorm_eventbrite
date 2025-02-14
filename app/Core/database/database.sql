@@ -111,3 +111,20 @@ CREATE TABLE IF NOT EXISTS event_promotions (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(event_id, promotion_id)
 ); 
+
+
+CREATE TABLE event_ticket_types (
+    id SERIAL PRIMARY KEY,
+    event_id INTEGER REFERENCES events(id),
+    ticket_type VARCHAR(50) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    total_quantity INTEGER NOT NULL,
+    available_quantity INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+ALTER TABLE events 
+DROP COLUMN capacity,
+DROP COLUMN price;

@@ -737,8 +737,6 @@
             "time": "2024-11-12T12:43:37+00:00"
         },
         {
-<<<<<<< HEAD
-=======
             "name": "paragonie/constant_time_encoding",
             "version": "v3.0.0",
             "source": {
@@ -1300,7 +1298,7 @@
             "time": "2024-09-11T13:17:53+00:00"
         },
         {
-<<<<<<< HEAD
+
             "name": "stripe/stripe-php",
             "version": "v16.5.1",
             "source": {
@@ -1334,8 +1332,8 @@
             "autoload": {
                 "psr-4": {
                     "Stripe\\": "lib/"
-                }
-=======
+                },
+
             "name": "ralouphie/getallheaders",
             "version": "3.0.3",
             "source": {
@@ -1361,7 +1359,6 @@
                 "files": [
                     "src/getallheaders.php"
                 ]
->>>>>>> dfb0c8942ccc4055d0d0827fbc787eb69a1859c5
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -1369,24 +1366,6 @@
             ],
             "authors": [
                 {
-<<<<<<< HEAD
-                    "name": "Stripe and contributors",
-                    "homepage": "https://github.com/stripe/stripe-php/contributors"
-                }
-            ],
-            "description": "Stripe PHP Library",
-            "homepage": "https://stripe.com/",
-            "keywords": [
-                "api",
-                "payment processing",
-                "stripe"
-            ],
-            "support": {
-                "issues": "https://github.com/stripe/stripe-php/issues",
-                "source": "https://github.com/stripe/stripe-php/tree/v16.5.1"
-            },
-            "time": "2025-02-07T21:24:29+00:00"
-=======
                     "name": "Ralph Khattar",
                     "email": "ralph.khattar@gmail.com"
                 }
@@ -1397,7 +1376,6 @@
                 "source": "https://github.com/ralouphie/getallheaders/tree/develop"
             },
             "time": "2019-03-08T08:55:37+00:00"
->>>>>>> dfb0c8942ccc4055d0d0827fbc787eb69a1859c5
         },
         {
             "name": "stripe/stripe-php",
@@ -3076,7 +3054,6 @@
             "time": "2024-12-05T13:48:26+00:00"
         },
         {
-<<<<<<< HEAD
             "name": "psr/cache",
             "version": "3.0.0",
             "source": {

@@ -85,3 +85,25 @@ $router->get('/paiment/cancel', [PaimentController::class, 'paimentCancel']);
 $router->post('/webhook/stripe', [WebhookController::class, 'handleWebhook']);
 
 $router->dispatch();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Add these routes for ticket type management
+$router->get('/event/{id}/tickets', [OrganizerController::class, 'getTicketTypes']);
+$router->post('/event/{id}/ticket/update', [OrganizerController::class, 'updateTicketType']);
