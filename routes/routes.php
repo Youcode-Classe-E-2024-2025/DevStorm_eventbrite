@@ -15,6 +15,8 @@ $router = new Router();
 
 
 $router->get('/', [HomeController::class, 'index']);
+$router->get('/contact', [HomeController::class, 'contact']);
+
 $router->get('/login', [UserController::class, 'login']);
 $router->get('/register', [UserController::class, 'register']);
 $router->post('/register', [UserController::class, 'handleRegister']);
@@ -62,6 +64,7 @@ $router->get('/events', [EventController::class, 'index']);
 $router->get('/event/{id}', [EventController::class, 'show']);
 
 $router->get('/cart', [CartController::class, 'index']);
+$router->post('/reservation/cancel/{id}', [CartController::class, 'cancelReservation']);
 
 $router->get('/reserve/{id}', [EventController::class, 'reserve']);
 
