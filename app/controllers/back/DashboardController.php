@@ -42,9 +42,13 @@ class DashboardController extends Controller{
 
     public function updateEventStatus():void{
         $event = new Event();
+        $user = new User();
         $status  = $_POST['status'];
         $id = $_POST['event_id'];
         $event->UpdateStatus($status,$id);
+        $userr = $user->getUserByEvent($id);
+        $organizer_email = $userr->email;
+        $user->sendEmail($organizer_email,$status);
         $this->adminDashboard();
     }
 
