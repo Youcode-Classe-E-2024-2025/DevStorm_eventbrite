@@ -203,20 +203,29 @@ public function getTicketTypeDistribution($eventId)
 
     return array_column($distribution, 'count');
 }
-    public function getEventsByOrganizer($organizerId)
+public function getEventsByOrganizer($organizerId)
 {
     $db = \App\Core\Database::getInstance();
     $query = $db->getConnection()->prepare("
-        SELECT e.*, c.name as category_name 
-        FROM events e 
-        JOIN categories c ON e.category_id = c.id 
-        WHERE e.organizer_id = :organizer_id 
+        SELECT 
+            e.*,
+            c.name as category_name,
+            COALESCE(SUM(ett.total_quantity), 0) as total_capacity,
+            COALESCE(SUM(ett.available_quantity), 0) as available_capacity
+        FROM events e
+        LEFT JOIN categories c ON e.category_id = c.id
+        LEFT JOIN event_ticket_types ett ON e.id = ett.event_id
+        WHERE e.organizer_id = :organizer_id
+        GROUP BY e.id, e.title, e.date, e.status, e.location, c.name
         ORDER BY e.date DESC
     ");
     
     $query->execute(['organizer_id' => $organizerId]);
     return $query->fetchAll(PDO::FETCH_ASSOC);
 }
+
+
+
 /**
  * Gets comprehensive statistics for a specific event
  * @param int $eventId The event ID
@@ -224,29 +233,29 @@ public function getTicketTypeDistribution($eventId)
  */
 public function getEventStats($eventId)
 {
-    $db = Database::getInstance();
-    $connection = $db->getConnection();
+    $db = \App\Core\Database::getInstance();
+    $query = $db->getConnection()->prepare("
+        SELECT 
+            e.id,
+            COALESCE(SUM(ett.total_quantity), 0) as total_capacity,
+            COALESCE(SUM(ett.available_quantity), 0) as available_capacity,
+            COUNT(t.id) as total_tickets,
+            COALESCE(SUM(t.price), 0) as total_revenue,
+            COUNT(CASE WHEN t.status = 'validé' THEN 1 END) as validated_tickets
+        FROM events e
+        LEFT JOIN event_ticket_types ett ON e.id = ett.event_id
+        LEFT JOIN tickets t ON e.id = t.event_id
+        WHERE e.id = :event_id
+        GROUP BY e.id
+    ");
     
-    $sql = "SELECT 
-        e.id,
-        e.title,
-        e.date,
-        e.status,
-        e.location,
-        ett.total_quantity as total_capacity,
-        ett.available_quantity as available_capacity,
-        COUNT(DISTINCT t.id) as total_tickets,
-        SUM(t.price) as total_revenue
-    FROM events e
-    LEFT JOIN event_ticket_types ett ON e.id = ett.event_id
-    LEFT JOIN tickets t ON e.id = t.event_id
-    WHERE e.id = :event_id
-    GROUP BY e.id, e.title, e.date, e.status, e.location, ett.total_quantity, ett.available_quantity";
-
-    $stmt = $connection->prepare($sql);
-    $stmt->execute(['event_id' => $eventId]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    $query->execute(['event_id' => $eventId]);
+    return $query->fetch(PDO::FETCH_ASSOC);
 }
+
+
+
+
 
 
 /**
@@ -467,29 +476,28 @@ public function getEventParticipants($eventId)
     }
 
 
-    public function findAll($limit, $offset, $organizer_id = null) {
-        $db = Database::getInstance();
-        $sql = "SELECT e.*, c.name as category_name 
-                FROM events e 
-                JOIN categories c ON e.category_id = c.id";
+    public function findAll($limit, $offset, $organizer_id) 
+    {
+        $db = \App\Core\Database::getInstance();
+        $query = $db->getConnection()->prepare("
+            SELECT 
+                e.*,
+                COALESCE(SUM(ett.total_quantity), 0) as total_capacity,
+                COALESCE(SUM(ett.available_quantity), 0) as available_capacity
+            FROM events e
+            LEFT JOIN event_ticket_types ett ON e.id = ett.event_id
+            WHERE e.organizer_id = :organizer_id
+            GROUP BY e.id
+            ORDER BY e.date DESC
+            LIMIT :limit OFFSET :offset
+        ");
         
-        if ($organizer_id) {
-            $sql .= " WHERE e.organizer_id = :organizer_id";
-        }
+        $query->bindValue(':organizer_id', $organizer_id, PDO::PARAM_INT);
+        $query->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $query->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $query->execute();
         
-        $sql .= " ORDER BY e.date DESC LIMIT :limit OFFSET :offset";
-        
-        $stmt = $db->getConnection()->prepare($sql);
-        
-        if ($organizer_id) {
-            $stmt->bindValue(':organizer_id', $organizer_id, PDO::PARAM_INT);
-        }
-        
-        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-        $stmt->execute();
-        
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $query->fetchAll(PDO::FETCH_ASSOC);
     }
     
     public function count($organizer_id = null) {

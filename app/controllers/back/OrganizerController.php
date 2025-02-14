@@ -25,22 +25,24 @@ class OrganizerController extends Controller
         $total_tickets = 0;
         $total_revenue = 0;
         $validated_tickets=0;
-        $capacity=0;
+        $total_capacity = 0;
+        $available_capacity = 0;
+
        foreach ($events as $evt) {
         $eventStats = $event->getEventStats($evt['id']);
         $total_tickets += $eventStats['total_tickets'] ?? 0;
         $total_revenue += $eventStats['total_revenue'] ?? 0;
         $validated_tickets+=$eventStats['validated_tickets'] ?? 0;
-        $capacity += $eventStats['capacity'] ?? 0;
-    }
+        $total_capacity += $eventStats['total_capacity'] ?? 0;
+        $available_capacity += $eventStats['available_capacity'] ?? 0;    }
     
         $stats = [
             'total_events' => count($events),
             'total_tickets' => $total_tickets,
             'total_revenue' => $total_revenue,
             'validated_tickets' =>$validated_tickets,
-            'capacity' => $capacity
-        ];
+            'total_capacity' => $total_capacity,
+            'available_capacity' => $available_capacity        ];
         
         $this->view('back/organizer/dashboard', [
             'events' => $events,
