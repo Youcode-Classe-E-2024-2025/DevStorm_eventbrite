@@ -34,6 +34,7 @@ $router->get('/deleteTag/{id}', [DashboardController::class, 'deleteTag']);
 
 $router->post('/addCategory', [DashboardController::class, 'AddCategory']);
 $router->post('/addTag', [DashboardController::class, 'addTag']);
+$router->post('/updateEventStatus', [DashboardController::class, 'updateEventStatus']);
 
 $router->get('/google-login', [UserController::class, 'handleGoogleAuth']);
 
@@ -62,7 +63,12 @@ $router->get('/event/{id}/export/pdf', [OrganizerController::class, 'exportParti
 $router->get('/events', [EventController::class, 'index']);
 $router->get('/event/{id}', [EventController::class, 'show']);
 
+$router->get('/events/page/{page}', ['App\controllers\back\OrganizerController', 'getEvents']);
+
+
+
 $router->get('/cart', [CartController::class, 'index']);
+$router->get('/cart/ticket/{id}', [CartController::class, 'showTicket']);
 $router->post('/reservation/cancel/{id}', [CartController::class, 'cancelReservation']);
 
 $router->get('/reserve/{id}', [EventController::class, 'reserve']);

@@ -40,6 +40,15 @@ class DashboardController extends Controller{
         }
     }
 
+    public function updateEventStatus():void{
+        $event = new Event();
+        $status  = $_POST['status'];
+        $id = $_POST['event_id'];
+        $event->UpdateStatus($status,$id);
+        $this->adminDashboard();
+    }
+
+
     public function deleteEvent($id){
         $event = new Event();
         $event->delete($id);

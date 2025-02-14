@@ -5,83 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Organisateur | DevEvents</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        'clash': ['"Clash Display"', 'sans-serif'],
+                        'manrope': ['Manrope', 'sans-serif'],
+                    },
                     colors: {
-                        'custom-purple': '#8B5CF6',
+                        'primary': '#8B5CF6',
                     }
                 }
             }
         }
     </script>
+    <style>
+        .bg-gradient {
+            background: radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.15), transparent 60%);
+        }
+    </style>
 </head>
-<body class="bg-black text-white">
-    <!-- Navigation remains the same -->
-    
-    <nav class="border-b border-white/10 bg-black">
-        <div class="container mx-auto px-4 py-4">
-            <div class="flex justify-between items-center">
-                <a href="/" class="text-2xl font-bold text-custom-purple">DevEvents</a>
-                <div class="space-x-4">
-                    <a href="/organizer/event/create" class="bg-custom-purple text-white px-4 py-2 rounded-lg hover:bg-purple-700">Créer un événement</a>
-                    <a href="/logout" class="text-white hover:text-custom-purple">Déconnexion</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-    <!-- Dashboard Content -->
-    <div id="notification" class="hidden fixed top-4 right-4 p-4 rounded-lg text-white bg-red-600">
-    <p class="flex items-center">
-        <i class="fas fa-exclamation-circle mr-2"></i>
-        <span id="notification-message"></span>
-    </p>
-</div>
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold mb-8">Tableau de bord</h1>
-        
-        <!-- Stats Overview remains the same -->
-        <!-- Stats Overview -->
+<body class="bg-black text-white font-manrope">
+{% include "layouts/nav.twig" %}  
+  <div id="notification" class="hidden fixed top-4 right-4 p-4 rounded-lg text-white bg-red-600">
+        <p class="flex items-center">
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            <span id="notification-message"></span>
+        </p>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 pt-24">
+<div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold font-clash">Tableau de bord</h1>
+        <a href="/organizer/event/create" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">Créer un événement</a>
+    </div>        
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div class="bg-gray-900 p-6 rounded-lg">
                 <h3 class="text-lg mb-2">Total Événements</h3>
-                <p class="text-2xl font-bold text-custom-purple">{{ stats.total_events }}</p>
+                <p class="text-2xl font-bold text-primary">{{ stats.total_events }}</p>
             </div>
             <div class="bg-gray-900 p-6 rounded-lg">
                 <h3 class="text-lg mb-2">Billets Vendus</h3>
-                <p class="text-2xl font-bold text-custom-purple">{{ stats.total_tickets }}</p>
+                <p class="text-2xl font-bold text-primary">{{ stats.total_tickets }}</p>
             </div>
             <div class="bg-gray-900 p-6 rounded-lg">
                 <h3 class="text-lg mb-2">Revenus Totaux</h3>
-                <p class="text-2xl font-bold text-custom-purple">{{ stats.total_revenue }}€</p>
+                <p class="text-2xl font-bold text-primary">{{ stats.total_revenue }}€</p>
             </div>
         </div>
 
-        <!-- Enhanced Events List -->
         <div class="bg-gray-900 rounded-lg p-6">
-            <h2 class="text-2xl font-bold mb-6">Mes Événements</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <h2 class="text-2xl font-bold mb-6 font-clash">Mes Événements</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="events-container">
                 {% for event in events %}
                     <div class="bg-black rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300">
-                        <!-- Media Section -->
                         <div class="relative h-48">
                             {% if event.image_url %}
                                 <img src="/{{ event.image_url }}" alt="{{ event.title }}" 
                                      class="w-full h-full object-cover">
                             {% endif %}
                             {% if event.video_url %}
-                                <button class="absolute bottom-2 right-2 bg-custom-purple p-2 rounded-full"
+                                <button class="absolute bottom-2 right-2 bg-primary p-2 rounded-full"
                                         onclick="playVideo('/{{ event.video_url }}')">
                                     <i class="fas fa-play"></i>
                                 </button>
                             {% endif %}
                         </div>
 
-                        <!-- Event Info -->
                         <div class="p-4">
-                            <h3 class="font-bold text-xl mb-2">{{ event.title }}</h3>
+                            <h3 class="font-bold text-xl mb-2 font-clash">{{ event.title }}</h3>
                             <p class="text-gray-400 mb-2">
                                 <i class="far fa-calendar-alt mr-2"></i>
                                 {{ event.date|date('d M Y • H:i') }}
@@ -91,44 +87,50 @@
                                 {{ event.capacity }} places
                             </p>
 
-                            <!-- Action Buttons -->
                             <div class="flex flex-wrap gap-2">
                                 <a href="/event/{{ event.id }}/stats" 
-                                   class="flex-1 text-center bg-gray-800 px-3 py-2 rounded-lg hover:bg-gray-700">
+                                   class="flex-1 text-center bg-gray-800 px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors">
                                     <i class="fas fa-chart-bar mr-2"></i>Stats
                                 </a>
                                 <a href="/event/{{ event.id }}/edit" 
-                                   class="flex-1 text-center bg-gray-800 px-3 py-2 rounded-lg hover:bg-gray-700">
+                                   class="flex-1 text-center bg-gray-800 px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors">
                                     <i class="fas fa-edit mr-2"></i>Modifier
                                 </a>
                                 <a href="/event/{{ event.id }}/export/pdf" 
-                                   class="flex-1 text-center bg-gray-800 px-3 py-2 rounded-lg hover:bg-gray-700">
+                                   class="flex-1 text-center bg-gray-800 px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors">
                                     <i class="fas fa-file-pdf mr-2"></i>PDF
                                 </a>
                                 <a href="/event/{{ event.id }}/promocode/create" 
-                                   class="flex-1 text-center bg-custom-purple px-3 py-2 rounded-lg hover:bg-purple-700">
+                                   class="flex-1 text-center bg-primary px-3 py-2 rounded-lg hover:bg-purple-700 transition-colors">
                                     <i class="fas fa-tag mr-2"></i>Promo
                                 </a>
-                                 <button onclick="confirmDelete({{ event.id }})" 
-            class="flex-1 text-center bg-red-600 px-3 py-2 rounded-lg hover:bg-red-700">
-        <i class="fas fa-trash mr-2"></i>Supprimer
-    </button>
+                                <button onclick="confirmDelete({{ event.id }})" 
+                                        class="flex-1 text-center bg-red-600 px-3 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                    <i class="fas fa-trash mr-2"></i>Supprimer
+                                </button>
                             </div>
                         </div>
                     </div>
                 {% endfor %}
             </div>
-        </div>
+<div class="flex justify-center gap-4 mt-8">
+    <button id="prevPage" class="bg-primary px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50">
+        <i class="fas fa-chevron-left mr-2"></i>Précédent
+    </button>
+    <span class="flex items-center" id="pageInfo">Page <span id="currentPage">1</span> sur <span id="totalPages">1</span></span>
+    <button id="nextPage" class="bg-primary px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50">
+        Suivant<i class="fas fa-chevron-right ml-2"></i>
+    </button>
+</div>        </div>
     </div>
 
-    <!-- Video Modal -->
     <div id="videoModal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center">
         <div class="relative w-full max-w-4xl">
             <button onclick="closeVideo()" class="absolute -top-10 right-0 text-white">
                 <i class="fas fa-times text-2xl"></i>
             </button>
             <video id="videoPlayer" controls class="w-full rounded-lg">
-                <source src="" type="video/mp4">
+                <source src="/placeholder.svg" type="video/mp4">
             </video>
         </div>
     </div>
@@ -147,39 +149,130 @@
             player.pause();
             modal.classList.add('hidden');
         }
-// Update your JavaScript function
-function confirmDelete(eventId) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) {
-        fetch(`/event/${eventId}/delete`, {
-            method: 'GET',
+
+        function confirmDelete(eventId) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) {
+                fetch(`/event/${eventId}/delete`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        showDeleteError();
+                    } else {
+                        window.location.reload();
+                    }
+                })
+                .catch(() => {
+                    showDeleteError();
+                });
+            }
+        }
+
+        function showDeleteError() {
+            const notification = document.getElementById('notification');
+            const message = document.getElementById('notification-message');
+            message.textContent = "Impossible de supprimer l'événement : des participants sont inscrits ou l'événement n'est pas terminé";
+            
+            notification.classList.remove('hidden');
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 3000);
+        }
+
+        let currentPage = 1;
+const eventsContainer = document.getElementById('events-container');
+const prevButton = document.getElementById('prevPage');
+const nextButton = document.getElementById('nextPage');
+const currentPageSpan = document.getElementById('currentPage');
+const totalPagesSpan = document.getElementById('totalPages');
+
+async function loadPage(page) {
+    try {
+        const response = await fetch(`/events/page/${page}`, {
             headers: {
-                'Accept': 'application/json'
+                'X-Requested-With': 'XMLHttpRequest'
             }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (!data.success) {
-                showDeleteError();
-            } else {
-                window.location.reload();
-            }
-        })
-        .catch(() => {
-            showDeleteError();
         });
+        
+        const data = await response.json();
+        
+        // Update pagination controls
+        currentPage = data.currentPage;
+        currentPageSpan.textContent = currentPage;
+        totalPagesSpan.textContent = data.totalPages;
+        
+        // Update buttons state
+        prevButton.disabled = currentPage === 1;
+        nextButton.disabled = currentPage === data.totalPages;
+        
+        // Clear and reload events
+        eventsContainer.innerHTML = '';
+       data.events.forEach(event => {
+    eventsContainer.insertAdjacentHTML('beforeend', `
+        <div class="bg-black rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300">
+            <div class="relative h-48">
+                ${event.image_url ? `<img src="/${event.image_url}" alt="${event.title}" class="w-full h-full object-cover">` : ''}
+                ${event.video_url ? `
+                    <button class="absolute bottom-2 right-2 bg-primary p-2 rounded-full" onclick="playVideo('/${event.video_url}')">
+                        <i class="fas fa-play"></i>
+                    </button>
+                ` : ''}
+            </div>
+            <div class="p-4">
+                <h3 class="font-bold text-xl mb-2 font-clash">${event.title}</h3>
+                <p class="text-gray-400 mb-2">
+                    <i class="far fa-calendar-alt mr-2"></i>
+                    ${new Date(event.date).toLocaleDateString()}
+                </p>
+                <p class="text-gray-400 mb-4">
+                    <i class="fas fa-users mr-2"></i>
+                    ${event.capacity} places
+                </p>
+                <div class="flex flex-wrap gap-2">
+                    <a href="/event/${event.id}/stats" class="flex-1 text-center bg-gray-800 px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-chart-bar mr-2"></i>Stats
+                    </a>
+                    <a href="/event/${event.id}/edit" class="flex-1 text-center bg-gray-800 px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-edit mr-2"></i>Modifier
+                    </a>
+                    <a href="/event/${event.id}/export/pdf" class="flex-1 text-center bg-gray-800 px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-file-pdf mr-2"></i>PDF
+                    </a>
+                    <a href="/event/${event.id}/promocode/create" class="flex-1 text-center bg-primary px-3 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                        <i class="fas fa-tag mr-2"></i>Promo
+                    </a>
+                    <button onclick="confirmDelete(${event.id})" class="flex-1 text-center bg-red-600 px-3 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                        <i class="fas fa-trash mr-2"></i>Supprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    `);
+});
+
+        
+    } catch (error) {
+        console.error('Error loading events:', error);
     }
 }
 
-function showDeleteError(eventId) {
-    const notification = document.getElementById('notification');
-    const message = document.getElementById('notification-message');
-    message.textContent = "Impossible de supprimer l'événement : des participants sont inscrits ou l'événement n'est pas terminé";
-    
-    notification.classList.remove('hidden');
-    setTimeout(() => {
-        notification.classList.add('hidden');
-    }, 3000);
-}
+prevButton.addEventListener('click', () => {
+    if (currentPage > 1) {
+        loadPage(currentPage - 1);
+    }
+});
+
+nextButton.addEventListener('click', () => {
+    loadPage(currentPage + 1);
+});
+
+// Initial load
+loadPage(1);
+
     </script>
 </body>
 </html>

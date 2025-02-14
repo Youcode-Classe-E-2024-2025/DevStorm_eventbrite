@@ -45,9 +45,9 @@
                                 <button class="bg-custom-red text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors duration-300" type="submit" id="cancel-button">Annuler</button>
                             </form>
                         {% else %}
-                        <button class="bg-custom-purple text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors duration-300" type="button" 
-                        onclick="alert('ticket-{{ reservation.id }}')"
-                        id="get-ticket-button" >Ticket</button>
+                        {# /cart/ticket/{id} #}
+                        <a href="/cart/ticket/{{ reservation.id }}"   class="bg-custom-purple text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors duration-300" 
+                        id="get-ticket-button" >Ticket</a>
                         {% endif %}
                         </div>
                     </div>

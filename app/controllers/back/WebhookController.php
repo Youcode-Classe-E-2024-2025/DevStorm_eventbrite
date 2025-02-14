@@ -4,7 +4,10 @@ namespace App\controllers\back;
 use App\Core\Controller;
 use Dotenv\Dotenv;
 use App\models\Payment;
+<<<<<<< HEAD
+=======
 use App\models\Ticket;
+>>>>>>> 373ea4e251823349516a2a66bd67a093656cdd49
 
 class WebhookController extends Controller
 {
@@ -89,7 +92,10 @@ class WebhookController extends Controller
 
         // Delegate payment storage to the Payment model
         if ($this->paymentModel->storePayment($paymentData)) {
+<<<<<<< HEAD
+=======
             Ticket::updateStatus($paymentData['ticket_id'],'validé');
+>>>>>>> 373ea4e251823349516a2a66bd67a093656cdd49
             http_response_code(200);
             echo "Payment recorded successfully";
         } else {
