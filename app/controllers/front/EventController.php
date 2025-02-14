@@ -24,14 +24,18 @@ class EventController extends Controller
         $this->view('front/event/index', [
             'uri'=>$uri,
             'events' => $events,
-            'categories' => $categories
+            'categories' => $categories,
+            'green' =>Session::getFlashMessage('green'),
+            'red' => Session::getFlashMessage('red')
         ]);
     }
     public function show($id){
         $event= Event::read($id);
         // var_dump($event);
         $this->view('front/event/details', [
-           'event'=>$event
+           'event'=>$event,
+           'green' =>Session::getFlashMessage('green'),
+            'red' => Session::getFlashMessage('red')
         ]);
     }
     public function reserve($id){

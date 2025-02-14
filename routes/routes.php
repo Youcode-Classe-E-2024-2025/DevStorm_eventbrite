@@ -68,6 +68,7 @@ $router->get('/events/page/{page}', ['App\controllers\back\OrganizerController',
 
 
 $router->get('/cart', [CartController::class, 'index']);
+$router->get('/cart/ticket/{id}', [CartController::class, 'showTicket']);
 $router->post('/reservation/cancel/{id}', [CartController::class, 'cancelReservation']);
 
 $router->get('/reserve/{id}', [EventController::class, 'reserve']);
