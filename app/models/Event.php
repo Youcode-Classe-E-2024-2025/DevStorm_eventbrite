@@ -429,7 +429,7 @@ public function getEventParticipants($eventId)
             COUNT(CASE WHEN t.status = 'validé' THEN 1 END) as validated_tickets,
             e.capacity as capacity
         FROM events e
-        LEFT JOIN tickets t ON e.id = t.event_id
+         JOIN tickets t ON e.id = t.event_id
         GROUP BY e.id, e.capacity
     ");
 
