@@ -432,6 +432,7 @@ public function getEventParticipants($eventId)
         LEFT JOIN tickets t ON e.id = t.event_id
         GROUP BY e.id, e.capacity
     ");
+
         $query->execute();
         return $query->fetch(PDO::FETCH_ASSOC);
     }
@@ -440,6 +441,49 @@ public function getEventParticipants($eventId)
         $db = \App\Core\Database::getInstance();
         $query = $db->getConnection()->prepare("UPDATE events SET status = :status WHERE id = :id");
         $query->execute(['status' => $status, 'id' => $id]);
+    }
+
+//pagination
+    public function findAll($limit, $offset, $organizer_id = null) {
+        $db = Database::getInstance();
+        $sql = "SELECT * FROM events";
+        
+        if ($organizer_id) {
+            $sql .= " WHERE organizer_id = :organizer_id";
+        }
+        
+        $sql .= " ORDER BY date DESC LIMIT :limit OFFSET :offset";
+        
+        $stmt = $db->getConnection()->prepare($sql);
+        
+        if ($organizer_id) {
+            $stmt->bindValue(':organizer_id', $organizer_id, PDO::PARAM_INT);
+        }
+        
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return self::toObjects($rows);
+    }
+    
+    public function count($organizer_id = null) {
+        $db = Database::getInstance();
+        $sql = "SELECT COUNT(*) as count FROM events";
+        
+        if ($organizer_id) {
+            $sql .= " WHERE organizer_id = :organizer_id";
+        }
+        
+        $stmt = $db->getConnection()->prepare($sql);
+        
+        if ($organizer_id) {
+            $stmt->bindValue(':organizer_id', $organizer_id, PDO::PARAM_INT);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['count'];
     }
 
 }

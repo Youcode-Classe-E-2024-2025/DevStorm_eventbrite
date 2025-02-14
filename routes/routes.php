@@ -63,6 +63,10 @@ $router->get('/event/{id}/export/pdf', [OrganizerController::class, 'exportParti
 $router->get('/events', [EventController::class, 'index']);
 $router->get('/event/{id}', [EventController::class, 'show']);
 
+$router->get('/events/page/{page}', ['App\controllers\back\OrganizerController', 'getEvents']);
+
+
+
 $router->get('/cart', [CartController::class, 'index']);
 $router->post('/reservation/cancel/{id}', [CartController::class, 'cancelReservation']);
 
