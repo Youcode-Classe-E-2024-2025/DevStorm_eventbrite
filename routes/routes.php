@@ -32,6 +32,7 @@ $router->get('/deleteTag/{id}', [DashboardController::class, 'deleteTag']);
 
 $router->post('/addCategory', [DashboardController::class, 'AddCategory']);
 $router->post('/addTag', [DashboardController::class, 'addTag']);
+$router->post('/updateEventStatus', [DashboardController::class, 'updateEventStatus']);
 
 $router->get('/google-login', [UserController::class, 'handleGoogleAuth']);
 

@@ -140,6 +140,54 @@ public function addEventTags($tags)
     }
 }
 
+public function getEventPromotions($eventId)
+{
+    $db = \App\Core\Database::getInstance();
+    $query = $db->getConnection()->prepare("
+        SELECT p.* 
+        FROM promotions p
+        JOIN event_promotions ep ON p.id = ep.promotion_id
+        WHERE ep.event_id = :event_id
+        ORDER BY p.created_at DESC
+    ");
+
+    $query->execute(['event_id' => $eventId]);
+    return $query->fetchAll(PDO::FETCH_ASSOC);
+}
+public function getSalesData($eventId)
+{
+    $db = \App\Core\Database::getInstance();
+    $query = $db->getConnection()->prepare("
+        SELECT 
+            DATE(purchase_date) as date,
+            COUNT(*) as count
+        FROM tickets
+        WHERE event_id = :event_id
+        GROUP BY DATE(purchase_date)
+        ORDER BY date DESC
+        LIMIT 7
+    ");
+
+    $query->execute(['event_id' => $eventId]);
+    return $query->fetchAll(PDO::FETCH_ASSOC);
+}
+public function getTicketTypeDistribution($eventId)
+{
+    $db = \App\Core\Database::getInstance();
+    $query = $db->getConnection()->prepare("
+        SELECT 
+            ticket_type,
+            COUNT(*) as count
+        FROM tickets
+        WHERE event_id = :event_id
+        GROUP BY ticket_type
+    ");
+
+    $query->execute(['event_id' => $eventId]);
+    $distribution = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    return array_column($distribution, 'count');
+}
     public function getEventsByOrganizer($organizerId)
 {
     $db = \App\Core\Database::getInstance();
@@ -384,9 +432,14 @@ public function getEventParticipants($eventId)
         LEFT JOIN tickets t ON e.id = t.event_id
         GROUP BY e.id, e.capacity
     ");
-
         $query->execute();
         return $query->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function UpdateStatus($status,$id){
+        $db = \App\Core\Database::getInstance();
+        $query = $db->getConnection()->prepare("UPDATE events SET status = :status WHERE id = :id");
+        $query->execute(['status' => $status, 'id' => $id]);
     }
 
 }

@@ -102,22 +102,47 @@
             </thead>
             <tbody class="bg-white/5 divide-y divide-white/10">
             {% for event in events %}
-            <tr>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{{ event.event_name }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-white/70">{{ event.created_at|date("Y-m-d") }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-white/70">{{ event.organizer_name }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                    {% set color = event.status == "actif" ? "green" : (event.status == "en attente" ? "yellow" : (event.status == "terminé" ? "red" : "gray")) %}
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ color }}-400 text-{{ color }}-900">{{ event.status }}</span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <a href="/event/{{ event.id }}/edit" class="text-primary hover:text-primary/80 mr-3">Edit</a>
-                    <a href="/deleteEvent/{{ event.id }}" class="text-red-500 hover:text-red-400 mr-3">Delete</a>
-                </td>
-            </tr>
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{{ event.event_name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-white/70">{{ event.created_at|date("Y-m-d") }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-white/70">{{ event.organizer_name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        {% set color = event.status == "actif" ? "green" : (event.status == "en attente" ? "yellow" : (event.status == "terminé" ? "red" : "gray")) %}
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ color }}-400 text-{{ color }}-900">{{ event.status }}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="openEditPopup('{{ event.id }}', '{{ event.event_name }}', '{{ event.status }}')" class="text-primary hover:text-primary/80 mr-3">Edit Status</button>
+                        <a href="/deleteEvent/{{ event.id }}" class="text-red-500 hover:text-red-400 mr-3">Delete</a>
+                    </td>
+                </tr>
             {% endfor %}
             </tbody>
         </table>
+    </div>
+
+    <div id="editPopup" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
+            <h2 class="text-lg font-semibold mb-4 text-gray-800">Edit Event</h2>
+            <form id="editForm" method="POST" action="/updateEventStatus">
+                <input type="text" name="event_id" id="event_id">
+                <div class="mb-4">
+                    <label for="event_name" class="block text-sm font-medium text-gray-700">Event Name</label>
+                    <input type="text" id="event_name" name="event_name" class="mt-1 p-2 w-full rounded-md border bg-gray-100 text-gray-800" required>
+                </div>
+                <div class="mb-4">
+                    <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                    <select id="status" name="status" class="mt-1 p-2 w-full rounded-md border bg-gray-100 text-gray-800" required>
+                        <option value="en attente">En Attente</option>
+                        <option value="actif">Actif</option>
+                        <option value="terminé">Terminé</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeEditPopup()" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/80">Save</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -370,6 +395,18 @@
             }
         }
     });
+</script>
+
+<script>
+    function openEditPopup(id, name, status) {
+        document.getElementById('editPopup').classList.remove('hidden');
+        document.getElementById('event_id').value = id;
+        document.getElementById('event_name').value = name;
+        document.getElementById('status').value = status;
+    }
+    function closeEditPopup() {
+        document.getElementById('editPopup').classList.add('hidden');
+    }
 </script>
 
 
