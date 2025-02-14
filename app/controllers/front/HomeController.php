@@ -15,4 +15,5 @@ class HomeController extends Controller{
         }
         $this->view('front/home',["avatar"=>$avatar,"user"=>$user]);
     }
+  
 }
