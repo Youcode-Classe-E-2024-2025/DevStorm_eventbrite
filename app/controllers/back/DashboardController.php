@@ -21,7 +21,13 @@ class DashboardController extends Controller{
         $users = $User->fetchAll();
         $events = $event->getAllEvents();
         $stats = $event->getAllEventStats();
-        $this->view('front/adminDashboard',['events'=>$events,'users'=>$users,'categories'=>$categories,'tags'=>$tags, 'stats'=>$stats]);
+        $user = Session::getUser();
+        if ($user && isset($user->avatar)) {
+            $avatar = $user->avatar;
+        } else {
+            $avatar = '';
+        }
+        $this->view('front/adminDashboard',['events'=>$events,'user'=>$user,"avatar"=>$avatar,'users'=>$users,'categories'=>$categories,'tags'=>$tags, 'stats'=>$stats]);
     }
 
     public function UpdateUserStatus(){
