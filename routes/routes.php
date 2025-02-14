@@ -15,6 +15,7 @@ $router = new Router();
 
 
 $router->get('/', [HomeController::class, 'index']);
+$router->get('/contact', [HomeController::class, 'contact']);
 
 $router->get('/login', [UserController::class, 'login']);
 $router->get('/register', [UserController::class, 'register']);
