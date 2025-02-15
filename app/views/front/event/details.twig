@@ -67,16 +67,151 @@
             </div>
         </div>
 
-        <!-- Event Tickets Section -->
-        <div class="flex flex-col md:flex-row items-center justify-between">
-            <div class="mb-6 md:mb-0">
-                <h2 class="text-3xl font-bold mb-4 font-clash">Réservez votre place maintenant</h2>
-                <p class="text-lg text-gray-700">Ne manquez pas cet événement incroyable. Réservez dès aujourd'hui!</p>
+        <!-- Ticket Options Section -->
+        <section class="container mx-auto px-4 py-16">
+            <h2 class="text-4xl font-bold mb-8 text-center font-display">Options de billets</h2>
+            <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
+                <!-- Regular Tier -->
+                <div class="rounded-3xl bg-[#F3EEFF] p-8 flex flex-col h-full">
+                    <div class="flex items-center gap-2 mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 3l14 9-14 9V3z"/>
+                        </svg>
+                        <h2 class="text-xl font-semibold">Regular</h2>
+                    </div>
+                    <div class="mb-8">
+                        <span class="text-5xl font-bold">49€</span>
+                        <span class="text-sm">+TVA</span>
+                    </div>
+                    <ul class="space-y-4 flex-grow">
+                        <li class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Présentation vidéo
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Déjeuner et café gratuits
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Toutes les conférences et ateliers
+                        </li>
+                    </ul>
+                    <div class="mt-8">
+                        <a href="/reserve/{{ event.id }}?ticket=regular" class="block w-full py-3 rounded-xl border-2 border-black/10 hover:bg-black/5 transition-colors text-center">
+                            Acheter le billet
+                        </a>
+                    </div>
+                </div>
+                <!-- Standard Tier -->
+                <div class="rounded-3xl bg-[#7C3AED] p-8 text-white flex flex-col h-full">
+                    <div class="flex items-center gap-2 mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 8v8M8 12h8"/>
+                        </svg>
+                        <h2 class="text-xl font-semibold">Standard</h2>
+                    </div>
+                    <div class="mb-8">
+                        <span class="text-5xl font-bold">79€</span>
+                        <span class="text-sm">+TVA</span>
+                    </div>
+                    <ul class="space-y-4 flex-grow">
+                        <li class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Toutes les fonctionnalités du forfait Regular
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Accès à l'espace d'exposition
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Opportunités de networking
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Session internationale
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Sac cadeau de l'événement offert
+                        </li>
+                    </ul>
+                    <div class="mt-8">
+                        <a href="/reserve/{{ event.id }}?ticket=standard" class="block w-full py-3 rounded-xl bg-white text-[#7C3AED] hover:bg-white/90 transition-colors text-center">
+                            Acheter le billet
+                        </a>
+                    </div>
+                </div>
+                <!-- VIP Premium Tier -->
+                <div class="rounded-3xl bg-[#F3EEFF] p-8 flex flex-col h-full">
+                    <div class="flex items-center gap-2 mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2l2.5 6h6.5l-5 4.5 2 6.5-6-4.5-6 4.5 2-6.5-5-4.5h6.5z"/>
+                        </svg>
+                        <h2 class="text-xl font-semibold">VIP Premium</h2>
+                    </div>
+                    <div class="mb-8">
+                        <span class="text-5xl font-bold">99€</span>
+                        <span class="text-sm">+TVA</span>
+                    </div>
+                    <ul class="space-y-4 flex-grow">
+                        <li class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Toutes les fonctionnalités du forfait Standard
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Rencontrez tous nos conférenciers
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Conférences et ateliers enregistrés
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Accès au salon VIP + afterparty
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Places prioritaires pour les keynotes et panels
+                        </li>
+                    </ul>
+                    <div class="mt-8">
+                        <a href="/reserve/{{ event.id }}?ticket=vip" class="block w-full py-3 rounded-xl border-2 border-black/10 hover:bg-black/5 transition-colors text-center">
+                            Acheter le billet
+                        </a>
+                    </div>
+                </div>
             </div>
-            <a href="/event/{{ event.id }}/booking" class="bg-primary text-white text-lg font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-purple-700 transition duration-300">
-                Réserver maintenant
-            </a>
-        </div>
+        </section>
     </div>
 </div>
 </body>
