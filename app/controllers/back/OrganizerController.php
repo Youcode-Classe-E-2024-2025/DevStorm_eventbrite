@@ -28,6 +28,14 @@ class OrganizerController extends Controller
         $total_capacity = 0;
         $available_capacity = 0;
 
+        $user = Session::getUser();
+        if ($user && isset($user->avatar)) {
+            $avatar = $user->avatar;
+        } else {
+            $avatar = '';
+        }
+
+
        foreach ($events as $evt) {
         $eventStats = $event->getEventStats($evt['id']);
         $total_tickets += $eventStats['total_tickets'] ?? 0;
@@ -46,7 +54,9 @@ class OrganizerController extends Controller
         
         $this->view('back/organizer/dashboard', [
             'events' => $events,
-            'stats' => $stats
+            'stats' => $stats,
+            'user'=>$user,
+            "avatar"=>$avatar
         ]);
     }
 
@@ -57,11 +67,20 @@ class OrganizerController extends Controller
 
         $tag = new Tag();
         $tags = $tag->getAllTags();
+
+        $user = Session::getUser();
+        if ($user && isset($user->avatar)) {
+            $avatar = $user->avatar;
+        } else {
+            $avatar = '';
+        }
     
         
         $this->view('front/event/create-event', [
             'categories' => $categories,
-            'tags' => $tags
+            'tags' => $tags,
+            'user'=>$user,
+            'avatar'=>$avatar,
         ]);
     }
     public function handleCreateEvent()
@@ -152,7 +171,14 @@ class OrganizerController extends Controller
     {
         $ticket = new Ticket();
         $stats = $ticket->getEventStats($eventId);
-        $this->view('back/organizer/stats', ['stats' => $stats]);
+        $user = Session::getUser();
+        if ($user && isset($user->avatar)) {
+            $avatar = $user->avatar;
+        } else {
+            $avatar = '';
+        }
+
+        $this->view('back/organizer/stats', ['stats' => $stats, 'user'=>$user,'avatar'=>$avatar]);
     }
  /**
  * Display event statistics je change this methode par des nuoveuax statistics
@@ -163,15 +189,24 @@ public function eventStats($eventId)
     $stats = $event->getEventStats($eventId);
     $promotions = $event->getEventPromotions($eventId);
     $salesData = $event->getSalesData($eventId);
+
+    $user = Session::getUser();
+    if ($user && isset($user->avatar)) {
+        $avatar = $user->avatar;
+    } else {
+        $avatar = '';
+    }
     
     $this->view('front/event/stats', [
         'stats' => array_merge($stats, [
             'promotions' => $promotions,
             'sales_dates' => array_column($salesData, 'date'),
             'sales_data' => array_column($salesData, 'count'),
-            'ticket_types_data' => $event->getTicketTypeDistribution($eventId)
+            'ticket_types_data' => $event->getTicketTypeDistribution($eventId),
         ]),
-        'event_id' => $eventId
+        'event_id' => $eventId,
+        'user'=>$user,
+        'avatar'=>$avatar
     ]);
 }
 
@@ -208,8 +243,14 @@ public function exportParticipantsPDF($eventId)
                 $this->redirect('/event/' . $eventId . '/promocodes');
             }
         }
-        
-        $this->view('front/event/create-promocode', ['event_id' => $eventId]);
+
+        $user = Session::getUser();
+        if ($user && isset($user->avatar)) {
+            $avatar = $user->avatar;
+        } else {
+            $avatar = '';
+        }
+        $this->view('front/event/create-promocode', ['event_id' => $eventId,'user'=>$user,'avatar'=>$avatar]);
     }
     
     public function listPromoCodes($eventId)
@@ -270,12 +311,21 @@ public function exportParticipantsPDF($eventId)
         $categories = $category->getAllCategories();
         $tags = $tag->getAllTags();
         $selectedTags = $event->getEventTags($eventId);
+
+        $user = Session::getUser();
+        if ($user && isset($user->avatar)) {
+            $avatar = $user->avatar;
+        } else {
+            $avatar = '';
+        }
         
         $this->view('front/event/edit-event', [
             'event' => $eventData,
             'categories' => $categories,
             'tags' => $tags,
-            'selectedTags' => $selectedTags
+            'selectedTags' => $selectedTags,
+            'user'=>$user,
+            'avatar'=>$avatar
         ]);
     }
     //delete event 
