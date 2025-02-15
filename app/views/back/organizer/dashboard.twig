@@ -93,19 +93,16 @@
 
                     <img src="/{{ event.image_url }}" alt="{{ event.title }}" class="w-full h-[400px] object-cover transition-transform duration-300 group-hover:scale-105" />
 
-                    {% if event.is_promo %}
-                        <div class="absolute top-4 left-4 bg-yellow-400 text-black font-bold py-1 px-3 rounded-full flex items-center space-x-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                            <span>PROMO</span>
-                        </div>
-                    {% endif %}
-
+                  
                     <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">
                         <span class="text-sm uppercase tracking-wider text-amber-300">{{ event.category_name }}</span>
                         <h3 class="text-3xl font-extrabold mt-2">{{ event.title }}</h3>
                         <p class="flex items-center space-x-2 mt-2"><i class="far fa-calendar-alt"></i><span>{{ event.date|date('d M Y • H:i') }}</span></p>
                         <p class="flex items-center space-x-2 mt-1"><i class="fas fa-map-marker-alt"></i><span>{{ event.location }}</span></p>
                         <p class="flex items-center space-x-2 text-gray-300 mt-1"><i class="fas fa-users"></i><span>{% if event.total_capacity > 0 %}{{ event.total_capacity }} places ({{ event.available_capacity }} disponibles){% else %}Places non définies{% endif %}</span></p>
+ <p class="{% if event.status == 'actif' %}bg-green-500{% elseif event.status == 'en attente' %}bg-blue-500{% else %}bg-red-500{% endif %} text-white font-bold py-1 px-3 rounded-full">
+        {{ event.status|capitalize }}
+    </p>
                     </div>
                 </div>
             {% endfor %}
@@ -244,14 +241,8 @@ async function loadPage(page) {
 
                     <img src="/${event.image_url}" alt="${event.title}" class="w-full h-[400px] object-cover transition-transform duration-300 group-hover:scale-105" />
 
-                    ${event.is_promo ? `
-                        <div class="absolute top-4 left-4 bg-yellow-400 text-black font-bold py-1 px-3 rounded-full flex items-center space-x-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                            <span>PROMO</span>
-                        </div>
-                    ` : ''}
-
-                    <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">
+                  
+        <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">
                         <span class="text-sm uppercase tracking-wider text-amber-300">${event.category_name}</span>
                         <h3 class="text-3xl font-extrabold mt-2">${event.title}</h3>
                         <p class="flex items-center space-x-2 mt-2">
@@ -267,13 +258,22 @@ async function loadPage(page) {
                         <p class="flex items-center space-x-2 mt-1">
                             <i class="fas fa-map-marker-alt"></i>
                             <span>${event.location}</span>
-                        </p>
+                       
                         <p class="flex items-center space-x-2 text-gray-300 mt-1">
                             <i class="fas fa-users"></i>
                             <span>${event.total_capacity > 0 ? 
                                 `${event.total_capacity} places (${event.available_capacity} disponibles)` : 
                                 'Places non définies'}</span>
                         </p>
+                    <p class="flex items-center space-x-2 mt-2">
+    <span class="${
+        event.status === 'actif' ? 'bg-green-500' : 
+        event.status === 'en attente' ? 'bg-blue-500' : 
+        'bg-red-500'
+    } text-white font-bold py-1 px-3 rounded-full">
+        ${event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+    </span>
+</p>
                     </div>
                 </div>
             `;
