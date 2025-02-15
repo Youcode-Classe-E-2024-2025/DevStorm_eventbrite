@@ -227,8 +227,14 @@ public function exportParticipantsPDF($eventId)
                 $this->redirect('/event/' . $eventId . '/promocodes');
             }
         }
-        
-        $this->view('front/event/create-promocode', ['event_id' => $eventId]);
+
+        $user = Session::getUser();
+        if ($user && isset($user->avatar)) {
+            $avatar = $user->avatar;
+        } else {
+            $avatar = '';
+        }
+        $this->view('front/event/create-promocode', ['event_id' => $eventId,'user'=>$user,'avatar'=>$avatar]);
     }
     
     public function listPromoCodes($eventId)
