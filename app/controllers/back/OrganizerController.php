@@ -25,22 +25,24 @@ class OrganizerController extends Controller
         $total_tickets = 0;
         $total_revenue = 0;
         $validated_tickets=0;
-        $capacity=0;
+        $total_capacity = 0;
+        $available_capacity = 0;
+
        foreach ($events as $evt) {
         $eventStats = $event->getEventStats($evt['id']);
         $total_tickets += $eventStats['total_tickets'] ?? 0;
         $total_revenue += $eventStats['total_revenue'] ?? 0;
         $validated_tickets+=$eventStats['validated_tickets'] ?? 0;
-        $capacity += $eventStats['capacity'] ?? 0;
-    }
+        $total_capacity += $eventStats['total_capacity'] ?? 0;
+        $available_capacity += $eventStats['available_capacity'] ?? 0;    }
     
         $stats = [
             'total_events' => count($events),
             'total_tickets' => $total_tickets,
             'total_revenue' => $total_revenue,
             'validated_tickets' =>$validated_tickets,
-            'capacity' => $capacity
-        ];
+            'total_capacity' => $total_capacity,
+            'available_capacity' => $available_capacity        ];
         
         $this->view('back/organizer/dashboard', [
             'events' => $events,
@@ -62,65 +64,47 @@ class OrganizerController extends Controller
             'tags' => $tags
         ]);
     }
-
     public function handleCreateEvent()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $event = new Event();
-            
-            $imageUploadDir = 'assets/images/';
-            $videoUploadDir = 'assets/videos/';
-    
-            // Handle image upload
-            if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-                $imageInfo = pathinfo($_FILES['image']['name']);
-                $imageExtension = strtolower($imageInfo['extension']);
-                $allowedImageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
-                
-                if (in_array($imageExtension, $allowedImageExtensions)) {
-                    $newImageName = uniqid() . '.' . $imageExtension;
-                    $imagePath = $imageUploadDir . $newImageName;
-                    
-                    if (move_uploaded_file($_FILES['image']['tmp_name'], $imagePath)) {
-                        $event->image_url = $imagePath;
-                    }
-                }
-            }
-    
-            // Handle video upload
-            if (isset($_FILES['video']) && $_FILES['video']['error'] == 0) {
-                $videoInfo = pathinfo($_FILES['video']['name']);
-                $videoExtension = strtolower($videoInfo['extension']);
-                $allowedVideoExtensions = ['mp4', 'mov', 'avi'];
-                
-                if (in_array($videoExtension, $allowedVideoExtensions)) {
-                    $newVideoName = uniqid() . '.' . $videoExtension;
-                    $videoPath = $videoUploadDir . $newVideoName;
-                    
-                    if (move_uploaded_file($_FILES['video']['tmp_name'], $videoPath)) {
-                        $event->video_url = $videoPath;
-                    }
-                }
-            }
-    
-            // Set other event properties
-            $event->title = $_POST['title'];
-            $event->description = $_POST['description'];
-            $event->date = $_POST['date'];
-            $event->price = $_POST['price'];
-            $event->capacity = $_POST['capacity'];
-            $event->location = $_POST['location'];
-            $event->category = Category::read($_POST['category_id']);
-            $event->status = 'en attente';
-            $event->organizer = User::read(Session::getUser()['id']);
-    
             try {
+                $event = new Event();
+                
+                // Handle file uploads
+                $this->handleFileUploads($event);
+                
+                // Set event properties
+                $event->title = $_POST['title'];
+                $event->description = $_POST['description'];
+                $event->date = $_POST['date'];
+                $event->location = $_POST['location'];
+                $event->category = Category::read($_POST['category_id']);
+                $event->status = 'en attente';
+                $event->organizer = User::read(Session::getUser()['id']);
+    
+                // Save the event
                 $eventId = $event->save();
+    
                 if ($eventId) {
+                    // Handle tags
                     if (isset($_POST['tags']) && is_array($_POST['tags'])) {
                         $event->addEventTags($_POST['tags']);
                     }
-                    
+    
+                    // Handle ticket types
+                    if (isset($_POST['ticket_types']) && is_array($_POST['ticket_types'])) {
+                        $ticketTypes = [];
+                        foreach ($_POST['ticket_types'] as $type) {
+                            $ticketTypes[] = [
+                                'type' => $type['type'],
+                                'price' => floatval($type['price']),
+                                'quantity' => intval($type['quantity'])
+                            ];
+                        }
+                        $event->addTicketTypes($eventId, $ticketTypes);
+                    }
+    
+                    $_SESSION['success'] = "Event created successfully!";
                     header('Location: /organizer/dashboard');
                     exit;
                 }
@@ -130,6 +114,37 @@ class OrganizerController extends Controller
                 exit;
             }
         }    
+    }
+    
+    
+    private function handleFileUploads($event)
+    {
+        $imageUploadDir = 'assets/images/';
+        $videoUploadDir = 'assets/videos/';
+    
+        // Handle image upload
+        if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+            $imageInfo = pathinfo($_FILES['image']['name']);
+            $imageExtension = strtolower($imageInfo['extension']);
+            if (in_array($imageExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
+                $newImageName = uniqid() . '.' . $imageExtension;
+                $imagePath = $imageUploadDir . $newImageName;
+                move_uploaded_file($_FILES['image']['tmp_name'], $imagePath);
+                $event->image_url = $imagePath;
+            }
+        }
+    
+        // Handle video upload
+        if (isset($_FILES['video']) && $_FILES['video']['error'] == 0) {
+            $videoInfo = pathinfo($_FILES['video']['name']);
+            $videoExtension = strtolower($videoInfo['extension']);
+            if (in_array($videoExtension, ['mp4', 'mov', 'avi'])) {
+                $newVideoName = uniqid() . '.' . $videoExtension;
+                $videoPath = $videoUploadDir . $newVideoName;
+                move_uploaded_file($_FILES['video']['tmp_name'], $videoPath);
+                $event->video_url = $videoPath;
+            }
+        }
     }
     
 
@@ -285,6 +300,8 @@ public function exportParticipantsPDF($eventId)
     }
     //pagination
     public function getEvents($page = 1) {
+        header('Content-Type: application/json');
+        
         $event = new Event();
         $organizer_id = Session::getUser()['id'];
         
@@ -295,20 +312,12 @@ public function exportParticipantsPDF($eventId)
         $totalEvents = $event->count($organizer_id);
         $totalPages = ceil($totalEvents / $limit);
         
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
-            echo json_encode([
-                'events' => $events,
-                'currentPage' => (int)$page,
-                'totalPages' => $totalPages
-            ]);
-            exit;
-        }
-        
-        return [
+        echo json_encode([
             'events' => $events,
             'currentPage' => (int)$page,
             'totalPages' => $totalPages
-        ];
+        ]);
+        exit;
     }
     
 

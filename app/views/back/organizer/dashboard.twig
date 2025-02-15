@@ -64,56 +64,37 @@
         <h3 class="text-3xl font-bold mb-6 font-clash">Mes Événements</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="events-container">
             {% for event in events %}
-                <div class="relative rounded-3xl overflow-hidden group shadow-lg">
-                    <img
-                            src="/{{ event.image_url }}"
-                            alt="{{ event.title }}"
-                            class="w-full h-[400px] object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <div class="absolute top-4 left-4">
-                        {% if event.is_promo %}
-                            <div class="bg-yellow-400 text-black font-bold py-1 px-3 rounded-full flex items-center space-x-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-black">
-                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                                </svg>
-                                <span>PROMO</span>
-                            </div>
-                        {% endif %}
-                    </div>
-                    <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">
-                        <span class="text-sm uppercase tracking-wider text-amber-300">{{ event.category.name }}</span>
-                        <h3 class="text-2xl font-bold mt-2">{{ event.title }}</h3>
-                    </div>
-                    <div class="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button onclick="confirmDelete({{ event.id }})" class="p-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-500">
-                                <path d="M3 6h18"></path>
-                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                            </svg>
+                <div class="relative rounded-3xl overflow-hidden group shadow-xl hover:shadow-2xl transition-shadow duration-300">
+                    <div class="absolute top-4 right-4 flex space-x-3 z-10">
+                        <button onclick="confirmDelete({{ event.id }})" class="p-2 bg-white/20 hover:bg-red-500 text-red-500 hover:text-white backdrop-blur-md rounded-full transition-colors duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                         </button>
-                        <a href="/event/{{ event.id }}/edit" class="p-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500">
-                                <path d="M12 20h9"></path>
-                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                            </svg>
+                        <a href="/event/{{ event.id }}/edit" class="p-2 bg-white/20 hover:bg-blue-500 text-blue-500 hover:text-white backdrop-blur-md rounded-full transition-colors duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                         </a>
-                        <a href="/event/{{ event.id }}/export/pdf" class="p-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <line x1="16" y1="13" x2="8" y2="13"></line>
-                                <line x1="16" y1="17" x2="8" y2="17"></line>
-                                <polyline points="10 9 9 9 8 9"></polyline>
-                            </svg>
+                        <a href="/event/{{ event.id }}/export/pdf" class="p-2 bg-white/20 hover:bg-green-500 text-green-500 hover:text-white backdrop-blur-md rounded-full transition-colors duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                         </a>
-                        <a href="/event/{{ event.id }}/stats" class="p-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-purple-500">
-                                <line x1="18" y1="20" x2="18" y2="10"></line>
-                                <line x1="12" y1="20" x2="12" y2="4"></line>
-                                <line x1="6" y1="20" x2="6" y2="14"></line>
-                            </svg>
+                        <a href="/event/{{ event.id }}/stats" class="p-2 bg-white/20 hover:bg-purple-500 text-purple-500 hover:text-white backdrop-blur-md rounded-full transition-colors duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                         </a>
+                    </div>
+
+                    <img src="/{{ event.image_url }}" alt="{{ event.title }}" class="w-full h-[400px] object-cover transition-transform duration-300 group-hover:scale-105" />
+
+                    {% if event.is_promo %}
+                        <div class="absolute top-4 left-4 bg-yellow-400 text-black font-bold py-1 px-3 rounded-full flex items-center space-x-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <span>PROMO</span>
+                        </div>
+                    {% endif %}
+
+                    <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">
+                        <span class="text-sm uppercase tracking-wider text-amber-300">{{ event.category_name }}</span>
+                        <h3 class="text-3xl font-extrabold mt-2">{{ event.title }}</h3>
+                        <p class="flex items-center space-x-2 mt-2"><i class="far fa-calendar-alt"></i><span>{{ event.date|date('d M Y • H:i') }}</span></p>
+                        <p class="flex items-center space-x-2 mt-1"><i class="fas fa-map-marker-alt"></i><span>{{ event.location }}</span></p>
+                        <p class="flex items-center space-x-2 text-gray-300 mt-1"><i class="fas fa-users"></i><span>{% if event.total_capacity > 0 %}{{ event.total_capacity }} places ({{ event.available_capacity }} disponibles){% else %}Places non définies{% endif %}</span></p>
                     </div>
                 </div>
             {% endfor %}
@@ -130,7 +111,6 @@
             </button>
         </div>
     </div>
-</div>
 
 <!-- Video Modal -->
 <div id="videoModal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">

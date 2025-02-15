@@ -66,49 +66,64 @@ class Event extends Model
         return self::toObjects($rows);
     }
 
-   
     public function save()
-{
-    $db = Database::getInstance();
-    $connection = $db->getConnection();
-    
-    try {
-        $connection->beginTransaction();
+    {
+        $db = Database::getInstance();
+        $connection = $db->getConnection();
         
-        $sql = "INSERT INTO events (title, description, date, price, capacity, organizer_id, location, category_id, status, image_url, video_url) 
-                VALUES (:title, :description, :date, :price, :capacity, :organizer_id, :location, :category_id, :status, :image_url, :video_url) 
-                RETURNING id";
-        
-        $stmt = $connection->prepare($sql);
-        $result = $stmt->execute([
-            'title' => $this->title,
-            'description' => $this->description,
-            'date' => $this->date,
-            'price' => $this->price,
-            'capacity' => $this->capacity,
-            'organizer_id' => $this->organizer->id,
-            'location' => $this->location,
-            'category_id' => $this->category->id,
-            'status' => $this->status,
-            'image_url' => $this->image_url ?? null,
-            'video_url' => $this->video_url ?? null
-        ]);
-        
-        if ($result) {
-            $this->id = $stmt->fetchColumn();
-            $connection->commit();
-            return $this->id;
+        try {
+            $connection->beginTransaction();
+            
+            $sql = "INSERT INTO events (
+                title, 
+                description, 
+                date, 
+                location, 
+                category_id, 
+                organizer_id, 
+                status, 
+                image_url, 
+                video_url
+            ) VALUES (
+                :title, 
+                :description, 
+                :date, 
+                :location, 
+                :category_id, 
+                :organizer_id, 
+                :status, 
+                :image_url, 
+                :video_url
+            ) RETURNING id";
+            
+            $stmt = $connection->prepare($sql);
+            $result = $stmt->execute([
+                'title' => $this->title,
+                'description' => $this->description,
+                'date' => $this->date,
+                'location' => $this->location,
+                'category_id' => $this->category->id,
+                'organizer_id' => $this->organizer->id,
+                'status' => $this->status,
+                'image_url' => $this->image_url ?? null,
+                'video_url' => $this->video_url ?? null
+            ]);
+            
+            if ($result) {
+                $this->id = $stmt->fetchColumn();
+                $connection->commit();
+                return $this->id;
+            }
+            
+            $connection->rollBack();
+            return false;
+            
+        } catch (\Exception $e) {
+            $connection->rollBack();
+            throw $e;
         }
-        
-        $connection->rollBack();
-        return false;
-        
-    } catch (\Exception $e) {
-        $connection->rollBack();
-        throw $e;
     }
-}
-
+    
 public function addEventTags($tags)
 {
     if (!$this->id || empty($tags)) {
@@ -188,20 +203,29 @@ public function getTicketTypeDistribution($eventId)
 
     return array_column($distribution, 'count');
 }
-    public function getEventsByOrganizer($organizerId)
+public function getEventsByOrganizer($organizerId)
 {
     $db = \App\Core\Database::getInstance();
     $query = $db->getConnection()->prepare("
-        SELECT e.*, c.name as category_name 
-        FROM events e 
-        JOIN categories c ON e.category_id = c.id 
-        WHERE e.organizer_id = :organizer_id 
+        SELECT 
+            e.*,
+            c.name as category_name,
+            COALESCE(SUM(ett.total_quantity), 0) as total_capacity,
+            COALESCE(SUM(ett.available_quantity), 0) as available_capacity
+        FROM events e
+        LEFT JOIN categories c ON e.category_id = c.id
+        LEFT JOIN event_ticket_types ett ON e.id = ett.event_id
+        WHERE e.organizer_id = :organizer_id
+        GROUP BY e.id, e.title, e.date, e.status, e.location, c.name
         ORDER BY e.date DESC
     ");
     
     $query->execute(['organizer_id' => $organizerId]);
     return $query->fetchAll(PDO::FETCH_ASSOC);
 }
+
+
+
 /**
  * Gets comprehensive statistics for a specific event
  * @param int $eventId The event ID
@@ -212,19 +236,27 @@ public function getEventStats($eventId)
     $db = \App\Core\Database::getInstance();
     $query = $db->getConnection()->prepare("
         SELECT 
+            e.id,
+            COALESCE(SUM(ett.total_quantity), 0) as total_capacity,
+            COALESCE(SUM(ett.available_quantity), 0) as available_capacity,
             COUNT(t.id) as total_tickets,
-            SUM(t.price) as total_revenue,
-            COUNT(CASE WHEN t.status = 'validé' THEN 1 END) as validated_tickets,
-            e.capacity as capacity
+            COALESCE(SUM(t.price), 0) as total_revenue,
+            COUNT(CASE WHEN t.status = 'validé' THEN 1 END) as validated_tickets
         FROM events e
+        LEFT JOIN event_ticket_types ett ON e.id = ett.event_id
         LEFT JOIN tickets t ON e.id = t.event_id
         WHERE e.id = :event_id
-        GROUP BY e.id, e.capacity
+        GROUP BY e.id
     ");
     
     $query->execute(['event_id' => $eventId]);
     return $query->fetch(PDO::FETCH_ASSOC);
 }
+
+
+
+
+
 
 /**
  * Get event by ID with category information
@@ -443,28 +475,29 @@ public function getEventParticipants($eventId)
         $query->execute(['status' => $status, 'id' => $id]);
     }
 
-//pagination
-    public function findAll($limit, $offset, $organizer_id = null) {
-        $db = Database::getInstance();
-        $sql = "SELECT * FROM events";
+
+    public function findAll($limit, $offset, $organizer_id) 
+    {
+        $db = \App\Core\Database::getInstance();
+        $query = $db->getConnection()->prepare("
+            SELECT 
+                e.*,
+                COALESCE(SUM(ett.total_quantity), 0) as total_capacity,
+                COALESCE(SUM(ett.available_quantity), 0) as available_capacity
+            FROM events e
+            LEFT JOIN event_ticket_types ett ON e.id = ett.event_id
+            WHERE e.organizer_id = :organizer_id
+            GROUP BY e.id
+            ORDER BY e.date DESC
+            LIMIT :limit OFFSET :offset
+        ");
         
-        if ($organizer_id) {
-            $sql .= " WHERE organizer_id = :organizer_id";
-        }
+        $query->bindValue(':organizer_id', $organizer_id, PDO::PARAM_INT);
+        $query->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $query->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $query->execute();
         
-        $sql .= " ORDER BY date DESC LIMIT :limit OFFSET :offset";
-        
-        $stmt = $db->getConnection()->prepare($sql);
-        
-        if ($organizer_id) {
-            $stmt->bindValue(':organizer_id', $organizer_id, PDO::PARAM_INT);
-        }
-        
-        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-        $stmt->execute();
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return self::toObjects($rows);
+        return $query->fetchAll(PDO::FETCH_ASSOC);
     }
     
     public function count($organizer_id = null) {
@@ -485,5 +518,62 @@ public function getEventParticipants($eventId)
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['count'];
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function addTicketTypes($eventId, $ticketTypes) 
+    {
+        $db = Database::getInstance();
+        $connection = $db->getConnection();
+        
+        try {
+            $connection->beginTransaction();
+            
+            $sql = "INSERT INTO event_ticket_types (
+                event_id,
+                ticket_type,
+                price,
+                total_quantity,
+                available_quantity
+            ) VALUES (
+                :event_id,
+                :ticket_type,
+                :price,
+                :total_quantity,
+                :available_quantity
+            )";
+            
+            $stmt = $connection->prepare($sql);
+            
+            foreach ($ticketTypes as $ticket) {
+                $stmt->execute([
+                    'event_id' => $eventId,
+                    'ticket_type' => $ticket['type'],
+                    'price' => $ticket['price'],
+                    'total_quantity' => $ticket['quantity'],
+                    'available_quantity' => $ticket['quantity']
+                ]);
+            }
+            
+            $connection->commit();
+            return true;
+        } catch (\Exception $e) {
+            $connection->rollBack();
+            throw $e;
+        }
+    }
+
 
 }
