@@ -2,102 +2,130 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Statistiques de l'événement | DevEvents</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'clash': ['"Clash Display"', 'sans-serif'],
+                        'manrope': ['Manrope', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary': '#8B5CF6',
+                        'custom-purple': '#8B5CF6', // Added custom purple color for consistency
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .bg-gradient {
+            background: radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.15), transparent 60%);
+        }
+    </style>
 </head>
-<body class="bg-black text-white">
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold text-custom-purple mb-8">Statistiques de l'événement</h1>
-        
-        <!-- Main Stats Cards -->
+<body class="bg-black text-white font-manrope">
+
+<div class="min-h-screen bg-gradient">
+    <!-- Navigation -->
+    {% include 'layouts/nav.twig' %}
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-20">
+        <h1 class="text-4xl md:text-5xl font-clash font-bold text-center text-primary mb-12">Statistiques de l'Événement</h1>
+
+        <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-gray-900 p-6 rounded-lg">
+            <div class="bg-gray-900/70 p-6 rounded-lg backdrop-blur-sm">
                 <h3 class="text-lg mb-2">Billets Vendus</h3>
-                <p class="text-2xl font-bold text-custom-purple">{{ stats.total_tickets }}</p>
+                <p class="text-2xl font-bold text-primary">{{ stats.total_tickets }}</p>
                 <div class="text-sm text-gray-400 mt-2">+{{ stats.tickets_last_24h }} dernières 24h</div>
             </div>
-            
-            <div class="bg-gray-900 p-6 rounded-lg">
+
+            <div class="bg-gray-900/70 p-6 rounded-lg backdrop-blur-sm">
                 <h3 class="text-lg mb-2">Revenus Totaux</h3>
-                <p class="text-2xl font-bold text-custom-purple">{{ stats.total_revenue }}€</p>
+                <p class="text-2xl font-bold text-primary">{{ stats.total_revenue }}€</p>
                 <div class="text-sm text-gray-400 mt-2">Moyenne: {{ stats.average_ticket_price }}€/billet</div>
             </div>
-            
-            <div class="bg-gray-900 p-6 rounded-lg">
+
+            <div class="bg-gray-900/70 p-6 rounded-lg backdrop-blur-sm">
                 <h3 class="text-lg mb-2">Places Disponibles</h3>
-                <p class="text-2xl font-bold text-custom-purple">{{ stats.available_seats }}</p>
+                <p class="text-2xl font-bold text-primary">{{ stats.available_seats }}</p>
                 <div class="text-sm text-gray-400 mt-2">sur {{ stats.total_capacity }} places</div>
             </div>
         </div>
 
         <!-- Charts Section -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="bg-gray-900 p-6 rounded-lg">
+            <div class="bg-gray-900/70 p-6 rounded-lg backdrop-blur-sm">
                 <h3 class="text-lg mb-4">Ventes par Jour</h3>
                 <canvas id="salesChart" height="200"></canvas>
             </div>
-            
-            <div class="bg-gray-900 p-6 rounded-lg">
+
+            <div class="bg-gray-900/70 p-6 rounded-lg backdrop-blur-sm">
                 <h3 class="text-lg mb-4">Types de Billets Vendus</h3>
                 <canvas id="ticketTypesChart" height="200"></canvas>
             </div>
         </div>
 
         <!-- Detailed Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
-            <div class="bg-gray-900 p-6 rounded-lg">
-                <h3 class="text-lg mb-4">Codes Promo Actifs</h3>
-                <div class="space-y-3">
-                    {% for promo in stats.promotions %}
+        <div class="bg-gray-900/70 p-6 rounded-lg backdrop-blur-sm">
+            <h3 class="text-lg mb-4">Codes Promo Actifs</h3>
+            <div class="space-y-3">
+                {% for promo in stats.promotions %}
                     <div class="flex justify-between items-center">
                         <span>{{ promo.code }}</span>
-                        <span class="text-custom-purple">{{ promo.uses }} utilisations</span>
+                        <span class="text-primary">{{ promo.uses }} utilisations</span>
                     </div>
-                    {% endfor %}
-                </div>
+                {% endfor %}
             </div>
-
-            
         </div>
     </div>
+</div>
 
-    <script>
-        // Sales Chart
-        const salesCtx = document.getElementById('salesChart').getContext('2d');
-        new Chart(salesCtx, {
-            type: 'line',
-            data: {
-                labels: {{ stats.sales_dates|json_encode|raw }},
-                datasets: [{
-                    label: 'Ventes',
-                    data: {{ stats.sales_data|json_encode|raw }},
-                    borderColor: '#8B5CF6',
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
+<script>
+    // Sales Chart
+    const salesCtx = document.getElementById('salesChart').getContext('2d');
+    new Chart(salesCtx, {
+        type: 'line',
+        data: {
+            labels: {{ stats.sales_dates|json_encode|raw }},
+            datasets: [{
+                label: 'Ventes',
+                data: {{ stats.sales_data|json_encode|raw }},
+                borderColor: '#8B5CF6',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
                 }
             }
-        });
+        }
+    });
 
-        // Ticket Types Chart
-        const typesCtx = document.getElementById('ticketTypesChart').getContext('2d');
-        new Chart(typesCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Standard', 'VIP', 'Groupe'],
-                datasets: [{
-                    data: {{ stats.ticket_types_data|json_encode|raw }},
-                    backgroundColor: ['#8B5CF6', '#4C1D95', '#C4B5FD']
-                }]
-            }
-        });
-    </script>
+    // Ticket Types Chart
+    const typesCtx = document.getElementById('ticketTypesChart').getContext('2d');
+    new Chart(typesCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Standard', 'VIP', 'Groupe'],
+            datasets: [{
+                data: {{ stats.ticket_types_data|json_encode|raw }},
+                backgroundColor: ['#8B5CF6', '#4C1D95', '#C4B5FD']
+            }]
+        }
+    });
+</script>
+
 </body>
 </html>
