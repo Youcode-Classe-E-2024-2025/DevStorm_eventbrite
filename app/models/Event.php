@@ -378,34 +378,87 @@ public function getEventParticipants($eventId)
      * @param array $rows
      * @return array
      */
-    private static function toObjects($rows){
-        $events=[];
+    private static function toObjects($rows)
+    {
+        $events = [];
         foreach ($rows as $row) {
-             $organizer = User::read($row['organizer_id']) ?? new User();
-             $category = Category::read($row['category_id']) ?? new Category();
-             $events[] = new Event($row['id'], $row['title'], $row['description'],$row['date'],$row['price'],$row['capacity'],$organizer,$row['location'],$category,$row['status'],$row['image_url'],
-             $row['video_url']);
-         }
-         return $events;
-       }
+            $organizer = User::read($row['organizer_id']) ?? new User();
+            $category = Category::read($row['category_id']) ?? new Category();
 
-       public static function read($id)
-       {
-           $db = Database::getInstance();
-           $sql = "SELECT * FROM events WHERE id = :id";
-           $query = $db->getConnection()->prepare($sql);
-           $query->bindParam(':id', $id);
-           $query->execute();
-           $row = $query->fetch();
 
-           $event=null;
-           if($row){
-               $organizer = User::read($row['organizer_id']) ?? new User();
-               $category = Category::read($row['category_id']) ?? new Category();
-               $event = new Event($row['id'], $row['title'], $row['description'],$row['date'],$row['price'],$row['capacity'],$organizer,$row['location'],$category,$row['status']);
-           }
-           return $event;
-       } 
+            $db = Database::getInstance();
+            $ticketSql = "SELECT price, total_quantity FROM event_ticket_types WHERE event_id = :event_id";
+            $ticketQuery = $db->getConnection()->prepare($ticketSql);
+            $ticketQuery->bindParam(':event_id', $row['id']);
+            $ticketQuery->execute();
+            $ticketRow = $ticketQuery->fetch();
+
+            $price = $ticketRow ? $ticketRow['price'] : null;
+            $capacity = $ticketRow ? $ticketRow['total_quantity'] : null;
+
+            $events[] = new Event(
+                $row['id'],
+                $row['title'],
+                $row['description'],
+                $row['date'],
+                $price, // Updated price
+                $capacity, // Updated capacity
+                $organizer,
+                $row['location'],
+                $category,
+                $row['status'],
+                $row['image_url'],
+                $row['video_url']
+            );
+        }
+        return $events;
+    }
+
+    public static function read($id)
+    {
+        $db = Database::getInstance();
+        $sql = "SELECT * FROM events WHERE id = :id";
+        $query = $db->getConnection()->prepare($sql);
+        $query->bindParam(':id', $id);
+        $query->execute();
+        $row = $query->fetch();
+
+        $event = null;
+        if ($row) {
+            $organizer = User::read($row['organizer_id']) ?? new User();
+            $category = Category::read($row['category_id']) ?? new Category();
+
+            $ticketSql = "SELECT price, total_quantity FROM event_ticket_types WHERE event_id = :event_id";
+            $ticketQuery = $db->getConnection()->prepare($ticketSql);
+            $ticketQuery->bindParam(':event_id', $row['id']);
+            $ticketQuery->execute();
+            $ticketRow = $ticketQuery->fetch();
+
+            $price = $ticketRow ? $ticketRow['price'] : null;
+            $capacity = $ticketRow ? $ticketRow['total_quantity'] : null;
+
+            // Fetch the image_url and video_url
+            $imageUrl = $row['image_url'] ?? null;
+            $videoUrl = $row['video_url'] ?? null;
+
+            // Create the event object with the added URLs
+            $event = new Event(
+                $row['id'],
+                $row['title'],
+                $row['description'],
+                $row['date'],
+                $price, // Updated price
+                $capacity, // Updated capacity
+                $organizer,
+                $row['location'],
+                $category,
+                $row['status'],
+                $imageUrl,
+                $videoUrl
+            );
+        }
+        return $event;
+    }
 
         public function addReservation($userId): bool
         {

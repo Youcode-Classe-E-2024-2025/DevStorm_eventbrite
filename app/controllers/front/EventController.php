@@ -40,11 +40,18 @@ class EventController extends Controller
     }
     public function show($id){
         $event= Event::read($id);
-        // var_dump($event);
+        $user = Session::getUser();
+        if ($user && isset($user->avatar)) {
+            $avatar = $user->avatar;
+        } else {
+            $avatar = '';
+        }
         $this->view('front/event/details', [
            'event'=>$event,
            'green' =>Session::getFlashMessage('green'),
-            'red' => Session::getFlashMessage('red')
+            'red' => Session::getFlashMessage('red'),
+            'user'=>$user,
+            "avatar"=>$avatar
         ]);
     }
     public function reserve($id){
