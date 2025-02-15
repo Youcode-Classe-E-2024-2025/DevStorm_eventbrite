@@ -4,17 +4,8 @@
 
 {% block content %}
     <!-- Navigation -->
-    <nav class="border-b border-white/10 bg-black">
-        <div class="container mx-auto px-4 py-4">
-            <div class="flex justify-between items-center">
-                <a href="/" class="text-2xl font-bold text-custom-purple font-display">DevEvents</a>
-                <div class="space-x-4">
-                    <a href="/login" class="text-white hover:text-custom-purple transition-colors duration-300">Connexion</a>
-                    <a href="/register" class="bg-custom-purple text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors duration-300 font-medium">Inscription</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+    {% include "layouts/nav.twig" %}     
+
 
     <!-- Cart Section -->
     <section class="container mx-auto px-4 py-16">
