@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accès Restreint - EventHINT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'clash': ['"Clash Display"', 'sans-serif'],
+                        'manrope': ['Manrope', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary': '#8B5CF6',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-black text-white font-manrope flex items-center justify-center h-screen">
+    <div class="bg-gray-900 p-8 shadow-lg rounded-lg text-center max-w-md w-full">
+        <h1 class="text-3xl font-clash font-bold text-red-500">Accès Restreint</h1>
+        <p class="mt-4 text-white/70">Votre compte a été suspendu. Veuillez contacter le support pour plus d'informations.</p>
+        <button class="mt-6 bg-primary text-white px-4 py-2 rounded-lg hover:bg-purple-500 transition-colors">
+            Essayer de vous inscrire de nouveau !
+        </button>
+    </div>
+</body>
+</html>

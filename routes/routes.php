@@ -63,7 +63,8 @@ $router->get('/event/{id}/export/pdf', [OrganizerController::class, 'exportParti
 $router->get('/events', [EventController::class, 'index']);
 $router->get('/event/{id}', [EventController::class, 'show']);
 
-$router->get('/events/page/{page}', ['App\controllers\back\OrganizerController', 'getEvents']);
+$router->get('/events/page/{page}', [OrganizerController::class, 'getEvents']);
+
 
 
 
@@ -86,3 +87,25 @@ $router->get('/paiment/cancel', [PaimentController::class, 'paimentCancel']);
 $router->post('/webhook/stripe', [WebhookController::class, 'handleWebhook']);
 
 $router->dispatch();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Add these routes for ticket type management
+$router->get('/event/{id}/tickets', [OrganizerController::class, 'getTicketTypes']);
+$router->post('/event/{id}/ticket/update', [OrganizerController::class, 'updateTicketType']);

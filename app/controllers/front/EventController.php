@@ -12,6 +12,13 @@ class EventController extends Controller
 {
     public function index()
     {
+
+        $user = Session::getUser();
+        if ($user && isset($user->avatar)) {
+            $avatar = $user->avatar;
+        } else {
+            $avatar = '';
+        }
         $event = new Event();
         $category = new Category();
         $uri=[];
@@ -26,7 +33,9 @@ class EventController extends Controller
             'events' => $events,
             'categories' => $categories,
             'green' =>Session::getFlashMessage('green'),
-            'red' => Session::getFlashMessage('red')
+            'red' => Session::getFlashMessage('red'),
+            "avatar"=>$avatar,
+            "user"=>$user
         ]);
     }
     public function show($id){
