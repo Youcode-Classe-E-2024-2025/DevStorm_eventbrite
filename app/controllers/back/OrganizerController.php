@@ -28,6 +28,14 @@ class OrganizerController extends Controller
         $total_capacity = 0;
         $available_capacity = 0;
 
+        $user = Session::getUser();
+        if ($user && isset($user->avatar)) {
+            $avatar = $user->avatar;
+        } else {
+            $avatar = '';
+        }
+
+
        foreach ($events as $evt) {
         $eventStats = $event->getEventStats($evt['id']);
         $total_tickets += $eventStats['total_tickets'] ?? 0;
@@ -46,7 +54,9 @@ class OrganizerController extends Controller
         
         $this->view('back/organizer/dashboard', [
             'events' => $events,
-            'stats' => $stats
+            'stats' => $stats,
+            'user'=>$user,
+            "avatar"=>$avatar
         ]);
     }
 
