@@ -37,7 +37,7 @@
     <div class="container mx-auto px-4 py-20">
         <h1 class="text-4xl md:text-5xl font-clash font-bold text-center text-primary mb-12">Modifier l'Événement</h1>
 
-        <form action="/organizer/event/edit/{{ event.id }}" method="POST" enctype="multipart/form-data" class="max-w-4xl mx-auto space-y-8">
+        <form method="POST" enctype="multipart/form-data" class="max-w-4xl mx-auto space-y-8">
             <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 
             <!-- Basic Information -->

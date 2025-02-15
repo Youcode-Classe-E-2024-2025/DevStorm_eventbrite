@@ -35,7 +35,7 @@
     <div class="container mx-auto px-4 py-20">
         <h1 class="text-4xl md:text-5xl font-clash font-bold text-center text-primary mb-12">Créer une Nouvelle Promotion</h1>
 
-        <form action="/organizer/promo/create" method="POST" enctype="multipart/form-data" class="max-w-4xl mx-auto space-y-8">
+        <form  method="POST" enctype="multipart/form-data" class="max-w-4xl mx-auto space-y-8">
             <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 
             <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl space-y-6">
@@ -54,11 +54,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block mb-2 font-medium">Date de début *</label>
-                        <input type="datetime-local" name="start_date" required class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                        <input type="datetime-local" name="valid_from" required class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
                     </div>
                     <div>
                         <label class="block mb-2 font-medium">Date de fin *</label>
-                        <input type="datetime-local" name="end_date" required class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                        <input type="datetime-local" name="valid_until" required class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
                     </div>
                 </div>
             </div>

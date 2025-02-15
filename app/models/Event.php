@@ -237,19 +237,20 @@ public function getEventStats($eventId)
     $query = $db->getConnection()->prepare("
         SELECT 
             e.id,
-            COALESCE(SUM(ett.total_quantity), 0) as total_capacity,
-            COALESCE(SUM(ett.available_quantity), 0) as available_capacity,
-            COUNT(t.id) as total_tickets,
-            COALESCE(SUM(t.price), 0) as total_revenue,
-            COUNT(CASE WHEN t.status = 'validé' THEN 1 END) as validated_tickets
+            COALESCE(SUM(ett.total_quantity), 0) AS total_capacity,
+            COALESCE(SUM(ett.available_quantity), 0) AS available_capacity,
+            COUNT(t.id) AS total_tickets,
+            COALESCE(SUM(t.price), 0) AS total_revenue,
+            COUNT(CASE WHEN t.status = 'validé' THEN 1 END) AS validated_tickets
         FROM events e
         LEFT JOIN event_ticket_types ett ON e.id = ett.event_id
-        LEFT JOIN tickets t ON e.id = t.event_id
+        LEFT JOIN tickets t ON t.ticket_type_id = ett.id
         WHERE e.id = :event_id
         GROUP BY e.id
     ");
     
     $query->execute(['event_id' => $eventId]);
+
     return $query->fetch(PDO::FETCH_ASSOC);
 }
 
@@ -627,6 +628,48 @@ public function getEventParticipants($eventId)
             throw $e;
         }
     }
+
+//deleteEvent 
+
+public function canDeleteEvent($id)
+{
+    $db = \App\Core\Database::getInstance();
+    
+    // Check for participants
+    $participantsQuery = $db->getConnection()->prepare("
+        SELECT COUNT(*) as count 
+        FROM tickets 
+        WHERE event_id = :id 
+        AND status != 'annulé'
+    ");
+    $participantsQuery->execute(['id' => $id]);
+    $hasParticipants = $participantsQuery->fetch(PDO::FETCH_ASSOC)['count'] > 0;
+
+    // Check if event is past
+    $eventQuery = $db->getConnection()->prepare("
+        SELECT date < CURRENT_TIMESTAMP as is_past
+        FROM events 
+        WHERE id = :id
+    ");
+    $eventQuery->execute(['id' => $id]);
+    $isPast = $eventQuery->fetch(PDO::FETCH_ASSOC)['is_past'];
+
+    // Event can be deleted if it has no participants AND is past
+    return !$hasParticipants && $isPast;
+}
+
+
+public function deleteEvent($id)
+{
+    error_log("Attempting to delete event $id");
+    $db = \App\Core\Database::getInstance();
+    
+    $query = $db->getConnection()->prepare("DELETE FROM events WHERE id = :id");
+    $success = $query->execute(['id' => $id]);
+    
+    error_log("Delete success: " . ($success ? 'true' : 'false'));
+    return $success;
+}
 
 
 }

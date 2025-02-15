@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Organisateur | DevEvents</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Add this in the head section -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -20,9 +26,7 @@
             }
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
 </head>
 <body class="bg-white text-gray-900 font-manrope">
 <!-- Navigation -->
@@ -130,48 +134,170 @@
         </video>
     </div>
 </div>
-
-<script>
-    function confirmDelete(eventId) {
-        if (confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) {
-            window.location.href = `/event/${eventId}/delete`;
+    <script>
+        function playVideo(url) {
+            const modal = document.getElementById('videoModal');
+            const player = document.getElementById('videoPlayer');
+            player.src = url;
+            modal.classList.remove('hidden');
         }
-    }
 
-    function playVideo(url) {
-        const modal = document.getElementById('videoModal');
-        const player = document.getElementById('videoPlayer');
-        player.src = url;
-        modal.classList.remove('hidden');
-    }
+        function closeVideo() {
+            const modal = document.getElementById('videoModal');
+            const player = document.getElementById('videoPlayer');
+            player.pause();
+            modal.classList.add('hidden');
+        }
 
-    function closeVideo() {
-        const modal = document.getElementById('videoModal');
-        const player = document.getElementById('videoPlayer');
-        player.pause();
-        modal.classList.add('hidden');
-    }
-
-    // Pagination functionality
-    const prevButton = document.getElementById('prevPage');
-    const nextButton = document.getElementById('nextPage');
-    const currentPage = parseInt(document.getElementById('currentPage').textContent);
-    const totalPages = parseInt(document.getElementById('totalPages').textContent);
-
-    prevButton.disabled = currentPage === 1;
-    nextButton.disabled = currentPage === totalPages;
-
-    prevButton.addEventListener('click', () => {
-        if (currentPage > 1) {
-            window.location.href = `/dashboard?page=${currentPage - 1}`;
+function confirmDelete(eventId) {
+    Swal.fire({
+        title: 'Êtes-vous sûr?',
+        text: "Vous ne pourrez pas revenir en arrière!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#8B5CF6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Oui, supprimer!',
+        cancelButtonText: 'Annuler'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/event/${eventId}/delete`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire(
+                        'Supprimé!',
+                        'L\'événement a été supprimé.',
+                        'success'
+                    ).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire(
+                        'Impossible de supprimer',
+                        'L\'événement a des participants ou n\'est pas terminé.',
+                        'error'
+                    );
+                }
+            });
         }
     });
+}
 
-    nextButton.addEventListener('click', () => {
-        if (currentPage < totalPages) {
-            window.location.href = `/dashboard?page=${currentPage + 1}`;
+
+
+
+
+
+        function showDeleteError() {
+            const notification = document.getElementById('notification');
+            const message = document.getElementById('notification-message');
+            message.textContent = "Impossible de supprimer l'événement : des participants sont inscrits ou l'événement n'est pas terminé";
+            
+            notification.classList.remove('hidden');
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 3000);
         }
-    });
-</script>
+
+let currentPage = 1;
+const eventsContainer = document.getElementById('events-container');
+
+async function loadPage(page) {
+    try {
+        const response = await fetch(`/events/page/${page}`);
+        const data = await response.json();
+        
+        document.getElementById('currentPage').textContent = data.currentPage;
+        document.getElementById('totalPages').textContent = data.totalPages;
+        document.getElementById('prevPage').disabled = data.currentPage === 1;
+        document.getElementById('nextPage').disabled = data.currentPage === data.totalPages;
+        
+        eventsContainer.innerHTML = '';
+        data.events.forEach(event => {
+            eventsContainer.innerHTML += `
+                <div class="relative rounded-3xl overflow-hidden group shadow-xl hover:shadow-2xl transition-shadow duration-300">
+                    <div class="absolute top-4 right-4 flex space-x-3 z-10">
+                        <button onclick="confirmDelete(${event.id})" class="p-2 bg-white/20 hover:bg-red-500 text-red-500 hover:text-white backdrop-blur-md rounded-full transition-colors duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                        <a href="/event/${event.id}/edit" class="p-2 bg-white/20 hover:bg-blue-500 text-blue-500 hover:text-white backdrop-blur-md rounded-full transition-colors duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                        </a>
+                        <a href="/event/${event.id}/export/pdf" class="p-2 bg-white/20 hover:bg-green-500 text-green-500 hover:text-white backdrop-blur-md rounded-full transition-colors duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        </a>
+                        <a href="/event/${event.id}/stats" class="p-2 bg-white/20 hover:bg-purple-500 text-purple-500 hover:text-white backdrop-blur-md rounded-full transition-colors duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                        </a>
+                        <a href="/event/${event.id}/promocode/create" class="p-2 bg-white/20 hover:bg-yellow-400 text-yellow-400 hover:text-white backdrop-blur-md rounded-full transition-colors duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-400">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                        </a>
+                    </div>
+
+                    <img src="/${event.image_url}" alt="${event.title}" class="w-full h-[400px] object-cover transition-transform duration-300 group-hover:scale-105" />
+
+                    ${event.is_promo ? `
+                        <div class="absolute top-4 left-4 bg-yellow-400 text-black font-bold py-1 px-3 rounded-full flex items-center space-x-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <span>PROMO</span>
+                        </div>
+                    ` : ''}
+
+                    <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">
+                        <span class="text-sm uppercase tracking-wider text-amber-300">${event.category_name}</span>
+                        <h3 class="text-3xl font-extrabold mt-2">${event.title}</h3>
+                        <p class="flex items-center space-x-2 mt-2">
+                            <i class="far fa-calendar-alt"></i>
+                            <span>${new Date(event.date).toLocaleDateString('fr-FR', { 
+                                day: '2-digit', 
+                                month: 'short', 
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })}</span>
+                        </p>
+                        <p class="flex items-center space-x-2 mt-1">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${event.location}</span>
+                        </p>
+                        <p class="flex items-center space-x-2 text-gray-300 mt-1">
+                            <i class="fas fa-users"></i>
+                            <span>${event.total_capacity > 0 ? 
+                                `${event.total_capacity} places (${event.available_capacity} disponibles)` : 
+                                'Places non définies'}</span>
+                        </p>
+                    </div>
+                </div>
+            `;
+        });
+    } catch (error) {
+        console.log('Error:', error);
+    }
+}
+
+
+// Add click handlers
+document.getElementById('prevPage').addEventListener('click', () => {
+    if (currentPage > 1) {
+        currentPage--;
+        loadPage(currentPage);
+    }
+});
+
+document.getElementById('nextPage').addEventListener('click', () => {
+    currentPage++;
+    loadPage(currentPage);
+});
+
+// Initial load
+loadPage(1);    </script>
 </body>
 </html>
