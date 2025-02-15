@@ -575,5 +575,47 @@ public function getEventParticipants($eventId)
         }
     }
 
+//deleteEvent 
+
+public function canDeleteEvent($id)
+{
+    $db = \App\Core\Database::getInstance();
+    
+    // Check for participants
+    $participantsQuery = $db->getConnection()->prepare("
+        SELECT COUNT(*) as count 
+        FROM tickets 
+        WHERE event_id = :id 
+        AND status != 'annulé'
+    ");
+    $participantsQuery->execute(['id' => $id]);
+    $hasParticipants = $participantsQuery->fetch(PDO::FETCH_ASSOC)['count'] > 0;
+
+    // Check if event is past
+    $eventQuery = $db->getConnection()->prepare("
+        SELECT date < CURRENT_TIMESTAMP as is_past
+        FROM events 
+        WHERE id = :id
+    ");
+    $eventQuery->execute(['id' => $id]);
+    $isPast = $eventQuery->fetch(PDO::FETCH_ASSOC)['is_past'];
+
+    // Event can be deleted if it has no participants AND is past
+    return !$hasParticipants && $isPast;
+}
+
+
+public function deleteEvent($id)
+{
+    error_log("Attempting to delete event $id");
+    $db = \App\Core\Database::getInstance();
+    
+    $query = $db->getConnection()->prepare("DELETE FROM events WHERE id = :id");
+    $success = $query->execute(['id' => $id]);
+    
+    error_log("Delete success: " . ($success ? 'true' : 'false'));
+    return $success;
+}
+
 
 }
