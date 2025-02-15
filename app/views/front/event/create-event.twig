@@ -2,158 +2,227 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Créer un Événement | DevEvents</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        'clash': ['"Clash Display"', 'sans-serif'],
+                        'manrope': ['Manrope', 'sans-serif'],
+                    },
                     colors: {
-                        'custom-purple': '#8B5CF6',
+                        'primary': '#8B5CF6',
                     }
                 }
             }
         }
     </script>
+    <style>
+        .bg-gradient {
+            background: radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.15), transparent 60%);
+        }
+    </style>
 </head>
-<body class="bg-black text-white">
-    <div class="min-h-screen">
-        <!-- Navigation -->
-{% include "layouts/nav.twig" %}  
+<body class="bg-black text-white font-manrope">
+<div class="min-h-screen bg-gradient">
+    <!-- Navigation -->
+    {% include 'layouts/nav.twig' %}
 
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-20">
+        <h1 class="text-4xl md:text-5xl font-clash font-bold text-center text-primary mb-12">Créer un Nouvel Événement</h1>
 
-        <!-- Main Content -->
-        <div class="container mx-auto px-4 py-8 flex justify-center items-center min-h-screen">
-        <div class="w-full max-w-4xl">
-            <h1 class="text-3xl font-bold text-custom-purple mb-8">Créer un Nouvel Événement</h1>
-            
-            <form action="/organizer/event/create" method="POST" enctype="multipart/form-data" class="max-w-3xl space-y-6">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                
-                <!-- Basic Information -->
-                <div class="bg-gray-900 p-6 rounded-lg space-y-6">
-                    <h2 class="text-xl font-semibold">Informations Générales</h2>
-                    
-                    <div>
-                        <label class="block mb-2">Titre de l'événement *</label>
-                        <input type="text" name="title" required 
-                               class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:border-custom-purple">
-                    </div>
-                    
-                    <div>
-                        <label class="block mb-2">Description *</label>
-                        <textarea name="description" required rows="4" 
-                                  class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:border-custom-purple"></textarea>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block mb-2">Date *</label>
-                            <input type="datetime-local" name="date" required 
-                                   class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:border-custom-purple">
-                        </div>
-                        <div>
-                            <label class="block mb-2">Lieu *</label>
-                            <input type="text" name="location" required 
-                                   class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:border-custom-purple">
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Tickets & Capacity -->
-                <div class="bg-gray-900 p-6 rounded-lg space-y-6">
-                    <h2 class="text-xl font-semibold">Billets et Capacité</h2>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      
-                        <div>
-                            <label class="block mb-2">Catégorie *</label>
-                            <select name="category_id" required 
-                                    class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:border-custom-purple">
-                                {% for category in categories %}
-                                    <option value="{{ category.id }}">{{ category.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-    <label class="block mb-2">Tags</label>
-    <select name="tags[]" multiple 
-            class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:border-custom-purple">
-        {% for tag in tags %}
-            <option value="{{ tag.id }}">{{ tag.name }}</option>
-        {% endfor %}
-    </select>
-    <p class="text-sm text-gray-400 mt-1">Maintenez Ctrl (Cmd sur Mac) pour sélectionner plusieurs tags</p>
-</div>
+        <form action="/organizer/event/create" method="POST" enctype="multipart/form-data" class="max-w-4xl mx-auto space-y-8">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 
+            <!-- Basic Information -->
+            <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl space-y-6">
+                <h2 class="text-2xl font-clash font-semibold">Informations Générales</h2>
+
+                <div>
+                    <label class="block mb-2 font-medium">Titre de l'événement *</label>
+                    <input type="text" name="title" required
+                           class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
                 </div>
 
-<div class="bg-gray-900 p-6 rounded-lg space-y-6">
-    <div class="flex justify-between items-center">
-        <h2 class="text-xl font-semibold">Types de Billets</h2>
-        <button type="button" onclick="addTicketType()" 
-                class="px-4 py-2 bg-custom-purple text-white rounded-lg hover:bg-purple-700">
-            <i class="fas fa-plus mr-2"></i>Ajouter un type
-        </button>
-    </div>
-    
-    <div id="ticket-types" class="space-y-4">
-        <!-- Ticket types will be added here dynamically -->
-    </div>
-</div>
+                <div>
+                    <label class="block mb-2 font-medium">Description *</label>
+                    <textarea name="description" required rows="4"
+                              class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white"></textarea>
+                </div>
 
-                
-                <!-- Media -->
-                <div class="bg-gray-900 p-6 rounded-lg space-y-6">
-                    <h2 class="text-xl font-semibold">Médias</h2>
-                    
-            <div>
-                <label for="image" class="block text-sm font-medium text-gray-300">Image de l'événement</label>
-                <input type="file" id="image" name="image" accept="image/*" class="mt-1 block w-full text-sm text-gray-300
-                    file:mr-4 file:py-2 file:px-4
-                    file:rounded-full file:border-0
-                    file:text-sm file:font-semibold
-                    file:bg-custom-purple file:text-white
-                    hover:file:bg-purple-700">
-            </div>
-            
-            <div>
-                <label for="video" class="block text-sm font-medium text-gray-300">Vidéo promotionnelle</label>
-                <input type="file" id="video" name="video" accept="video/*" class="mt-1 block w-full text-sm text-gray-300
-                    file:mr-4 file:py-2 file:px-4
-                    file:rounded-full file:border-0
-                    file:text-sm file:font-semibold
-                    file:bg-custom-purple file:text-white
-                    hover:file:bg-purple-700">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block mb-2 font-medium">Date *</label>
+                        <input type="datetime-local" name="date" required
+                               class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                    </div>
+                    <div>
+                        <label class="block mb-2 font-medium">Lieu *</label>
+                        <input type="text" name="location" required
+                               class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                    </div>
+                </div>
             </div>
 
+            <!-- Tickets & Capacity -->
+            <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl space-y-6">
+                <h2 class="text-2xl font-clash font-semibold">Billets et Capacité</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block mb-2 font-medium">Catégorie *</label>
+                        <select name="category_id" required
+                                class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                            <option value="">Sélectionnez une catégorie</option>
+                            <option value="1">Conférence</option>
+                            <option value="2">Atelier</option>
+                            <option value="3">Meetup</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block mb-2 font-medium">Tags</label>
+                        <select name="tags[]" multiple
+                                class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                            <option value="1">Tech</option>
+                            <option value="2">Design</option>
+                            <option value="3">Marketing</option>
+                            <option value="4">Business</option>
+                        </select>
+                        <p class="text-sm text-gray-400 mt-1">Maintenez Ctrl (Cmd sur Mac) pour sélectionner plusieurs tags</p>
+                    </div>
                 </div>
-                
-                <!-- Submit -->
-                <div class="flex justify-end space-x-4">
-                    <a href="/organizer/dashboard" 
-                       class="px-6 py-2 border border-custom-purple text-custom-purple rounded-lg hover:bg-custom-purple hover:text-white">
-                        Annuler
-                    </a>
-                    <button type="submit" 
-                            class="px-6 py-2 bg-custom-purple text-white rounded-lg hover:bg-purple-700">
-                        Créer l'événement
+            </div>
+
+            <!-- Ticket Types -->
+            <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl space-y-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-clash font-semibold">Types de Billets</h2>
+                    <button type="button" onclick="addTicketType()"
+                            class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                        Ajouter un type
                     </button>
                 </div>
-            </form>
-        </div>
-    </div>
 
-    <!-- JavaScript for form validation -->
+                <div id="ticket-types" class="space-y-4">
+                    <!-- Ticket types will be added here dynamically -->
+                </div>
+            </div>
+
+            <!-- Media -->
+            <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl space-y-6">
+                <h2 class="text-2xl font-clash font-semibold">Médias</h2>
+
+                <div>
+                    <label for="image" class="block mb-2 font-medium">Image de l'événement</label>
+                    <input type="file" id="image" name="image" accept="image/*"
+                           class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white
+                                      file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0
+                                      file:text-sm file:font-semibold file:bg-primary file:text-white
+                                      hover:file:bg-primary/90">
+                </div>
+
+                <div>
+                    <label for="video" class="block mb-2 font-medium">Vidéo promotionnelle</label>
+                    <input type="file" id="video" name="video" accept="video/*"
+                           class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white
+                                      file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0
+                                      file:text-sm file:font-semibold file:bg-primary file:text-white
+                                      hover:file:bg-primary/90">
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="flex justify-end space-x-4">
+                <a href="/organizer/dashboard"
+                   class="px-6 py-2 border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition-colors">
+                    Annuler
+                </a>
+                <button type="submit"
+                        class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                    Créer l'événement
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+    let ticketTypeCount = 0;
+
+    function addTicketType() {
+        const template = `
+                <div class="ticket-type bg-white/5 p-4 rounded-lg">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block mb-2">Type de Billet</label>
+                            <select name="ticket_types[${ticketTypeCount}][type]"
+                                    onchange="togglePriceField(this)"
+                                    class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                                <option value="gratuit">Gratuit</option>
+                                <option value="payant">Standard</option>
+                                <option value="VIP">VIP</option>
+                                <option value="early_bird">Early Bird</option>
+                            </select>
+                        </div>
+
+                        <div class="price-field">
+                            <label class="block mb-2">Prix (€)</label>
+                            <input type="number" step="0.01" min="0"
+                                   name="ticket_types[${ticketTypeCount}][price]"
+                                   class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                        </div>
+
+                        <div>
+                            <label class="block mb-2">Quantité</label>
+                            <input type="number" min="1"
+                                   name="ticket_types[${ticketTypeCount}][quantity]"
+                                   class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="removeTicketType(this)"
+                            class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                        Supprimer
+                    </button>
+                </div>
+            `;
+
+        document.getElementById('ticket-types').insertAdjacentHTML('beforeend', template);
+        ticketTypeCount++;
+    }
+
+    function togglePriceField(select) {
+        const priceField = select.closest('.ticket-type').querySelector('.price-field');
+        const priceInput = priceField.querySelector('input');
+
+        if (select.value === 'gratuit') {
+            priceField.style.display = 'none';
+            priceInput.value = 0;
+        } else {
+            priceField.style.display = 'block';
+            priceInput.value = '';
+        }
+    }
+
+    function removeTicketType(button) {
+        button.closest('.ticket-type').remove();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        addTicketType();
+    });
+
     document.querySelector('form').addEventListener('submit', function(e) {
         const title = document.querySelector('input[name="title"]').value;
         const date = document.querySelector('input[name="date"]').value;
         let totalTickets = 0;
 
-        // Calculate total tickets across all types
         document.querySelectorAll('input[name$="[quantity]"]').forEach(input => {
             totalTickets += parseInt(input.value || 0);
         });
@@ -163,75 +232,6 @@
             alert('Veuillez remplir tous les champs obligatoires et ajouter au moins un type de billet.');
         }
     });
-
-
-
-   let ticketTypeCount = 0;
-
-function addTicketType() {
-    const template = `
-        <div class="ticket-type bg-gray-800 p-4 rounded-lg">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block mb-2">Type de Billet</label>
-                    <select name="ticket_types[${ticketTypeCount}][type]" 
-                            onchange="togglePriceField(this)"
-                            class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg">
-                        <option value="gratuit">Gratuit</option>
-                        <option value="payant">Standard</option>
-                        <option value="VIP">VIP</option>
-                        <option value="early_bird">Early Bird</option>
-                    </select>
-                </div>
-                
-                <div class="price-field">
-                    <label class="block mb-2">Prix (€)</label>
-                    <input type="number" step="0.01" min="0" 
-                           name="ticket_types[${ticketTypeCount}][price]"
-                           class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg">
-                </div>
-                
-                <div>
-                    <label class="block mb-2">Quantité</label>
-                    <input type="number" min="1" 
-                           name="ticket_types[${ticketTypeCount}][quantity]"
-                           class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg">
-                </div>
-            </div>
-            
-            <button type="button" onclick="removeTicketType(this)" 
-                    class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                Supprimer
-            </button>
-        </div>
-    `;
-    
-    document.getElementById('ticket-types').insertAdjacentHTML('beforeend', template);
-    ticketTypeCount++;
-}
-
-function togglePriceField(select) {
-    const priceField = select.closest('.ticket-type').querySelector('.price-field');
-    const priceInput = priceField.querySelector('input');
-    
-    if (select.value === 'gratuit') {
-        priceField.style.display = 'none';
-        priceInput.value = 0;
-    } else {
-        priceField.style.display = 'block';
-        priceInput.value = '';
-    }
-}
-
-function removeTicketType(button) {
-    button.closest('.ticket-type').remove();
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    addTicketType();
-});
-
 </script>
-
 </body>
 </html>

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tech Innovation Event 2025</title>
+    <title>Créer un Événement | DevEvents</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
@@ -26,323 +26,222 @@
         .bg-gradient {
             background: radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.15), transparent 60%);
         }
-        .star {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-        }
-        .star-1 { top: 15%; right: 35%; }
-        .star-2 { top: 40%; right: 15%; }
-        .star-3 { bottom: 30%; right: 45%; }
-    </style>
-    <style>
-        .font-space-grotesk {
-            font-family: 'Clash Display', sans-serif;
-        }
-        .logo-container {
-            display: flex;
-            justify-content: start;
-            align-items: center;
-            padding: 1.5rem 2rem;
-            overflow: hidden;
-            white-space: nowrap;
-        }
-
-        .logo-wrapper {
-            display: flex;
-            flex-wrap: nowrap;
-        }
-
-        .logo {
-            margin-right: 2rem; /* Espacement entre les éléments */
-        }
-
     </style>
 </head>
-<body class="bg-black min-h-screen">
-<!-- Navigation -->
-{% include 'layouts/nav.twig' %}
-<div class="relative min-h-screen overflow-hidden bg-[url('/assets/hero.jpg')] bg-cover bg-center bg-no-repeat pt-20">
+<body class="bg-black text-white font-manrope">
+<div class="min-h-screen bg-gradient">
+    <!-- Navigation -->
+    <nav class="bg-black/50 backdrop-blur-sm fixed w-full z-10">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="/" class="font-clash text-2xl font-bold text-white">DevEvents</a>
+            <div class="space-x-4">
+                <a href="#" class="text-white hover:text-primary transition-colors">Accueil</a>
+                <a href="#" class="text-white hover:text-primary transition-colors">Événements</a>
+                <a href="#" class="text-white hover:text-primary transition-colors">À propos</a>
+                <a href="#" class="text-white hover:text-primary transition-colors">Contact</a>
+            </div>
+        </div>
+    </nav>
 
-    <!-- Decorative stars -->
-    <svg class="star star-1" viewBox="0 0 24 24" fill="none">
-        <path d="M12 2L15 9L22 9L16 14L18 21L12 17L6 21L8 14L2 9L9 9L12 2Z" fill="white" opacity="0.5"/>
-    </svg>
-    <svg class="star star-2" viewBox="0 0 24 24" fill="none">
-        <path d="M12 2L15 9L22 9L16 14L18 21L12 17L6 21L8 14L2 9L9 9L12 2Z" fill="#FF6B6B" opacity="0.5"/>
-    </svg>
-    <svg class="star star-3" viewBox="0 0 24 24" fill="none">
-        <path d="M12 2L15 9L22 9L16 14L18 21L12 17L6 21L8 14L2 9L9 9L12 2Z" fill="white" opacity="0.5"/>
-    </svg>
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-20">
+        <h1 class="text-4xl md:text-5xl font-clash font-bold text-center text-primary mb-12">Créer un Nouvel Événement</h1>
 
-    <!-- Main content -->
-    <div class="container mx-auto px-4 py-16">
-        <div class="flex flex-col lg:flex-row items-center gap-12">
-            <!-- Left content -->
-            <div class="lg:w-1/2 space-y-6">
-                <p class="font-manrope text-white/80 text-lg">15-17 December National IT Hall</p>
-                <h1 class="font-clash text-white text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
-                    Tech Innovation Event 2025
-                </h1>
-                <p class="font-manrope text-white/70 text-lg max-w-xl">
-                    Tech Innovation Event 2024: Unveiling breakthrough technologies and networking opportunities for industry pioneers.
-                </p>
-                <div class="flex gap-4 pt-4">
-                    <button class="bg-primary hover:bg-primary/90 text-white font-manrope px-8 py-3 rounded-lg transition-colors">
-                        Buy Tickets
+        <form action="/organizer/event/create" method="POST" enctype="multipart/form-data" class="max-w-4xl mx-auto space-y-8">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <!-- Basic Information -->
+            <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl space-y-6">
+                <h2 class="text-2xl font-clash font-semibold">Informations Générales</h2>
+
+                <div>
+                    <label class="block mb-2 font-medium">Titre de l'événement *</label>
+                    <input type="text" name="title" required
+                           class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                </div>
+
+                <div>
+                    <label class="block mb-2 font-medium">Description *</label>
+                    <textarea name="description" required rows="4"
+                              class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block mb-2 font-medium">Date *</label>
+                        <input type="datetime-local" name="date" required
+                               class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                    </div>
+                    <div>
+                        <label class="block mb-2 font-medium">Lieu *</label>
+                        <input type="text" name="location" required
+                               class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tickets & Capacity -->
+            <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl space-y-6">
+                <h2 class="text-2xl font-clash font-semibold">Billets et Capacité</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block mb-2 font-medium">Catégorie *</label>
+                        <select name="category_id" required
+                                class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                            <option value="">Sélectionnez une catégorie</option>
+                            <option value="1">Conférence</option>
+                            <option value="2">Atelier</option>
+                            <option value="3">Meetup</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block mb-2 font-medium">Tags</label>
+                        <select name="tags[]" multiple
+                                class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                            <option value="1">Tech</option>
+                            <option value="2">Design</option>
+                            <option value="3">Marketing</option>
+                            <option value="4">Business</option>
+                        </select>
+                        <p class="text-sm text-gray-400 mt-1">Maintenez Ctrl (Cmd sur Mac) pour sélectionner plusieurs tags</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ticket Types -->
+            <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl space-y-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-clash font-semibold">Types de Billets</h2>
+                    <button type="button" onclick="addTicketType()"
+                            class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                        Ajouter un type
                     </button>
-                    <button class="border border-white/20 hover:bg-white/10 text-white font-manrope px-8 py-3 rounded-lg transition-colors">
-                        See Schedule
-                    </button>
+                </div>
+
+                <div id="ticket-types" class="space-y-4">
+                    <!-- Ticket types will be added here dynamically -->
                 </div>
             </div>
 
-        </div>
-    </div>
-</div>
+            <!-- Media -->
+            <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl space-y-6">
+                <h2 class="text-2xl font-clash font-semibold">Médias</h2>
 
-<div class="bg-[#fff8f0] font-space-grotesk">
-<!-- Logo Section -->
+                <div>
+                    <label for="image" class="block mb-2 font-medium">Image de l'événement</label>
+                    <input type="file" id="image" name="image" accept="image/*"
+                           class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white
+                                      file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0
+                                      file:text-sm file:font-semibold file:bg-primary file:text-white
+                                      hover:file:bg-primary/90">
+                </div>
 
-    <div class="logo-container flex items-center px-8 py-6 overflow-hidden">
-        <div class="logo-wrapper">
-            <a href="/" class="font-clash text-2xl font-bold h-8 text-black logo">Event Hive</a>
-            <a href="/" class="font-clash text-2xl font-bold h-8 text-black logo">Event Hive</a>
-            <a href="/" class="font-clash text-2xl font-bold h-8 text-black logo">Event Hive</a>
-            <a href="/" class="font-clash text-2xl font-bold h-8 text-black logo">Event Hive</a>
-            <a href="/" class="font-clash text-2xl font-bold h-8 text-black logo">Event Hive</a>
-            <a href="/" class="font-clash text-2xl font-bold h-8 text-black logo">Event Hive</a>
-        </div>
-    </div>
-
-
-    <!-- About Section -->
-<div class="container mx-auto px-8 py-16">
-    <div class="flex items-start justify-between gap-12">
-        <div class="w-1/2">
-            <h1 class="text-6xl font-bold mb-4">About the event</h1>
-        </div>
-        <div class="w-1/2">
-            <p class="text-lg">
-                <span class="text-purple-600">Tech Event 2025</span> showcases groundbreaking innovations, featuring keynote talks, interactive workshops, and networking sessions for tech enthusiasts and industry leaders.
-            </p>
-        </div>
-    </div>
-
-    <!-- Event Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
-        <!-- Card 1 -->
-        <div class="relative rounded-3xl overflow-hidden group">
-            <img
-                    src="../../../public/assets/Event1.webp"
-                    alt="Event"
-                    class="w-full h-[400px] object-cover transition-transform duration-300 group-hover:scale-105"
-            />
-            <div class="absolute top-4 left-4">
-                <div class="bg-yellow-400 text-black font-bold py-1 px-3 rounded-full flex items-center space-x-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-black">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
-                    <span>PROMO</span>
+                <div>
+                    <label for="video" class="block mb-2 font-medium">Vidéo promotionnelle</label>
+                    <input type="file" id="video" name="video" accept="video/*"
+                           class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white
+                                      file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0
+                                      file:text-sm file:font-semibold file:bg-primary file:text-white
+                                      hover:file:bg-primary/90">
                 </div>
             </div>
-            <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">
-                <span class="text-sm uppercase tracking-wider text-amber-300">MEMORABLE EXPERIENCE</span>
-                <h3 class="text-2xl font-bold mt-2">Unforgettable Moments at Eventive 2024</h3>
-            </div>
-            <div class="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <button class="p-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-500">
-                        <path d="M3 6h18"></path>
-                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                    </svg>
-                </button>
-                <button class="p-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500">
-                        <path d="M12 20h9"></path>
-                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                    </svg>
-                </button>
-                <button class="p-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                </button>
-                <button class="p-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-purple-500">
-                        <line x1="18" y1="20" x2="18" y2="10"></line>
-                        <line x1="12" y1="20" x2="12" y2="4"></line>
-                        <line x1="6" y1="20" x2="6" y2="14"></line>
-                    </svg>
+
+            <!-- Submit -->
+            <div class="flex justify-end space-x-4">
+                <a href="/organizer/dashboard"
+                   class="px-6 py-2 border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition-colors">
+                    Annuler
+                </a>
+                <button type="submit"
+                        class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                    Créer l'événement
                 </button>
             </div>
-        </div>
-
-        <!-- Card 2 -->
-        <div class="relative rounded-3xl overflow-hidden">
-            <img src="../../../public/assets/Event2.webp" alt="Speakers" class="w-full h-[400px] object-cover">
-            <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">
-                <span class="text-sm uppercase tracking-wider">SKILLED SPEAKERS</span>
-                <h3 class="text-2xl font-bold mt-2">Storytelling Festival</h3>
-            </div>
-        </div>
-
-        <!-- Card 3 -->
-        <div class="relative rounded-3xl overflow-hidden">
-            <img src="../../../public/assets/Event3.webp" alt="Networking" class="w-full h-[400px] object-cover">
-            <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">
-                <span class="text-sm uppercase tracking-wider">COMMUNITY BUILD</span>
-                <h3 class="text-2xl font-bold mt-2">Build Networking</h3>
-            </div>
-        </div>
+        </form>
     </div>
 </div>
 
-<!-- Decorative Elements -->
-    <svg class="w-8 h-8 text-black" viewBox="0 0 24 24">
-        <path fill="currentColor" d="M12 0L14.5 9.5L24 12L14.5 14.5L12 24L9.5 14.5L0 12L9.5 9.5L12 0Z"/>
-    </svg>
-</div>
-<div class="fixed bottom-40 right-8">
-    <svg class="w-12 h-12 text-black" viewBox="0 0 24 24">
-        <path fill="currentColor" d="M3 3L7 7M17 7L21 3M3 21L7 17M17 17L21 21"/>
-    </svg>
-</div>
-
-<div class="bg-white font-manrope p-8 mx-auto">
-        <!-- Header -->
-    <div class="w-[80%] mx-auto text-center mb-16]">
-        <div class="text-center max-w-6xl mb-16 relative">
-            <span class="absolute left-10 top-0 text-orange-400">✧</span>
-            <h1 class="font-clash text-5xl mb-4">Browse all the schedule</h1>
-            <p class="text-gray-600 max-w-2xl mx-auto">
-                Explore the complete event schedule to find sessions, speakers, and activities that match your interests and needs.
-            </p>
-            <span class="absolute right-10 top-0 text-purple-500">✧</span>
-        </div>
-
-        <!-- Day Header -->
-        <div class="bg-black text-white rounded-2xl p-6 mb-8 flex justify-between items-center">
-            <div class="flex items-center gap-4">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
-                </svg>
-                <span class="font-clash">Day 01</span>
-                <span class="font-clash">Sunday, December 2025</span>
-            </div>
-            <span class="font-clash">Innovation & Technology</span>
-        </div>
-
-        <!-- Schedule Items -->
-        <div class="space-y-6">
-            <!-- Digital Innovation -->
-            <div class="bg-[#FFF5D9] rounded-2xl p-6 flex gap-6">
-                <div class="w-32 h-32 rounded-2xl overflow-hidden bg-gray-200">
-                    <img src="../../../public/assets/Event4.webp" alt="Event" class="w-full h-full object-cover">
-                </div>
-                <div class="flex-1">
-                    <div class="flex justify-between items-start mb-2">
-                        <div>
-                            <h3 class="font-clash text-2xl mb-1">The Future of Digital Innovation</h3>
-                            <p class="text-gray-600">By Make Torello</p>
-                        </div>
-                        <span class="font-clash">10:00 AM - 11:00 AM</span>
-                    </div>
-                    <p class="text-gray-600">The Future of Digital Innovation: Harnessing emerging technologies to revolutionize industries, enhance user experiences, and drive unprecedented growth in a rapidly evolving digital landscape.</p>
-                </div>
-            </div>
-
-            <!-- AI and Machine Learning -->
-            <div class="bg-[#EBE1FF] rounded-2xl p-6 flex gap-6">
-                <div class="w-32 h-32 rounded-2xl overflow-hidden bg-gray-200">
-                    <img src="../../../public/assets/Event5.webp" alt="Event" class="w-full h-full object-cover">
-                </div>
-                <div class="flex-1">
-                    <div class="flex justify-between items-start mb-2">
-                        <div>
-                            <h3 class="font-clash text-2xl mb-1">Trends AI and Machine Learning</h3>
-                            <p class="text-gray-600">By David Brown</p>
-                        </div>
-                        <span class="font-clash">11:00 AM - 12:00 AM</span>
-                    </div>
-                    <p class="text-gray-600">AI and Machine Learning are revolutionizing industries by enabling advanced data analysis, personalized experiences, and intelligent automation, paving the way for smarter and more efficient solutions across various sectors.</p>
-                </div>
-            </div>
-
-            <!-- Lunch Break -->
-            <div class="border-t border-b py-8 text-center">
-                <h3 class="font-clash text-2xl mb-2">Lunch Break & Networking</h3>
-                <p class="font-clash text-gray-600">12:30 PM - 2:00PM</p>
-            </div>
-
-            <!-- Digital Marketing -->
-            <div class="bg-[#E3F0FB] rounded-2xl p-6 flex gap-6">
-                <div class="w-32 h-32 rounded-2xl overflow-hidden bg-gray-200">
-                    <img src="../../../public/assets/Event6.webp" alt="Event" class="w-full h-full object-cover">
-                </div>
-                <div class="flex-1">
-                    <div class="flex justify-between items-start mb-2">
-                        <div>
-                            <h3 class="font-clash text-2xl mb-1">Digital Marketing for a New Era</h3>
-                            <p class="text-gray-600">By Jenifer Moore</p>
-                        </div>
-                        <span class="font-clash">7:00 AM - 8:00 AM</span>
-                    </div>
-                    <p class="text-gray-600">Navigate the evolving landscape of digital marketing in a new era, harnessing innovative strategies and technologies to create compelling campaigns that resonate with audiences and drive business growth.</p>
-                </div>
-            </div>
-
-            <!-- Blockchain -->
-            <div class="bg-[#FEEAE4] rounded-2xl p-6 flex gap-6">
-                <div class="w-32 h-32 rounded-2xl overflow-hidden bg-gray-200">
-                    <img src="../../../public/assets/Event5.webp" alt="Event" class="w-full h-full object-cover">
-                </div>
-                <div class="flex-1">
-                    <div class="flex justify-between items-start mb-2">
-                        <div>
-                            <h3 class="font-clash text-2xl mb-1">Introduction to Blockchain</h3>
-                            <p class="text-gray-600">By David Brown</p>
-                        </div>
-                        <span class="font-clash">6:00 AM - 8:00 AM</span>
-                    </div>
-                    <p class="text-gray-600">Blockchain introduction: Decentralized ledger tech records secure, transparent, immutable transactions across networks, transforming finance and supply chain management.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- See All Button -->
-        <div class="text-center mt-12">
-            <button class="bg-purple-600 hover:bg-purple-700 text-white font-clash px-8 py-3 rounded-full">
-                See All Schedule
-            </button>
-        </div>
-    </div>
-</div>
-</div>
 <script>
-    const logoWrapper = document.querySelector('.logo-wrapper');
-    const logos = document.querySelectorAll('.logo');
-    logos.forEach(logo => {
-        const clone = logo.cloneNode(true);
-        logoWrapper.appendChild(clone);
+    let ticketTypeCount = 0;
+
+    function addTicketType() {
+        const template = `
+                <div class="ticket-type bg-white/5 p-4 rounded-lg">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block mb-2">Type de Billet</label>
+                            <select name="ticket_types[${ticketTypeCount}][type]"
+                                    onchange="togglePriceField(this)"
+                                    class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                                <option value="gratuit">Gratuit</option>
+                                <option value="payant">Standard</option>
+                                <option value="VIP">VIP</option>
+                                <option value="early_bird">Early Bird</option>
+                            </select>
+                        </div>
+
+                        <div class="price-field">
+                            <label class="block mb-2">Prix (€)</label>
+                            <input type="number" step="0.01" min="0"
+                                   name="ticket_types[${ticketTypeCount}][price]"
+                                   class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                        </div>
+
+                        <div>
+                            <label class="block mb-2">Quantité</label>
+                            <input type="number" min="1"
+                                   name="ticket_types[${ticketTypeCount}][quantity]"
+                                   class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="removeTicketType(this)"
+                            class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                        Supprimer
+                    </button>
+                </div>
+            `;
+
+        document.getElementById('ticket-types').insertAdjacentHTML('beforeend', template);
+        ticketTypeCount++;
+    }
+
+    function togglePriceField(select) {
+        const priceField = select.closest('.ticket-type').querySelector('.price-field');
+        const priceInput = priceField.querySelector('input');
+
+        if (select.value === 'gratuit') {
+            priceField.style.display = 'none';
+            priceInput.value = 0;
+        } else {
+            priceField.style.display = 'block';
+            priceInput.value = '';
+        }
+    }
+
+    function removeTicketType(button) {
+        button.closest('.ticket-type').remove();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        addTicketType();
     });
 
-    let scrollPosition = 0;
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const title = document.querySelector('input[name="title"]').value;
+        const date = document.querySelector('input[name="date"]').value;
+        let totalTickets = 0;
 
-    function scrollLogos() {
-        scrollPosition += 1;
-        logoWrapper.style.transform = `translateX(-${scrollPosition}px)`;
-        if (scrollPosition >= logoWrapper.scrollWidth / 7) {
-            scrollPosition = 0;
+        document.querySelectorAll('input[name$="[quantity]"]').forEach(input => {
+            totalTickets += parseInt(input.value || 0);
+        });
+
+        if (!title || !date || totalTickets === 0) {
+            e.preventDefault();
+            alert('Veuillez remplir tous les champs obligatoires et ajouter au moins un type de billet.');
         }
-        requestAnimationFrame(scrollLogos);
-    }
-    scrollLogos();
+    });
 </script>
 </body>
 </html>

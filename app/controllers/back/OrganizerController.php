@@ -67,11 +67,20 @@ class OrganizerController extends Controller
 
         $tag = new Tag();
         $tags = $tag->getAllTags();
+
+        $user = Session::getUser();
+        if ($user && isset($user->avatar)) {
+            $avatar = $user->avatar;
+        } else {
+            $avatar = '';
+        }
     
         
         $this->view('front/event/create-event', [
             'categories' => $categories,
-            'tags' => $tags
+            'tags' => $tags,
+            'user'=>$user,
+            'avatar'=>$avatar,
         ]);
     }
     public function handleCreateEvent()
