@@ -67,62 +67,88 @@ class Event extends Model
     }
 
     public function save()
-    {
-        $db = Database::getInstance();
-        $connection = $db->getConnection();
+{
+    $db = Database::getInstance();
+    $connection = $db->getConnection();
+    
+    try {
+        $connection->beginTransaction();
         
-        try {
-            $connection->beginTransaction();
-            
-            $sql = "INSERT INTO events (
-                title, 
-                description, 
-                date, 
-                location, 
-                category_id, 
-                organizer_id, 
-                status, 
-                image_url, 
-                video_url
-            ) VALUES (
-                :title, 
-                :description, 
-                :date, 
-                :location, 
-                :category_id, 
-                :organizer_id, 
-                :status, 
-                :image_url, 
-                :video_url
-            ) RETURNING id";
-            
-            $stmt = $connection->prepare($sql);
-            $result = $stmt->execute([
-                'title' => $this->title,
-                'description' => $this->description,
-                'date' => $this->date,
-                'location' => $this->location,
-                'category_id' => $this->category->id,
-                'organizer_id' => $this->organizer->id,
-                'status' => $this->status,
-                'image_url' => $this->image_url ?? null,
-                'video_url' => $this->video_url ?? null
+        // Insert event
+        $eventSql = "INSERT INTO events (
+            title, 
+            description, 
+            date, 
+            location, 
+            category_id, 
+            organizer_id, 
+            status, 
+            image_url, 
+            video_url
+        ) VALUES (
+            :title, 
+            :description, 
+            :date, 
+            :location, 
+            :category_id, 
+            :organizer_id, 
+            :status, 
+            :image_url, 
+            :video_url
+        ) RETURNING id";
+        
+        $eventStmt = $connection->prepare($eventSql);
+        $eventStmt->execute([
+            'title' => $this->title,
+            'description' => $this->description,
+            'date' => $this->date,
+            'location' => $this->location,
+            'category_id' => $this->category->id,
+            'organizer_id' => $this->organizer->id,
+            'status' => $this->status,
+            'image_url' => $this->image_url ?? null,
+            'video_url' => $this->video_url ?? null
+        ]);
+        
+        $eventId = $eventStmt->fetchColumn();
+        
+        // Insert ticket types
+        $ticketSql = "INSERT INTO event_ticket_types (
+            event_id,
+            ticket_type,
+            price,
+            total_quantity,
+            available_quantity
+        ) VALUES (
+            :event_id,
+            :ticket_type,
+            :price,
+            :total_quantity,
+            :available_quantity
+        )";
+        
+        $ticketStmt = $connection->prepare($ticketSql);
+        
+        foreach ($this->ticketTypes as $ticket) {
+            $ticketStmt->execute([
+                'event_id' => $eventId,
+                'ticket_type' => $ticket['type'],
+                'price' => $ticket['price'],
+                'total_quantity' => $ticket['quantity'],
+                'available_quantity' => $ticket['quantity']
             ]);
-            
-            if ($result) {
-                $this->id = $stmt->fetchColumn();
-                $connection->commit();
-                return $this->id;
-            }
-            
-            $connection->rollBack();
-            return false;
-            
-        } catch (\Exception $e) {
-            $connection->rollBack();
-            throw $e;
         }
+        
+        $connection->commit();
+        $this->id = $eventId;
+        return $eventId;
+        
+    } catch (\Exception $e) {
+        $connection->rollBack();
+        throw $e;
     }
+}
+
     
 public function addEventTags($tags)
 {
@@ -509,20 +535,29 @@ public function getEventParticipants($eventId)
     {
         $db = \App\Core\Database::getInstance();
         $query = $db->getConnection()->prepare("
-        SELECT 
-            COUNT(t.id) as total_tickets,
-            SUM(t.price) as total_revenue,
-            COUNT(CASE WHEN t.status = 'validé' THEN 1 END) as validated_tickets,
-            e.capacity as capacity
-        FROM events e
-         JOIN tickets t ON e.id = t.event_id
-        GROUP BY e.id, e.capacity
-    ");
-
+            SELECT 
+                SUM(total_tickets) as total_tickets,
+                SUM(total_revenue) as total_revenue,
+                SUM(validated_tickets) as validated_tickets,
+                SUM(total_capacity) as total_capacity
+            FROM (
+                SELECT 
+                    COUNT(t.id) as total_tickets,
+                    COALESCE(SUM(t.price), 0) as total_revenue,
+                    COUNT(CASE WHEN t.status = 'validé' THEN 1 END) as validated_tickets,
+                    COALESCE(SUM(ett.total_quantity), 0) as total_capacity
+                FROM events e
+                LEFT JOIN event_ticket_types ett ON e.id = ett.event_id
+                LEFT JOIN tickets t ON t.event_id = e.id
+                GROUP BY e.id
+            ) as stats
+        ");
+    
         $query->execute();
         return $query->fetch(PDO::FETCH_ASSOC);
     }
-
+    
+    
     public function UpdateStatus($status,$id){
         $db = \App\Core\Database::getInstance();
         $query = $db->getConnection()->prepare("UPDATE events SET status = :status WHERE id = :id");
