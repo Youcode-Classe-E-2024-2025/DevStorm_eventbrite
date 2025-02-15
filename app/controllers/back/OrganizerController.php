@@ -101,6 +101,11 @@ class OrganizerController extends Controller
                 $event->status = 'en attente';
                 $event->organizer = User::read(Session::getUser()['id']);
     
+                // Set ticket types before saving
+                if (isset($_POST['ticket_types']) && is_array($_POST['ticket_types'])) {
+                    $event->setTicketTypes($_POST['ticket_types']);
+                }
+    
                 // Save the event
                 $eventId = $event->save();
     
@@ -108,19 +113,6 @@ class OrganizerController extends Controller
                     // Handle tags
                     if (isset($_POST['tags']) && is_array($_POST['tags'])) {
                         $event->addEventTags($_POST['tags']);
-                    }
-    
-                    // Handle ticket types
-                    if (isset($_POST['ticket_types']) && is_array($_POST['ticket_types'])) {
-                        $ticketTypes = [];
-                        foreach ($_POST['ticket_types'] as $type) {
-                            $ticketTypes[] = [
-                                'type' => $type['type'],
-                                'price' => floatval($type['price']),
-                                'quantity' => intval($type['quantity'])
-                            ];
-                        }
-                        $event->addTicketTypes($eventId, $ticketTypes);
                     }
     
                     $_SESSION['success'] = "Event created successfully!";
@@ -269,41 +261,53 @@ public function exportParticipantsPDF($eventId)
         $category = new Category();
         $tag = new Tag();
         
+        // Get existing event tickets first
+        $eventTickets = $event->getEventTicketTypes($eventId);
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Base event data
             $updateData = [
                 'title' => $_POST['title'],
                 'description' => $_POST['description'],
                 'date' => $_POST['date'],
-                'price' => $_POST['price'],
-                'capacity' => $_POST['capacity'],
                 'location' => $_POST['location'],
                 'category_id' => $_POST['category_id']
             ];
-    
-            // Handle image upload
+            
+            // Handle file uploads
             if (!empty($_FILES['image']['name'])) {
                 $newImageName = uniqid() . '_' . $_FILES['image']['name'];
                 move_uploaded_file($_FILES['image']['tmp_name'], 'assets/images/' . $newImageName);
                 $updateData['image_url'] = 'assets/images/' . $newImageName;
             }
             
-            // Handle video upload
             if (!empty($_FILES['video']['name'])) {
                 $newVideoName = uniqid() . '_' . $_FILES['video']['name'];
                 move_uploaded_file($_FILES['video']['tmp_name'], 'assets/videos/' . $newVideoName);
                 $updateData['video_url'] = 'assets/videos/' . $newVideoName;
             }
-    
-            // Update event data
-            $event->updateEvent($eventId, $updateData);
+            
+            // Process ticket types
+            $ticketTypes = [];
+            if (isset($_POST['ticket_type']) && is_array($_POST['ticket_type'])) {
+                foreach ($_POST['ticket_type'] as $index => $type) {
+                    $ticketTypes[] = [
+                        'type' => $type,
+                        'price' => $_POST['price'][$index],
+                        'quantity' => $_POST['quantity'][$index]
+                    ];
+                }
+            }
+            
+            // Update event with processed ticket types
+            $event->updateEvent($eventId, $updateData, $ticketTypes);
             
             // Update tags if present
             if (isset($_POST['tags'])) {
                 $event->updateEventTags($eventId, $_POST['tags']);
             }
             
-            $this->redirect('/organizer/dashboard');
+            header('Location: /organizer/dashboard');
+            exit;
         }
         
         // Get all necessary data for the form
@@ -311,23 +315,21 @@ public function exportParticipantsPDF($eventId)
         $categories = $category->getAllCategories();
         $tags = $tag->getAllTags();
         $selectedTags = $event->getEventTags($eventId);
-
+        
         $user = Session::getUser();
-        if ($user && isset($user->avatar)) {
-            $avatar = $user->avatar;
-        } else {
-            $avatar = '';
-        }
+        $avatar = $user && isset($user->avatar) ? $user->avatar : '';
         
         $this->view('front/event/edit-event', [
             'event' => $eventData,
             'categories' => $categories,
             'tags' => $tags,
             'selectedTags' => $selectedTags,
-            'user'=>$user,
-            'avatar'=>$avatar
+            'eventTickets' => $eventTickets, // Add this to pass ticket data to view
+            'user' => $user,
+            'avatar' => $avatar
         ]);
     }
+    
     //delete event 
     public function deleteEvent($id)
     {

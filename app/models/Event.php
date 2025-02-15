@@ -67,88 +67,114 @@ class Event extends Model
     }
 
     public function save()
-{
-    $db = Database::getInstance();
-    $connection = $db->getConnection();
-    
-    try {
-        $connection->beginTransaction();
+    {
+        $db = Database::getInstance();
+        $connection = $db->getConnection();
         
-        // Insert event
-        $eventSql = "INSERT INTO events (
-            title, 
-            description, 
-            date, 
-            location, 
-            category_id, 
-            organizer_id, 
-            status, 
-            image_url, 
-            video_url
-        ) VALUES (
-            :title, 
-            :description, 
-            :date, 
-            :location, 
-            :category_id, 
-            :organizer_id, 
-            :status, 
-            :image_url, 
-            :video_url
-        ) RETURNING id";
-        
-        $eventStmt = $connection->prepare($eventSql);
-        $eventStmt->execute([
-            'title' => $this->title,
-            'description' => $this->description,
-            'date' => $this->date,
-            'location' => $this->location,
-            'category_id' => $this->category->id,
-            'organizer_id' => $this->organizer->id,
-            'status' => $this->status,
-            'image_url' => $this->image_url ?? null,
-            'video_url' => $this->video_url ?? null
-        ]);
-        
-        $eventId = $eventStmt->fetchColumn();
-        
-        // Insert ticket types
-        $ticketSql = "INSERT INTO event_ticket_types (
-            event_id,
-            ticket_type,
-            price,
-            total_quantity,
-            available_quantity
-        ) VALUES (
-            :event_id,
-            :ticket_type,
-            :price,
-            :total_quantity,
-            :available_quantity
-        )";
-        
-        $ticketStmt = $connection->prepare($ticketSql);
-        
-        foreach ($this->ticketTypes as $ticket) {
-            $ticketStmt->execute([
-                'event_id' => $eventId,
-                'ticket_type' => $ticket['type'],
-                'price' => $ticket['price'],
-                'total_quantity' => $ticket['quantity'],
-                'available_quantity' => $ticket['quantity']
+        try {
+            $connection->beginTransaction();
+            
+            // 1. Insert into events table
+            $eventSql = "INSERT INTO events (
+                title, 
+                description, 
+                date, 
+                location, 
+                category_id, 
+                organizer_id, 
+                status, 
+                image_url, 
+                video_url
+            ) VALUES (
+                :title, 
+                :description, 
+                :date, 
+                :location, 
+                :category_id, 
+                :organizer_id, 
+                :status, 
+                :image_url, 
+                :video_url
+            ) RETURNING id";
+            
+            $eventStmt = $connection->prepare($eventSql);
+            $eventStmt->execute([
+                'title' => $this->title,
+                'description' => $this->description,
+                'date' => $this->date,
+                'location' => $this->location,
+                'category_id' => $this->category->id,
+                'organizer_id' => $this->organizer->id,
+                'status' => $this->status,
+                'image_url' => $this->image_url ?? null,
+                'video_url' => $this->video_url ?? null
             ]);
+            
+            $eventId = $eventStmt->fetchColumn();
+            
+            // 2. Insert into event_ticket_types table
+            $ticketTypeSql = "INSERT INTO event_ticket_types (
+                event_id,
+                ticket_type,
+                price,
+                total_quantity,
+                available_quantity
+            ) VALUES (
+                :event_id,
+                :ticket_type,
+                :price,
+                :total_quantity,
+                :available_quantity
+            ) RETURNING id";
+            
+            $ticketTypeStmt = $connection->prepare($ticketTypeSql);
+            
+            foreach ($this->ticketTypes as $ticket) {
+                $ticketTypeStmt->execute([
+                    'event_id' => $eventId,
+                    'ticket_type' => $ticket['type'],
+                    'price' => $ticket['price'],
+                    'total_quantity' => $ticket['quantity'],
+                    'available_quantity' => $ticket['quantity']
+                ]);
+                
+                $ticketTypeId = $ticketTypeStmt->fetchColumn();
+                
+                // 3. Create initial tickets in tickets table (optional)
+                $ticketSql = "INSERT INTO tickets (
+                    event_id,
+                    ticket_type_id,
+                    ticket_type,
+                    price
+                ) VALUES (
+                    :event_id,
+                    :ticket_type_id,
+                    :ticket_type,
+                    :price
+                )";
+                
+                $ticketStmt = $connection->prepare($ticketSql);
+                $ticketStmt->execute([
+                    'event_id' => $eventId,
+                    'ticket_type_id' => $ticketTypeId,
+                    'ticket_type' => $ticket['type'],
+                    'price' => $ticket['price']
+                ]);
+            }
+            
+            $connection->commit();
+            $this->id = $eventId;
+            return $eventId;
+            
+        } catch (\Exception $e) {
+            $connection->rollBack();
+            throw $e;
         }
-        
-        $connection->commit();
-        $this->id = $eventId;
-        return $eventId;
-        
-    } catch (\Exception $e) {
-        $connection->rollBack();
-        throw $e;
     }
-}
-
+    public function setTicketTypes($ticketTypes)
+    {
+        $this->ticketTypes = $ticketTypes;
+    }
     
 public function addEventTags($tags)
 {
@@ -261,18 +287,19 @@ public function getEventStats($eventId)
 {
     $db = \App\Core\Database::getInstance();
     $query = $db->getConnection()->prepare("
-        SELECT 
-            e.id,
-            COALESCE(SUM(ett.total_quantity), 0) AS total_capacity,
-            COALESCE(SUM(ett.available_quantity), 0) AS available_capacity,
-            COUNT(t.id) AS total_tickets,
-            COALESCE(SUM(t.price), 0) AS total_revenue,
-            COUNT(CASE WHEN t.status = 'validé' THEN 1 END) AS validated_tickets
-        FROM events e
-        LEFT JOIN event_ticket_types ett ON e.id = ett.event_id
-        LEFT JOIN tickets t ON t.ticket_type_id = ett.id
-        WHERE e.id = :event_id
-        GROUP BY e.id
+      SELECT 
+    e.id,
+    COALESCE(SUM(ett.total_quantity), 0) AS total_capacity,
+    COALESCE(SUM(ett.available_quantity), 0) AS available_capacity,
+    COUNT(DISTINCT t.id) AS total_tickets,
+    COALESCE(SUM(ett.price * (ett.total_quantity - ett.available_quantity)), 0) AS total_revenue,
+    COUNT(DISTINCT CASE WHEN t.status = 'validé' THEN t.id END) AS validated_tickets
+    FROM events e
+    LEFT JOIN event_ticket_types ett ON e.id = ett.event_id
+    LEFT JOIN tickets t ON t.ticket_type_id = ett.id
+    WHERE e.id = :event_id
+    GROUP BY e.id;
+
     ");
     
     $query->execute(['event_id' => $eventId]);
@@ -344,25 +371,104 @@ public function getEventTags($eventId)
     $stmt->execute(['event_id' => $eventId]);
     return $stmt->fetchAll(PDO::FETCH_COLUMN);
 }
-public function updateEvent($eventId, $data)
+public function updateEvent($eventId, $data, $ticketTypes = null)
 {
-    $db = \App\Core\Database::getInstance();
+    $db = Database::getInstance();
+    $connection = $db->getConnection();
     
-    $updateFields = [];
-    $params = ['id' => $eventId];
-    
-    foreach ($data as $key => $value) {
-        $updateFields[] = "$key = :$key";
-        $params[$key] = $value;
+    try {
+        $connection->beginTransaction();
+        
+        // Update event basic information
+        $updateFields = [];
+        $params = ['id' => $eventId];
+        
+        foreach ($data as $key => $value) {
+            if (!empty($value)) {
+                $updateFields[] = "$key = :$key";
+                $params[$key] = $value;
+            }
+        }
+        
+        $sql = "UPDATE events SET " . implode(', ', $updateFields) . " WHERE id = :id";
+        $stmt = $connection->prepare($sql);
+        $stmt->execute($params);
+        
+        // Handle ticket types
+        if ($ticketTypes) {
+            // Get existing ticket types
+            $existingTickets = $connection->prepare("SELECT id, ticket_type FROM event_ticket_types WHERE event_id = :event_id");
+            $existingTickets->execute(['event_id' => $eventId]);
+            $existingTicketTypes = $existingTickets->fetchAll(PDO::FETCH_ASSOC);
+            
+            foreach ($ticketTypes as $index => $ticket) {
+                if ($index < count($existingTicketTypes)) {
+                    // Update existing ticket
+                    $stmt = $connection->prepare("
+                        UPDATE event_ticket_types 
+                        SET ticket_type = :type,
+                            price = :price,
+                            total_quantity = :quantity,
+                            available_quantity = :available
+                        WHERE id = :id
+                    ");
+                    $stmt->execute([
+                        'type' => $ticket['type'],
+                        'price' => $ticket['price'],
+                        'quantity' => $ticket['quantity'],
+                        'available' => $ticket['quantity'],
+                        'id' => $existingTicketTypes[$index]['id']
+                    ]);
+                } else {
+                    // Insert new ticket
+                    $stmt = $connection->prepare("
+                        INSERT INTO event_ticket_types (
+                            event_id, 
+                            ticket_type, 
+                            price, 
+                            total_quantity, 
+                            available_quantity
+                        ) VALUES (
+                            :event_id,
+                            :type,
+                            :price,
+                            :quantity,
+                            :available
+                        )
+                    ");
+                    $stmt->execute([
+                        'event_id' => $eventId,
+                        'type' => $ticket['type'],
+                        'price' => $ticket['price'],
+                        'quantity' => $ticket['quantity'],
+                        'available' => $ticket['quantity']
+                    ]);
+                }
+            }
+        }
+        
+        $connection->commit();
+        return true;
+        
+    } catch (\Exception $e) {
+        $connection->rollBack();
+        throw $e;
     }
-    
-    $sql = "UPDATE events SET " . implode(', ', $updateFields) . " WHERE id = :id";
-    
-    $stmt = $db->getConnection()->prepare($sql);
-    return $stmt->execute($params);
 }
 
 
+
+// In your Event model, add this method to get existing ticket types:
+public function getEventTicketTypes($eventId)
+{
+    $db = Database::getInstance();
+    $sql = "SELECT * FROM event_ticket_types WHERE event_id = :event_id";
+    $stmt = $db->getConnection()->prepare($sql);
+    $stmt->execute(['event_id' => $eventId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// In your controller, before showing the edit form:
 
 
  /**
