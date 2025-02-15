@@ -26,11 +26,7 @@
             }
         }
     </script>
-    <style>
-        .bg-gradient {
-            background: radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.15), transparent 60%);
-        }
-    </style>
+
 </head>
 <body class="bg-white text-gray-900 font-manrope">
 <!-- Navigation -->
@@ -125,64 +121,6 @@
                 Suivant<i class="fas fa-chevron-right ml-2"></i>
             </button>
         </div>
-        <div class="bg-gray-900 rounded-lg p-6">
-            <h2 class="text-2xl font-bold mb-6 font-clash">Mes Événements</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="events-container">
-              {% for event in events %}
-    <div class="bg-black rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300">
-        <div class="relative h-48">
-            {% if event.image_url %}
-                <img src="/{{ event.image_url }}" alt="{{ event.title }}" class="w-full h-full object-cover">
-            {% endif %}
-            <div class="absolute top-2 right-2">
-                <span class="px-2 py-1 rounded-full text-xs 
-                    {% if event.status == 'actif' %}bg-green-500
-                    {% elseif event.status == 'en attente' %}bg-yellow-500
-                    {% else %}bg-red-500{% endif %}">
-                    {{ event.status }}
-                </span>
-            </div>
-        </div>
-        <div class="p-4">
-            <h3 class="font-bold text-xl mb-2 font-clash">{{ event.title }}</h3>
-            <div class="flex flex-col gap-2 text-gray-400">
-                <p><i class="far fa-calendar-alt mr-2"></i>{{ event.date|date('d M Y • H:i') }}</p>
-                <p><i class="fas fa-map-marker-alt mr-2"></i>{{ event.location }}</p>
-               <p class="text-gray-400 mb-2">
-    <i class="fas fa-users mr-2"></i>
-    {% if event.total_capacity > 0 %}
-        {{ event.total_capacity }} places ({{ event.available_capacity }} disponibles)
-    {% else %}
-        Places non définies
-    {% endif %}
-</p>
-
-            </div>
-            <div class="mt-4 flex flex-wrap gap-2">
-                <a href="/event/{{ event.id }}/stats" class="flex-1 text-center bg-gray-800 px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors">
-                    <i class="fas fa-chart-bar mr-2"></i>Stats
-                </a>
-                <a href="/event/{{ event.id }}/edit" class="flex-1 text-center bg-gray-800 px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors">
-                    <i class="fas fa-edit mr-2"></i>Modifier
-                </a>
-                <button onclick="confirmDelete(${ event.id })" class="flex-1 text-center bg-red-600 px-3 py-2 rounded-lg hover:bg-red-700 transition-colors">
-                    <i class="fas fa-trash mr-2"></i>Supprimer
-                </button>
-            </div>
-        </div>
-    </div>
-{% endfor %}
-
-            </div>
-<div class="flex justify-center gap-4 mt-8">
-    <button id="prevPage" class="bg-primary px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50">
-        <i class="fas fa-chevron-left mr-2"></i>Précédent
-    </button>
-    <span class="flex items-center" id="pageInfo">Page <span id="currentPage">1</span> sur <span id="totalPages">1</span></span>
-    <button id="nextPage" class="bg-primary px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50">
-        Suivant<i class="fas fa-chevron-right ml-2"></i>
-    </button>
-</div>        </div>
     </div>
 
 <!-- Video Modal -->
@@ -196,7 +134,6 @@
         </video>
     </div>
 </div>
-
     <script>
         function playVideo(url) {
             const modal = document.getElementById('videoModal');
@@ -276,77 +213,67 @@ async function loadPage(page) {
         const response = await fetch(`/events/page/${page}`);
         const data = await response.json();
         
-        // Update pagination info
         document.getElementById('currentPage').textContent = data.currentPage;
         document.getElementById('totalPages').textContent = data.totalPages;
-        
-        // Enable/disable buttons
         document.getElementById('prevPage').disabled = data.currentPage === 1;
         document.getElementById('nextPage').disabled = data.currentPage === data.totalPages;
         
-        // Clear and reload events
         eventsContainer.innerHTML = '';
         data.events.forEach(event => {
             eventsContainer.innerHTML += `
-                <div class="bg-black rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300">
-                    <div class="relative h-48">
-                        ${event.image_url ? 
-                            `<img src="/${event.image_url}" alt="${event.title}" class="w-full h-full object-cover">` : ''
-                        }
-                        ${event.video_url ? 
-                            `<button class="absolute bottom-2 right-2 bg-primary p-2 rounded-full" onclick="playVideo('/${event.video_url}')">
-                                <i class="fas fa-play"></i>
-                            </button>` : ''
-                        }
-                      <div class="absolute top-2 right-2">
-                    <span class="px-2 py-1 rounded-full text-xs ${
-                        event.status === 'actif' ? 'bg-green-500' : 
-                        event.status === 'en attente' ? 'bg-yellow-500' : 'bg-red-500'
-                    }">
-                        ${event.status}
-                    </span>
-                </div>
-            </div>
-                    <div class="p-4">
-                        <h3 class="font-bold text-xl mb-2 font-clash">${event.title}</h3>
-                        <p class="text-gray-400 mb-2">
-                            <i class="far fa-calendar-alt mr-2"></i>
-                            ${new Date(event.date).toLocaleDateString('fr-FR', { 
+                <div class="relative rounded-3xl overflow-hidden group shadow-xl hover:shadow-2xl transition-shadow duration-300">
+                    <div class="absolute top-4 right-4 flex space-x-3 z-10">
+                        <button onclick="confirmDelete(${event.id})" class="p-2 bg-white/20 hover:bg-red-500 text-red-500 hover:text-white backdrop-blur-md rounded-full transition-colors duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                        <a href="/event/${event.id}/edit" class="p-2 bg-white/20 hover:bg-blue-500 text-blue-500 hover:text-white backdrop-blur-md rounded-full transition-colors duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                        </a>
+                        <a href="/event/${event.id}/export/pdf" class="p-2 bg-white/20 hover:bg-green-500 text-green-500 hover:text-white backdrop-blur-md rounded-full transition-colors duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        </a>
+                        <a href="/event/${event.id}/stats" class="p-2 bg-white/20 hover:bg-purple-500 text-purple-500 hover:text-white backdrop-blur-md rounded-full transition-colors duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                        </a>
+                        <a href="/event/${event.id}/promocode/create" class="p-2 bg-white/20 hover:bg-yellow-400 text-yellow-400 hover:text-white backdrop-blur-md rounded-full transition-colors duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-400">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                        </a>
+                    </div>
+
+                    <img src="/${event.image_url}" alt="${event.title}" class="w-full h-[400px] object-cover transition-transform duration-300 group-hover:scale-105" />
+
+                    ${event.is_promo ? `
+                        <div class="absolute top-4 left-4 bg-yellow-400 text-black font-bold py-1 px-3 rounded-full flex items-center space-x-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <span>PROMO</span>
+                        </div>
+                    ` : ''}
+
+                    <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">
+                        <span class="text-sm uppercase tracking-wider text-amber-300">${event.category_name}</span>
+                        <h3 class="text-3xl font-extrabold mt-2">${event.title}</h3>
+                        <p class="flex items-center space-x-2 mt-2">
+                            <i class="far fa-calendar-alt"></i>
+                            <span>${new Date(event.date).toLocaleDateString('fr-FR', { 
                                 day: '2-digit', 
                                 month: 'short', 
                                 year: 'numeric',
                                 hour: '2-digit',
                                 minute: '2-digit'
-                            })}
+                            })}</span>
                         </p>
-<p class="text-gray-400 mb-2">
-    <i class="fas fa-users mr-2"></i>
-    ${event.total_capacity > 0 ? 
-        `${event.total_capacity} places (${event.available_capacity} disponibles)` : 
-        'Places non définies'}
-</p>
-
-                        <div class="flex flex-wrap gap-2">
-                            <a href="/event/${event.id}/stats" 
-                               class="flex-1 text-center bg-gray-800 px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors">
-                                <i class="fas fa-chart-bar mr-2"></i>Stats
-                            </a>
-                            <a href="/event/${event.id}/edit" 
-                               class="flex-1 text-center bg-gray-800 px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors">
-                                <i class="fas fa-edit mr-2"></i>Modifier
-                            </a>
-                            <a href="/event/${event.id}/export/pdf" 
-                               class="flex-1 text-center bg-gray-800 px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors">
-                                <i class="fas fa-file-pdf mr-2"></i>PDF
-                            </a>
-                            <a href="/event/${event.id}/promocode/create" 
-                               class="flex-1 text-center bg-primary px-3 py-2 rounded-lg hover:bg-purple-700 transition-colors">
-                                <i class="fas fa-tag mr-2"></i>Promo
-                            </a>
-                             <button onclick="confirmDelete(${event.id})" class="flex-1 text-center bg-red-600 px-3 py-2 rounded-lg hover:bg-red-700 transition-colors">
-                    <i class="fas fa-trash mr-2"></i>Supprimer
-                </button>
-                        </div>
+                        <p class="flex items-center space-x-2 mt-1">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${event.location}</span>
+                        </p>
+                        <p class="flex items-center space-x-2 text-gray-300 mt-1">
+                            <i class="fas fa-users"></i>
+                            <span>${event.total_capacity > 0 ? 
+                                `${event.total_capacity} places (${event.available_capacity} disponibles)` : 
+                                'Places non définies'}</span>
+                        </p>
                     </div>
                 </div>
             `;
@@ -355,6 +282,7 @@ async function loadPage(page) {
         console.log('Error:', error);
     }
 }
+
 
 // Add click handlers
 document.getElementById('prevPage').addEventListener('click', () => {
