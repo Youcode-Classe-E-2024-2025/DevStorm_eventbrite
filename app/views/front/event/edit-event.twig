@@ -2,111 +2,228 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Modifier l'événement | DevEvents</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier l'Événement | DevEvents</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        'clash': ['"Clash Display"', 'sans-serif'],
+                        'manrope': ['Manrope', 'sans-serif'],
+                    },
                     colors: {
-                        'custom-purple': '#8B5CF6',
+                        'primary': '#8B5CF6',
                     }
                 }
             }
         }
     </script>
+    <style>
+        .bg-gradient {
+            background: radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.15), transparent 60%);
+        }
+    </style>
 </head>
-<body class="bg-black text-white">
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold text-custom-purple mb-8">Modifier l'événement</h1>
-        
-        <form method="POST" enctype="multipart/form-data" class="max-w-2xl space-y-6">
-            <div class="bg-gray-900 p-6 rounded-lg space-y-4">
-                <!-- Existing fields -->
-                <div>
-                    <label class="block mb-2">Titre</label>
-                    <input type="text" name="title" value="{{ event.title }}" required 
-                           class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg">
-                </div>
-                
-                <div>
-                    <label class="block mb-2">Description</label>
-                    <textarea name="description" rows="4" required 
-                              class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg">{{ event.description }}</textarea>
-                </div>
-                
-                <div>
-                    <label class="block mb-2">Date et heure</label>
-                    <input type="datetime-local" name="date" value="{{ event.date }}" required 
-                           class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg">
-                </div>
-                
-                <div>
-                    <label class="block mb-2">Prix</label>
-                    <input type="number" name="price" value="{{ event.price }}" step="0.01" required 
-                           class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg">
-                </div>
-                
-                <div>
-                    <label class="block mb-2">Capacité</label>
-                    <input type="number" name="capacity" value="{{ event.capacity }}" required 
-                           class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg">
-                </div>
-                
-                <div>
-                    <label class="block mb-2">Lieu</label>
-                    <input type="text" name="location" value="{{ event.location }}" required 
-                           class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg">
-                </div>
-                
-                <div>
-                    <label class="block mb-2">Catégorie</label>
-                    <select name="category_id" required class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg">
-                        {% for category in categories %}
-                            <option value="{{ category.id }}" {% if category.id == event.category_id %}selected{% endif %}>
-                                {{ category.name }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
+<body class="bg-black text-white font-manrope">
+<div class="min-h-screen bg-gradient">
+    <!-- Navigation -->
+    {% include 'layouts/nav.twig' %}
 
-                <!-- New fields for media -->
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-20">
+        <h1 class="text-4xl md:text-5xl font-clash font-bold text-center text-primary mb-12">Modifier l'Événement</h1>
+
+        <form action="/organizer/event/edit/{{ event.id }}" method="POST" enctype="multipart/form-data" class="max-w-4xl mx-auto space-y-8">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <!-- Basic Information -->
+            <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl space-y-6">
+                <h2 class="text-2xl font-clash font-semibold">Informations Générales</h2>
+
                 <div>
-                    <label class="block mb-2">Image de l'événement</label>
-                    {% if event.image_url %}
-                        <img src="{{ event.image_url }}" alt="Current event image" class="w-32 h-32 object-cover mb-2">
-                    {% endif %}
-                    <input type="file" name="image" accept="image/*" 
-                           class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg">
+                    <label class="block mb-2 font-medium">Titre de l'événement *</label>
+                    <input type="text" name="title" value="{{ event.title }}" required
+                           class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
                 </div>
 
                 <div>
-                    <label class="block mb-2">Vidéo de l'événement</label>
-                    {% if event.video_url %}
-                        <video src="{{ event.video_url }}" class="w-64 mb-2" controls></video>
-                    {% endif %}
-                    <input type="file" name="video" accept="video/*" 
-                           class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg">
+                    <label class="block mb-2 font-medium">Description *</label>
+                    <textarea name="description" required rows="4"
+                              class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">{{ event.description }}</textarea>
                 </div>
 
-                <!-- Tags selection -->
-                <div>
-                    <label class="block mb-2">Tags</label>
-                    <select name="tags[]" multiple class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg">
-                        {% for tag in tags %}
-                            <option value="{{ tag.id }}" {% if tag.id in selectedTags %}selected{% endif %}>
-                                {{ tag.name }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                    <p class="text-sm text-gray-400 mt-1">Maintenez Ctrl (Cmd sur Mac) pour sélectionner plusieurs tags</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block mb-2 font-medium">Date *</label>
+                        <input type="datetime-local" name="date" value="{{ event.date }}" required
+                               class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                    </div>
+                    <div>
+                        <label class="block mb-2 font-medium">Lieu *</label>
+                        <input type="text" name="location" value="{{ event.location }}" required
+                               class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                    </div>
                 </div>
-                
-                <button type="submit" class="w-full bg-custom-purple text-white py-2 rounded-lg hover:bg-purple-700">
-                    Mettre à jour l'événement
+            </div>
+
+            <!-- Tickets & Capacity -->
+            <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl space-y-6">
+                <h2 class="text-2xl font-clash font-semibold">Billets et Capacité</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block mb-2 font-medium">Catégorie *</label>
+                        <select name="category_id" required
+                                class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                            <option value="1" {% if event.category_id == 1 %} selected {% endif %}>Conférence</option>
+                            <option value="2" {% if event.category_id == 2 %} selected {% endif %}>Atelier</option>
+                            <option value="3" {% if event.category_id == 3 %} selected {% endif %}>Meetup</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block mb-2 font-medium">Tags</label>
+                        <select name="tags[]" multiple
+                                class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                            <option value="1" {% if '1' in event.tags %} selected {% endif %}>Tech</option>
+                            <option value="2" {% if '2' in event.tags %} selected {% endif %}>Design</option>
+                            <option value="3" {% if '3' in event.tags %} selected {% endif %}>Marketing</option>
+                            <option value="4" {% if '4' in event.tags %} selected {% endif %}>Business</option>
+                        </select>
+                        <p class="text-sm text-gray-400 mt-1">Maintenez Ctrl (Cmd sur Mac) pour sélectionner plusieurs tags</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ticket Types -->
+            <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl space-y-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-clash font-semibold">Types de Billets</h2>
+                    <button type="button" onclick="addTicketType()"
+                            class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                        Ajouter un type
+                    </button>
+                </div>
+
+                <div id="ticket-types" class="space-y-4">
+                    {% for ticket_type in event.ticket_types %}
+                        <div class="ticket-type bg-white/5 p-4 rounded-lg">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block mb-2">Type de Billet</label>
+                                    <select name="ticket_types[{{ loop.index0 }}][type]"
+                                            onchange="togglePriceField(this)"
+                                            class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                                        <option value="gratuit" {% if ticket_type.type == 'gratuit' %} selected {% endif %}>Gratuit</option>
+                                        <option value="payant" {% if ticket_type.type == 'payant' %} selected {% endif %}>Standard</option>
+                                        <option value="VIP" {% if ticket_type.type == 'VIP' %} selected {% endif %}>VIP</option>
+                                        <option value="early_bird" {% if ticket_type.type == 'early_bird' %} selected {% endif %}>Early Bird</option>
+                                    </select>
+                                </div>
+
+                                <div class="price-field">
+                                    <label class="block mb-2">Prix (€)</label>
+                                    <input type="number" step="0.01" min="0"
+                                           name="ticket_types[{{ loop.index0 }}][price]"
+                                           value="{{ ticket_type.price }}"
+                                           class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                                </div>
+
+                                <div>
+                                    <label class="block mb-2">Quantité</label>
+                                    <input type="number" min="1"
+                                           name="ticket_types[{{ loop.index0 }}][quantity]"
+                                           value="{{ ticket_type.quantity }}"
+                                           class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                                </div>
+                            </div>
+
+                            <button type="button" onclick="removeTicketType(this)"
+                                    class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                                Supprimer
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Media -->
+            <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl space-y-6">
+                <h2 class="text-2xl font-clash font-semibold">Médias</h2>
+
+                <div>
+                    <label for="image" class="block mb-2 font-medium">Image de l'événement</label>
+                    <input type="file" id="image" name="image" accept="image/*"
+                           class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                </div>
+            </div>
+
+            <div class="flex justify-between">
+                <button type="submit"
+                        class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                    Sauvegarder les Modifications
                 </button>
+                <a href="/organizer/events" class="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors">
+                    Annuler
+                </a>
             </div>
         </form>
     </div>
+</div>
+
+<script>
+    function addTicketType() {
+        const ticketTypesContainer = document.getElementById('ticket-types');
+        const newTicketType = document.createElement('div');
+        newTicketType.classList.add('ticket-type', 'bg-white/5', 'p-4', 'rounded-lg');
+        newTicketType.innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block mb-2">Type de Billet</label>
+                    <select name="ticket_types[][type]" onchange="togglePriceField(this)" class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                        <option value="gratuit">Gratuit</option>
+                        <option value="payant">Standard</option>
+                        <option value="VIP">VIP</option>
+                        <option value="early_bird">Early Bird</option>
+                    </select>
+                </div>
+                <div class="price-field">
+                    <label class="block mb-2">Prix (€)</label>
+                    <input type="number" step="0.01" min="0" name="ticket_types[][price]"
+                           class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                </div>
+                <div>
+                    <label class="block mb-2">Quantité</label>
+                    <input type="number" min="1" name="ticket_types[][quantity]"
+                           class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                </div>
+            </div>
+            <button type="button" onclick="removeTicketType(this)"
+                    class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                Supprimer
+            </button>
+        `;
+        ticketTypesContainer.appendChild(newTicketType);
+    }
+
+    function removeTicketType(button) {
+        button.closest('.ticket-type').remove();
+    }
+
+    function togglePriceField(select) {
+        const priceField = select.closest('.ticket-type').querySelector('.price-field');
+        if (select.value === 'gratuit') {
+            priceField.style.display = 'none';
+        } else {
+            priceField.style.display = 'block';
+        }
+    }
+
+    // Initialize the form with price visibility based on current value
+    document.querySelectorAll('select[name$="[type]"]').forEach(select => togglePriceField(select));
+</script>
 </body>
 </html>

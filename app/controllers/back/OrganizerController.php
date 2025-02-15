@@ -311,12 +311,21 @@ public function exportParticipantsPDF($eventId)
         $categories = $category->getAllCategories();
         $tags = $tag->getAllTags();
         $selectedTags = $event->getEventTags($eventId);
+
+        $user = Session::getUser();
+        if ($user && isset($user->avatar)) {
+            $avatar = $user->avatar;
+        } else {
+            $avatar = '';
+        }
         
         $this->view('front/event/edit-event', [
             'event' => $eventData,
             'categories' => $categories,
             'tags' => $tags,
-            'selectedTags' => $selectedTags
+            'selectedTags' => $selectedTags,
+            'user'=>$user,
+            'avatar'=>$avatar
         ]);
     }
     //delete event 
