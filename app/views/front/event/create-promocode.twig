@@ -2,48 +2,87 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Créer un Code Promo | DevEvents</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer une Promotion | DevEvents</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .bg-custom-purple {
-            background-color: #8B5CF6;
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'clash': ['"Clash Display"', 'sans-serif'],
+                        'manrope': ['Manrope', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary': '#8B5CF6',
+                    }
+                }
+            }
         }
-        .text-custom-purple {
-            color: #8B5CF6;
+    </script>
+    <style>
+        .bg-gradient {
+            background: radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.15), transparent 60%);
         }
     </style>
 </head>
-<body class="bg-black text-white">
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold text-custom-purple mb-8">Créer un Code Promo</h1>
-        
-        <form method="POST" class="max-w-lg space-y-6">
-            <div class="bg-gray-900 p-6 rounded-lg space-y-4">
+<body class="bg-black text-white font-manrope">
+<div class="min-h-screen bg-gradient">
+    {% include 'layouts/nav.twig' %}
+
+    <div class="container mx-auto px-4 py-20">
+        <h1 class="text-4xl md:text-5xl font-clash font-bold text-center text-primary mb-12">Créer une Nouvelle Promotion</h1>
+
+        <form  method="POST" enctype="multipart/form-data" class="max-w-4xl mx-auto space-y-8">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl space-y-6">
+                <h2 class="text-2xl font-clash font-semibold">Détails de la Promotion</h2>
+
                 <div>
-                    <label class="block mb-2">Réduction (%)</label>
-                    <input type="number" name="discount_percentage" min="1" max="100" required 
-                           class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg">
+                    <label class="block mb-2 font-medium">Nom de la promotion *</label>
+                    <input type="text" name="promo_name" required class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
                 </div>
-              <div>
-                    <label class="block mb-2">Valide du</label>
-                    <input type="datetime-local" name="valid_from" required 
-                           class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg">
-                </div>
-                
+
                 <div>
-                    <label class="block mb-2">Valide jusqu'au</label>
-                    <input type="datetime-local" name="valid_until" required 
-                           class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg">
+                    <label class="block mb-2 font-medium">Description *</label>
+                    <textarea name="promo_description" required rows="4" class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white"></textarea>
                 </div>
-                
-                <input type="hidden" name="event_id" value="{{ event_id }}">
-                
-                <button type="submit" 
-                        class="w-full bg-custom-purple text-white py-2 rounded-lg hover:bg-purple-700">
-                    Créer le code promo
-                </button>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block mb-2 font-medium">Date de début *</label>
+                        <input type="datetime-local" name="valid_from" required class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                    </div>
+                    <div>
+                        <label class="block mb-2 font-medium">Date de fin *</label>
+                        <input type="datetime-local" name="valid_until" required class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white/10 backdrop-blur-sm p-6 rounded-xl space-y-6">
+                <h2 class="text-2xl font-clash font-semibold">Détails du Rabais</h2>
+
+                <div>
+                    <label class="block mb-2 font-medium">Code de promotion *</label>
+                    <input type="text" name="promo_code" required class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                </div>
+
+                <div>
+                    <label class="block mb-2 font-medium">Pourcentage de réduction *</label>
+                    <input type="number" name="discount_percentage" required min="0" max="100" class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary text-white">
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-4">
+                <a href="/organizer/dashboard" class="px-6 py-2 border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition-colors">Annuler</a>
+                <button type="submit" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">Créer la promotion</button>
             </div>
         </form>
     </div>
+</div>
 </body>
 </html>

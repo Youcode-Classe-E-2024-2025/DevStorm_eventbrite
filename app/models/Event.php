@@ -67,62 +67,88 @@ class Event extends Model
     }
 
     public function save()
-    {
-        $db = Database::getInstance();
-        $connection = $db->getConnection();
+{
+    $db = Database::getInstance();
+    $connection = $db->getConnection();
+    
+    try {
+        $connection->beginTransaction();
         
-        try {
-            $connection->beginTransaction();
-            
-            $sql = "INSERT INTO events (
-                title, 
-                description, 
-                date, 
-                location, 
-                category_id, 
-                organizer_id, 
-                status, 
-                image_url, 
-                video_url
-            ) VALUES (
-                :title, 
-                :description, 
-                :date, 
-                :location, 
-                :category_id, 
-                :organizer_id, 
-                :status, 
-                :image_url, 
-                :video_url
-            ) RETURNING id";
-            
-            $stmt = $connection->prepare($sql);
-            $result = $stmt->execute([
-                'title' => $this->title,
-                'description' => $this->description,
-                'date' => $this->date,
-                'location' => $this->location,
-                'category_id' => $this->category->id,
-                'organizer_id' => $this->organizer->id,
-                'status' => $this->status,
-                'image_url' => $this->image_url ?? null,
-                'video_url' => $this->video_url ?? null
+        // Insert event
+        $eventSql = "INSERT INTO events (
+            title, 
+            description, 
+            date, 
+            location, 
+            category_id, 
+            organizer_id, 
+            status, 
+            image_url, 
+            video_url
+        ) VALUES (
+            :title, 
+            :description, 
+            :date, 
+            :location, 
+            :category_id, 
+            :organizer_id, 
+            :status, 
+            :image_url, 
+            :video_url
+        ) RETURNING id";
+        
+        $eventStmt = $connection->prepare($eventSql);
+        $eventStmt->execute([
+            'title' => $this->title,
+            'description' => $this->description,
+            'date' => $this->date,
+            'location' => $this->location,
+            'category_id' => $this->category->id,
+            'organizer_id' => $this->organizer->id,
+            'status' => $this->status,
+            'image_url' => $this->image_url ?? null,
+            'video_url' => $this->video_url ?? null
+        ]);
+        
+        $eventId = $eventStmt->fetchColumn();
+        
+        // Insert ticket types
+        $ticketSql = "INSERT INTO event_ticket_types (
+            event_id,
+            ticket_type,
+            price,
+            total_quantity,
+            available_quantity
+        ) VALUES (
+            :event_id,
+            :ticket_type,
+            :price,
+            :total_quantity,
+            :available_quantity
+        )";
+        
+        $ticketStmt = $connection->prepare($ticketSql);
+        
+        foreach ($this->ticketTypes as $ticket) {
+            $ticketStmt->execute([
+                'event_id' => $eventId,
+                'ticket_type' => $ticket['type'],
+                'price' => $ticket['price'],
+                'total_quantity' => $ticket['quantity'],
+                'available_quantity' => $ticket['quantity']
             ]);
-            
-            if ($result) {
-                $this->id = $stmt->fetchColumn();
-                $connection->commit();
-                return $this->id;
-            }
-            
-            $connection->rollBack();
-            return false;
-            
-        } catch (\Exception $e) {
-            $connection->rollBack();
-            throw $e;
         }
+        
+        $connection->commit();
+        $this->id = $eventId;
+        return $eventId;
+        
+    } catch (\Exception $e) {
+        $connection->rollBack();
+        throw $e;
     }
+}
+
     
 public function addEventTags($tags)
 {
@@ -237,19 +263,20 @@ public function getEventStats($eventId)
     $query = $db->getConnection()->prepare("
         SELECT 
             e.id,
-            COALESCE(SUM(ett.total_quantity), 0) as total_capacity,
-            COALESCE(SUM(ett.available_quantity), 0) as available_capacity,
-            COUNT(t.id) as total_tickets,
-            COALESCE(SUM(t.price), 0) as total_revenue,
-            COUNT(CASE WHEN t.status = 'validé' THEN 1 END) as validated_tickets
+            COALESCE(SUM(ett.total_quantity), 0) AS total_capacity,
+            COALESCE(SUM(ett.available_quantity), 0) AS available_capacity,
+            COUNT(t.id) AS total_tickets,
+            COALESCE(SUM(t.price), 0) AS total_revenue,
+            COUNT(CASE WHEN t.status = 'validé' THEN 1 END) AS validated_tickets
         FROM events e
         LEFT JOIN event_ticket_types ett ON e.id = ett.event_id
-        LEFT JOIN tickets t ON e.id = t.event_id
+        LEFT JOIN tickets t ON t.ticket_type_id = ett.id
         WHERE e.id = :event_id
         GROUP BY e.id
     ");
     
     $query->execute(['event_id' => $eventId]);
+
     return $query->fetch(PDO::FETCH_ASSOC);
 }
 
@@ -378,34 +405,87 @@ public function getEventParticipants($eventId)
      * @param array $rows
      * @return array
      */
-    private static function toObjects($rows){
-        $events=[];
+    private static function toObjects($rows)
+    {
+        $events = [];
         foreach ($rows as $row) {
-             $organizer = User::read($row['organizer_id']) ?? new User();
-             $category = Category::read($row['category_id']) ?? new Category();
-             $events[] = new Event($row['id'], $row['title'], $row['description'],$row['date'],$row['price'],$row['capacity'],$organizer,$row['location'],$category,$row['status'],$row['image_url'],
-             $row['video_url']);
-         }
-         return $events;
-       }
+            $organizer = User::read($row['organizer_id']) ?? new User();
+            $category = Category::read($row['category_id']) ?? new Category();
 
-       public static function read($id)
-       {
-           $db = Database::getInstance();
-           $sql = "SELECT * FROM events WHERE id = :id";
-           $query = $db->getConnection()->prepare($sql);
-           $query->bindParam(':id', $id);
-           $query->execute();
-           $row = $query->fetch();
 
-           $event=null;
-           if($row){
-               $organizer = User::read($row['organizer_id']) ?? new User();
-               $category = Category::read($row['category_id']) ?? new Category();
-               $event = new Event($row['id'], $row['title'], $row['description'],$row['date'],$row['price'],$row['capacity'],$organizer,$row['location'],$category,$row['status']);
-           }
-           return $event;
-       } 
+            $db = Database::getInstance();
+            $ticketSql = "SELECT price, total_quantity FROM event_ticket_types WHERE event_id = :event_id";
+            $ticketQuery = $db->getConnection()->prepare($ticketSql);
+            $ticketQuery->bindParam(':event_id', $row['id']);
+            $ticketQuery->execute();
+            $ticketRow = $ticketQuery->fetch();
+
+            $price = $ticketRow ? $ticketRow['price'] : null;
+            $capacity = $ticketRow ? $ticketRow['total_quantity'] : null;
+
+            $events[] = new Event(
+                $row['id'],
+                $row['title'],
+                $row['description'],
+                $row['date'],
+                $price, // Updated price
+                $capacity, // Updated capacity
+                $organizer,
+                $row['location'],
+                $category,
+                $row['status'],
+                $row['image_url'],
+                $row['video_url']
+            );
+        }
+        return $events;
+    }
+
+    public static function read($id)
+    {
+        $db = Database::getInstance();
+        $sql = "SELECT * FROM events WHERE id = :id";
+        $query = $db->getConnection()->prepare($sql);
+        $query->bindParam(':id', $id);
+        $query->execute();
+        $row = $query->fetch();
+
+        $event = null;
+        if ($row) {
+            $organizer = User::read($row['organizer_id']) ?? new User();
+            $category = Category::read($row['category_id']) ?? new Category();
+
+            $ticketSql = "SELECT price, total_quantity FROM event_ticket_types WHERE event_id = :event_id";
+            $ticketQuery = $db->getConnection()->prepare($ticketSql);
+            $ticketQuery->bindParam(':event_id', $row['id']);
+            $ticketQuery->execute();
+            $ticketRow = $ticketQuery->fetch();
+
+            $price = $ticketRow ? $ticketRow['price'] : null;
+            $capacity = $ticketRow ? $ticketRow['total_quantity'] : null;
+
+            // Fetch the image_url and video_url
+            $imageUrl = $row['image_url'] ?? null;
+            $videoUrl = $row['video_url'] ?? null;
+
+            // Create the event object with the added URLs
+            $event = new Event(
+                $row['id'],
+                $row['title'],
+                $row['description'],
+                $row['date'],
+                $price, // Updated price
+                $capacity, // Updated capacity
+                $organizer,
+                $row['location'],
+                $category,
+                $row['status'],
+                $imageUrl,
+                $videoUrl
+            );
+        }
+        return $event;
+    }
 
         public function addReservation($userId): bool
         {
@@ -455,20 +535,29 @@ public function getEventParticipants($eventId)
     {
         $db = \App\Core\Database::getInstance();
         $query = $db->getConnection()->prepare("
-        SELECT 
-            COUNT(t.id) as total_tickets,
-            SUM(t.price) as total_revenue,
-            COUNT(CASE WHEN t.status = 'validé' THEN 1 END) as validated_tickets,
-            e.capacity as capacity
-        FROM events e
-         JOIN tickets t ON e.id = t.event_id
-        GROUP BY e.id, e.capacity
-    ");
-
+            SELECT 
+                SUM(total_tickets) as total_tickets,
+                SUM(total_revenue) as total_revenue,
+                SUM(validated_tickets) as validated_tickets,
+                SUM(total_capacity) as total_capacity
+            FROM (
+                SELECT 
+                    COUNT(t.id) as total_tickets,
+                    COALESCE(SUM(t.price), 0) as total_revenue,
+                    COUNT(CASE WHEN t.status = 'validé' THEN 1 END) as validated_tickets,
+                    COALESCE(SUM(ett.total_quantity), 0) as total_capacity
+                FROM events e
+                LEFT JOIN event_ticket_types ett ON e.id = ett.event_id
+                LEFT JOIN tickets t ON t.event_id = e.id
+                GROUP BY e.id
+            ) as stats
+        ");
+    
         $query->execute();
         return $query->fetch(PDO::FETCH_ASSOC);
     }
-
+    
+    
     public function UpdateStatus($status,$id){
         $db = \App\Core\Database::getInstance();
         $query = $db->getConnection()->prepare("UPDATE events SET status = :status WHERE id = :id");
@@ -574,6 +663,48 @@ public function getEventParticipants($eventId)
             throw $e;
         }
     }
+
+//deleteEvent 
+
+public function canDeleteEvent($id)
+{
+    $db = \App\Core\Database::getInstance();
+    
+    // Check for participants
+    $participantsQuery = $db->getConnection()->prepare("
+        SELECT COUNT(*) as count 
+        FROM tickets 
+        WHERE event_id = :id 
+        AND status != 'annulé'
+    ");
+    $participantsQuery->execute(['id' => $id]);
+    $hasParticipants = $participantsQuery->fetch(PDO::FETCH_ASSOC)['count'] > 0;
+
+    // Check if event is past
+    $eventQuery = $db->getConnection()->prepare("
+        SELECT date < CURRENT_TIMESTAMP as is_past
+        FROM events 
+        WHERE id = :id
+    ");
+    $eventQuery->execute(['id' => $id]);
+    $isPast = $eventQuery->fetch(PDO::FETCH_ASSOC)['is_past'];
+
+    // Event can be deleted if it has no participants AND is past
+    return !$hasParticipants && $isPast;
+}
+
+
+public function deleteEvent($id)
+{
+    error_log("Attempting to delete event $id");
+    $db = \App\Core\Database::getInstance();
+    
+    $query = $db->getConnection()->prepare("DELETE FROM events WHERE id = :id");
+    $success = $query->execute(['id' => $id]);
+    
+    error_log("Delete success: " . ($success ? 'true' : 'false'));
+    return $success;
+}
 
 
 }

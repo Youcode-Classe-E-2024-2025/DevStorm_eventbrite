@@ -1,227 +1,83 @@
-{% extends 'layout.twig' %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails de l'événement - DevEvents</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'clash': ['"Clash Display"', 'sans-serif'],
+                        'manrope': ['Manrope', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary': '#8B5CF6',
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-white text-gray-900 font-manrope">
+<!-- Navigation -->
+{% include 'layouts/nav.twig' %}
 
-{% block title %}Détails de l'événement - {{ event.title }} {% endblock %}
+<!-- Event Hero Section -->
+<div class="relative overflow-hidden bg-gray-100">
+    <div class="relative w-full h-[60vh]">
+        <img src="../../../../public/assets/background.png" alt="Event Hero" class="object-cover w-full h-full sm:h-[40vh] md:h-[50vh] lg:h-[60vh]">
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-white font-clash z-10">
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 text-center">Découvrez un événement unique</h1>
+            <p class="text-xl sm:text-2xl font-medium text-center px-4">Plongez dans une expérience inoubliable et découvrez ce que cet événement a à offrir.</p>
+        </div>
+    </div>
+</div>
 
-{% block content %}
-    <!-- Navigation -->
-    <nav class="border-b border-white/10 bg-black">
-        <div class="container mx-auto px-4 py-4">
-            <div class="flex justify-between items-center">
-                <a href="/" class="text-2xl font-bold text-custom-purple font-display">DevEvents</a>
-                <div class="space-x-4">
-                    <a href="/login" class="text-white hover:text-custom-purple transition-colors duration-300">Connexion</a>
-                    <a href="/register" class="bg-custom-purple text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors duration-300 font-medium">Inscription</a>
-                </div>
+<!-- Event Details Section -->
+<div class="container mx-auto px-6 py-16 lg:px-16">
+    <div class="max-w-4xl mx-auto">
+        <!-- Event Title & Date -->
+        <div class="mb-12 text-center">
+            <h1 class="text-4xl sm:text-5xl font-bold mb-2 font-clash">{{ event.title }}</h1>
+            <p class="text-xl sm:text-2xl font-medium text-gray-600">{{ event.date | date('d-m-Y') }}</p>
+        </div>
+
+        <!-- Event Description -->
+        <div class="mb-12">
+            <h2 class="text-3xl font-bold mb-6 font-clash">À propos de l'événement</h2>
+            <p class="text-lg leading-relaxed text-gray-700">{{ event.description }}</p>
+        </div>
+
+        <!-- Event Image Section -->
+        <div class="mb-12">
+            <img src="/{{ event.image_url }}" alt="Event Image" class="object-cover w-full h-96 rounded-lg shadow-lg">
+        </div>
+
+        <!-- Event Category & Location -->
+        <div class="flex flex-wrap gap-6 items-center mb-12">
+            <div class="inline-flex items-center px-6 py-3 bg-primary text-white text-sm font-medium rounded-full shadow-lg">
+                <strong>Catégorie:</strong> {{ event.category.name }}
+            </div>
+            <div class="inline-flex items-center px-6 py-3 bg-gray-200 text-gray-700 text-sm font-medium rounded-full shadow-lg">
+                <strong>Lieu:</strong> {{ event.location }}
             </div>
         </div>
-    </nav>
 
-    <!-- Event Hero Section -->
-    <section class="relative overflow-hidden bg-black">
-        <div class="absolute inset-0 bg-gradient-to-br from-custom-purple/20 to-transparent"></div>
-        <div class="container mx-auto px-4 py-16">
-            <div class="max-w-5xl">
-                <h1 class="text-5xl font-bold mb-4 font-display">{{ event.title }}</h1>
-                <p class="text-lg text-gray-400 mb-8">{{ event.description|slice(0,150) }}</p>
-                <img
-                        src="{{ event.image_url|default('https://picsum.photos/1200/400') }}"
-                        alt="{{ event.title }}"
-                        class="w-full h-80 object-cover rounded-lg shadow-lg"
-                >
+        <!-- Event Tickets Section -->
+        <div class="flex flex-col md:flex-row items-center justify-between">
+            <div class="mb-6 md:mb-0">
+                <h2 class="text-3xl font-bold mb-4 font-clash">Réservez votre place maintenant</h2>
+                <p class="text-lg text-gray-700">Ne manquez pas cet événement incroyable. Réservez dès aujourd'hui!</p>
             </div>
+            <a href="/event/{{ event.id }}/booking" class="bg-primary text-white text-lg font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-purple-700 transition duration-300">
+                Réserver maintenant
+            </a>
         </div>
-    </section>
-
-    <!-- Event Details Section -->
-    <section class="container mx-auto px-4 py-16">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Left Column: Event Info -->
-            <div class="bg-gray-900 rounded-lg p-6 space-y-6">
-                <div>
-                    <h3 class="text-2xl font-bold mb-2">À propos de l'événement</h3>
-                    <p class="text-gray-400">{{ event.description }}</p>
-                </div>
-
-                <div>
-                    <h3 class="text-2xl font-bold mb-2">Organisateur</h3>
-                    <p class="text-gray-400">{{ event.organizer.username }} ({{ event.organizer.email }})</p>
-                </div>
-
-                <div>
-                    <h3 class="text-2xl font-bold mb-2">Catégorie</h3>
-                    <span class="bg-custom-purple text-white px-3 py-1 rounded-full text-sm">{{ event.category.name }}</span>
-                </div>
-            </div>
-
-            <!-- Right Column: Event Details -->
-            <div class="bg-gray-900 rounded-lg p-6 space-y-6">
-                <div>
-                    <h3 class="text-2xl font-bold mb-2">Date et lieu</h3>
-                    <p class="text-gray-400">Le {{ event.date|date('d M Y') }} à {{ event.location }}</p>
-                </div>
-
-                <div>
-                    <h3 class="text-2xl font-bold mb-2">Prix et capacité</h3>
-                    <p class="text-gray-400">Prix : {{ event.price }} € | Capacité : {{ event.capacity }}</p>
-                </div>
-
-                <div>
-                    <h3 class="text-2xl font-bold mb-2">Statut</h3>
-                    {% if event.status == 'actif' %}
-                        <span class="bg-custom-green text-white px-4 py-2 rounded-full">Disponible</span>
-                    {% else %}
-                        <span class="bg-custom-red text-white px-4 py-2 rounded-full">Indisponible</span>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Pricing Table Section -->
-    <section class="container mx-auto px-4 py-16">
-        <h2 class="text-4xl font-bold mb-8 text-center font-display">Options de billets</h2>
-        <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
-            <!-- Regular Tier -->
-            <div class="rounded-3xl bg-[#F3EEFF] p-8 flex flex-col h-full">
-                <div class="flex items-center gap-2 mb-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 3l14 9-14 9V3z"/>
-                    </svg>
-                    <h2 class="text-xl font-semibold">Regular</h2>
-                </div>
-                <div class="mb-8">
-                    <span class="text-5xl font-bold">49€</span>
-                    <span class="text-sm">+TVA</span>
-                </div>
-                <ul class="space-y-4 flex-grow">
-                    <li class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Présentation vidéo
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Déjeuner et café gratuits
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Toutes les conférences et ateliers
-                    </li>
-                </ul>
-                <div class="mt-8">
-                    <a href="/reserve/{{ event.id }}?ticket=regular" class="block w-full py-3 rounded-xl border-2 border-black/10 hover:bg-black/5 transition-colors text-center">
-                        Acheter le billet
-                    </a>
-                </div>
-            </div>
-
-            <!-- Standard Tier -->
-            <div class="rounded-3xl bg-[#7C3AED] p-8 text-white flex flex-col h-full">
-                <div class="flex items-center gap-2 mb-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M12 8v8M8 12h8"/>
-                    </svg>
-                    <h2 class="text-xl font-semibold">Standard</h2>
-                </div>
-                <div class="mb-8">
-                    <span class="text-5xl font-bold">79€</span>
-                    <span class="text-sm">+TVA</span>
-                </div>
-                <ul class="space-y-4 flex-grow">
-                    <li class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Toutes les fonctionnalités du forfait Regular
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Accès à l'espace d'exposition
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Opportunités de networking
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Session internationale
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Sac cadeau de l'événement offert
-                    </li>
-                </ul>
-                <div class="mt-8">
-                    <a href="/reserve/{{ event.id }}?ticket=standard" class="block w-full py-3 rounded-xl bg-white text-[#7C3AED] hover:bg-white/90 transition-colors text-center">
-                        Acheter le billet
-                    </a>
-                </div>
-            </div>
-
-            <!-- VIP Premium Tier -->
-            <div class="rounded-3xl bg-[#F3EEFF] p-8 flex flex-col h-full">
-                <div class="flex items-center gap-2 mb-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2l2.5 6h6.5l-5 4.5 2 6.5-6-4.5-6 4.5 2-6.5-5-4.5h6.5z"/>
-                    </svg>
-                    <h2 class="text-xl font-semibold">VIP Premium</h2>
-                </div>
-                <div class="mb-8">
-                    <span class="text-5xl font-bold">99€</span>
-                    <span class="text-sm">+TVA</span>
-                </div>
-                <ul class="space-y-4 flex-grow">
-                    <li class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Toutes les fonctionnalités du forfait Standard
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Rencontrez tous nos conférenciers
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Conférences et ateliers enregistrés
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Accès au salon VIP + afterparty
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Places prioritaires pour les keynotes et panels
-                    </li>
-                </ul>
-                <div class="mt-8">
-                    <a href="/reserve/{{ event.id }}?ticket=vip" class="block w-full py-3 rounded-xl border-2 border-black/10 hover:bg-black/5 transition-colors text-center">
-                        Acheter le billet
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-{% endblock %}
+    </div>
+</div>
+</body>
+</html>

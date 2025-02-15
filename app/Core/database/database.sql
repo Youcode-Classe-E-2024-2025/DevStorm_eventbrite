@@ -65,6 +65,8 @@ CREATE TABLE IF NOT EXISTS payments (
     payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+
+
 CREATE TABLE IF NOT EXISTS promotions (
     id SERIAL PRIMARY KEY,
     code VARCHAR(50) UNIQUE NOT NULL,
@@ -128,3 +130,6 @@ CREATE TABLE event_ticket_types (
 ALTER TABLE events 
 DROP COLUMN capacity,
 DROP COLUMN price;
+
+ALTER TABLE tickets ADD COLUMN ticket_type_id INT REFERENCES event_ticket_types(id);
+

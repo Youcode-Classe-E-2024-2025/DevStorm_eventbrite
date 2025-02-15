@@ -197,12 +197,12 @@
 </div>
 <script>
     // Chart.js configuration
-    const stats = {
-        total_tickets: {{ stats.total_tickets }},
-        total_revenue: {{ stats.total_revenue }},
-        validated_tickets: {{ stats.validated_tickets }},
-        capacity: {{ stats.capacity }}
-    };
+   const stats = {
+    total_tickets: {{ stats.total_tickets|default(0) }},
+    total_revenue: {{ stats.total_revenue|default(0) }},
+    validated_tickets: {{ stats.validated_tickets|default(0) }},
+    capacity: {{ stats.total_capacity|default(0) }}  // Note: changed to total_capacity
+};
 
     const ctx = document.getElementById('eventStatsChart').getContext('2d');
 
