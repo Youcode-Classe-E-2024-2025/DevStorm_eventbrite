@@ -11,6 +11,8 @@ use App\models\Category;
 use App\models\Tag; 
 use App\traits\PDFGenerator ; 
 use TCPDF; 
+use DateTime;
+
 
 class OrganizerController extends Controller 
 {
@@ -87,6 +89,17 @@ class OrganizerController extends Controller
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
+
+
+                $eventTimestamp = strtotime($_POST['date']);
+            $currentTimestamp = time();
+            
+            if ($eventTimestamp < $currentTimestamp) {
+                $_SESSION['error'] = "Event date must be in the future";
+                header('Location: /organizer/event/create');
+                exit;
+            }
+
                 $event = new Event();
                 
                 // Handle file uploads
