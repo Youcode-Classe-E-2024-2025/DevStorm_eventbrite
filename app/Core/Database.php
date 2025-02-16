@@ -11,8 +11,8 @@ class Database
 
     private static string $host = 'localhost';
     private static string $dbname = 'eventbrite';
-    private static string $user = 'postgres';
-    private static string $pass = 'root';
+    private static string $user = 'human';
+    private static string $pass = 'ahmed';
 
     private function __construct() {}
 

@@ -15,16 +15,24 @@ class CartController extends Controller{
         $reservations = Ticket::getByUserId(Session::getUser()['id']);
 
         $total_price = 80;
-
+        $user = Session::getUser();
+        if ($user && isset($user->avatar)) {
+            $avatar = $user->avatar;
+        } else {
+            $avatar = '';
+        }
         $this->view('front/cart',[
             'reservations'=>$reservations ,
             'total_price'=> $total_price,
             'green' =>Session::getFlashMessage('green'),
-            'red' => Session::getFlashMessage('red')
+            'red' => Session::getFlashMessage('red'),
+            "avatar"=>$avatar,
+            "user"=>$user
         ]);
     }
 
     public function cancelReservation($id){
+        Auth::requireAuth(Role::PARTICIPANT);
 
         if (empty($id) || !is_numeric($id)) {
             $this->redirect('/404');
@@ -48,6 +56,8 @@ class CartController extends Controller{
     } 
 
     public function showTicket($id){
+        Auth::requireAuth(Role::PARTICIPANT);
+
         if (empty($id) || !is_numeric($id)) {
             $this->redirect('/404');
         }

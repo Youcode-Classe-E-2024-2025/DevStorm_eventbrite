@@ -3,6 +3,7 @@
 namespace App\controllers\back;
 
 use App\Core\Controller;
+use App\Core\Session;
 use App\models\Ticket;
 use Dotenv\Dotenv;
 class PaimentController extends Controller
@@ -44,10 +45,13 @@ $name = " #{$type}# Ticket for  {$item->event->title} ";
         header("Location: " . $checkout_session->url);
     }
     public function paimentSuccess(){
-        echo "Payment was successful!";
+        Session::setFlashMessage('green', 'Payment was successful!');
+        $this->redirect('/cart');
     }
     public function paimentCancel(){
         echo "Payment was canceled.";
+        Session::setFlashMessage('green', 'Payment was canceled.');
+        $this->redirect('/cart');
     }
 }
 
