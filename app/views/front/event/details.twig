@@ -95,16 +95,23 @@
             <h2 class="text-4xl font-bold mb-8 text-center font-display">Options de billets</h2>
             <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
                 <!-- Regular Tier -->
+
                 <div class="rounded-3xl bg-[#F3EEFF] p-8 flex flex-col h-full">
                     <div class="flex items-center gap-2 mb-6">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M5 3l14 9-14 9V3z"/>
                         </svg>
-                        <h2 class="text-xl font-semibold">Regular</h2>
+                        <h2 class="text-xl font-semibold">Gratuit</h2>
                     </div>
                     <div class="mb-8">
-                        <span class="text-5xl font-bold">49€</span>
-                        <span class="text-sm">+TVA</span>
+                         {% if event.ticketTypes['gratuit'] %}
+                        <span class="text-5xl font-bold">0$</span>
+                        <span class="text-sm"></span>
+                         {% else %}
+                         <span class="text-2xl font-bold">
+                         Epuisé
+                        </span>
+                         {% endif %}
                     </div>
                     <ul class="space-y-4 flex-grow">
                         <li class="flex items-center gap-2">
@@ -126,12 +133,22 @@
                             Toutes les conférences et ateliers
                         </li>
                     </ul>
+                    {% if event.ticketTypes['gratuit'] %}
                     <div class="mt-8">
-                        <a href="/reserve/{{ event.id }}?ticket=regular" class="block w-full py-3 rounded-xl border-2 border-black/10 hover:bg-black/5 transition-colors text-center">
+                        <a href="/reserve/{{ event.id }}?ticket=gratuit" class="block w-full py-3 rounded-xl border-2 border-black/10 hover:bg-black/5 transition-colors text-center">
                             Acheter le billet
                         </a>
                     </div>
+                    {% else %}
+                    <div class="mt-8">
+                        <a class="block w-full py-3 rounded-xl border-2 border-black/10 text-center text-gray-500 line-through">
+                            Acheter le billet
+                        </a>
+                    </div>
+                       {% endif %}
                 </div>
+
+             
                 <!-- Standard Tier -->
                 <div class="rounded-3xl bg-[#7C3AED] p-8 text-white flex flex-col h-full">
                     <div class="flex items-center gap-2 mb-6">
@@ -142,8 +159,16 @@
                         <h2 class="text-xl font-semibold">Standard</h2>
                     </div>
                     <div class="mb-8">
-                        <span class="text-5xl font-bold">79€</span>
+                         {% if event.ticketTypes['payant'] %}
+                        <span class="text-5xl font-bold">
+                         {{event.ticketTypes['payant']['price']}}$
+                        </span>
                         <span class="text-sm">+TVA</span>
+                         {% else %}
+                         <span class="text-2xl font-bold">
+                         Epuisé
+                        </span>
+                         {% endif %}
                     </div>
                     <ul class="space-y-4 flex-grow">
                         <li class="flex items-center gap-2">
@@ -177,11 +202,20 @@
                             Sac cadeau de l'événement offert
                         </li>
                     </ul>
+                     {% if event.ticketTypes['payant'] %}
                     <div class="mt-8">
-                        <a href="/reserve/{{ event.id }}?ticket=standard" class="block w-full py-3 rounded-xl bg-white text-[#7C3AED] hover:bg-white/90 transition-colors text-center">
+                        <a href="/reserve/{{ event.id }}?ticket=payant" class="block w-full py-3 rounded-xl bg-white text-[#7C3AED] hover:bg-white/90 transition-colors text-center">
                             Acheter le billet
                         </a>
                     </div>
+                    {% else %}
+                    <div class="mt-8">
+                        <a class="block w-full py-3 rounded-xl bg-white text-[#7C3AED] hover:bg-white/90 transition-colors text-center line-through">
+                            Acheter le billet
+                        </a>
+                    </div>
+                       {% endif %}
+                    
                 </div>
                 <!-- VIP Premium Tier -->
                 <div class="rounded-3xl bg-[#F3EEFF] p-8 flex flex-col h-full">
@@ -192,8 +226,16 @@
                         <h2 class="text-xl font-semibold">VIP Premium</h2>
                     </div>
                     <div class="mb-8">
-                        <span class="text-5xl font-bold">99€</span>
+                         {% if event.ticketTypes['VIP'] %}
+                        <span class="text-5xl font-bold">
+                         {{event.ticketTypes['VIP']['price']}}$
+                        </span>
                         <span class="text-sm">+TVA</span>
+                         {% else %}
+                         <span class="text-2xl font-bold">
+                         Epuisé
+                        </span>
+                         {% endif %}
                     </div>
                     <ul class="space-y-4 flex-grow">
                         <li class="flex items-center gap-2">
@@ -227,11 +269,19 @@
                             Places prioritaires pour les keynotes et panels
                         </li>
                     </ul>
+                    {% if event.ticketTypes['VIP'] %}
                     <div class="mt-8">
-                        <a href="/reserve/{{ event.id }}?ticket=vip" class="block w-full py-3 rounded-xl border-2 border-black/10 hover:bg-black/5 transition-colors text-center">
+                        <a href="/reserve/{{ event.id }}?ticket=VIP" class="block w-full py-3 rounded-xl border-2 border-black/10 hover:bg-black/5 transition-colors text-center">
                             Acheter le billet
                         </a>
                     </div>
+                    {% else %}
+                    <div class="mt-8">
+                        <a class="block w-full py-3 rounded-xl border-2 border-black/10 text-center text-gray-500 line-through">
+                            Acheter le billet
+                        </a>
+                    </div>
+                       {% endif %}
                 </div>
             </div>
         </section>

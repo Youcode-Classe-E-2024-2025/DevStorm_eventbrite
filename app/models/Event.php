@@ -607,6 +607,9 @@ public function getEventParticipants($eventId)
             return false; 
         }
 
+        // echo("<pre>");
+        // var_dump($ticketType);
+        // echo("</pre>");die;
         $ticket = new Ticket(null, $this, User::read($userId),$ticketType, $this->ticketTypes[$ticketType]['price'], null, 'réservé');
         if (!$ticket->save()) {
             return false; 

@@ -18,7 +18,8 @@ class PaimentController extends Controller
 
         \Stripe\Stripe::setApiKey($stripeSecretKey);
         header('Content-Type: application/json');
-
+        $type = $item->ticket_type == 'payant' ? 'Standard':$item->ticket_type ;
+$name = " #{$type}# Ticket for  {$item->event->title} ";
         $checkout_session = \Stripe\Checkout\Session::create([
           'line_items' => [[
             'quantity' => 1,
@@ -26,7 +27,7 @@ class PaimentController extends Controller
                         'currency' => 'usd',
                         'unit_amount' => $item->price*100, // (e.g., $20.00 = 2000 cents)
                         'product_data' => [
-                            'name' =>'Ticket for '. $item->event->title, 
+                            'name' => $name, 
                             'description' => $item->event->description , 
                         ],
                     ],

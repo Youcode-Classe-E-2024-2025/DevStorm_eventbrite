@@ -23,8 +23,9 @@
                         <!-- Event Info -->
                         <div>
                             <h2 class="text-xl font-bold">{{ reservation.event.title }}</h2>
+                            <h3 class="text-purple-300 font-bold">{% if reservation.ticket_type == 'payant' %} Standard {% else %} {{ reservation.ticket_type }}  {% endif %} </h3>
                             <p class="text-gray-400">Le {{ reservation.event.date|date('d M Y') }} à {{ reservation.event.location }}</p>
-                            <p class="text-sm text-gray-400">Prix : {{ reservation.event.price }} €</p>
+                            <p class="text-sm text-gray-400">Prix : {{ reservation.price }} €</p>
                         </div>
 
                         <!-- Actions -->

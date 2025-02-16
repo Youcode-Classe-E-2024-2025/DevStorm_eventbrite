@@ -76,7 +76,7 @@ class EventController extends Controller
         }
 
         $userId = Session::getUser()['id']; 
-        if($event->addReservation($userId,'VIP')){
+        if($event->addReservation($userId,$type)){
             Session::setFlashMessage('green',"event #{$event->title} has been successfully reserved.");
             $this->redirect("/cart");
         

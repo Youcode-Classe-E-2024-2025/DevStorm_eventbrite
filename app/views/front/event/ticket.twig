@@ -38,11 +38,11 @@
                     </div>
                     <div class="flex flex-col">
                         <span class="text-xs text-zinc-400">Ticket Type</span>
-                        <span class="font-mono text-purple-400">{{ ticket.ticket_type}}</span>
+                        <span class="font-mono text-purple-400">{% if ticket.ticket_type == 'payant' %} Standard {% else %}  {{ ticket.ticket_type }}  {% endif %}</span>
                     </div>
                     <div class="flex flex-col">
                         <span class="text-xs text-zinc-400">Price</span>
-                        <span class="font-mono">${{ ticket.event.price}}</span>
+                        <span class="font-mono">${{ ticket.price}}</span>
                     </div>
                 </div>
                 <div class="flex w-full mt-auto justify-between">
