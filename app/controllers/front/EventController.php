@@ -1,6 +1,7 @@
 <?php
 namespace App\controllers\front;
 
+use App\controllers\back\QrCodeService;
 use App\Core\Auth;
 use App\Core\Controller;
 use App\Core\Session;
@@ -46,6 +47,7 @@ class EventController extends Controller
         } else {
             $avatar = '';
         }
+
         $this->view('front/event/details', [
            'event'=>$event,
            'green' =>Session::getFlashMessage('green'),
@@ -76,10 +78,21 @@ class EventController extends Controller
         }
 
         $userId = Session::getUser()['id']; 
-        if($event->addReservation($userId,$type)){
+        $ticket= $event->addReservation($userId,$type);
+        if($ticket){
             Session::setFlashMessage('green',"event #{$event->title} has been successfully reserved.");
+            $ticketData = [
+                'id' => $ticket->id,  
+                'ticket type'=>$ticket->ticket_type,
+                'participant name'=> $ticket->user->username,
+                'event Name' => $event->title, 
+                'location' => $event->title,
+                'date' => $event->date  
+            ];
+            $qrCodeImagePath = QrCodeService::generateQrCode($ticketData);
+            $ticket->setQrCode($qrCodeImagePath);
             $this->redirect("/cart");
-        
+            
         }
         Session::setFlashMessage('red',"Failed to reserve event: ");
         $this->redirect("/event/$id");

@@ -114,4 +114,12 @@ class Ticket extends Model
         $query=$db->getConnection()->prepare($sql);
         $query->execute($params);
     }
+
+    public function setQrCode($path){
+        $db = Database::getInstance();
+        $sql="UPDATE tickets SET qr_code = :qr_code WHERE id = :id ";
+        $params=['id'=>$this->id , 'qr_code'=> $path];
+        $query=$db->getConnection()->prepare($sql);
+        $query->execute($params);
+    }
 }

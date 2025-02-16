@@ -1,5 +1,7 @@
 <?php
 
+// phpinfo();
+// ? > 
 use App\Core\Security;
 use App\Core\Session;
 

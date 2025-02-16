@@ -597,7 +597,7 @@ public function getEventParticipants($eventId)
         return $event;
     }
 
-        public function addReservation($userId,$ticketType): bool
+        public function addReservation($userId,$ticketType)
         {
         if (!$this->isOpenForReservations()) {
             return false;
@@ -617,7 +617,7 @@ public function getEventParticipants($eventId)
         if (!$ticket->save()) {
             return false; 
         }
-        return true; 
+        return $ticket; 
     }
 
     /**
