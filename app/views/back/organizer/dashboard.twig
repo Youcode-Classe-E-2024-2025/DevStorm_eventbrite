@@ -92,6 +92,13 @@
                     </div>
 
                     <img src="/{{ event.image_url }}" alt="{{ event.title }}" class="w-full h-[400px] object-cover transition-transform duration-300 group-hover:scale-105" />
+<!-- Add this after the image in the static section -->
+{% if event.video_url %}
+    <button class="absolute bottom-4 right-4 bg-primary/80 p-3 rounded-full hover:bg-primary transition-colors z-[100] pointer-events-auto"
+            onclick="playVideo('/{{ event.video_url }}')">
+        <i class="fas fa-play text-white"></i>
+    </button>
+{% endif %}
 
                   
                     <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">
@@ -240,6 +247,15 @@ async function loadPage(page) {
                     </div>
 
                     <img src="/${event.image_url}" alt="${event.title}" class="w-full h-[400px] object-cover transition-transform duration-300 group-hover:scale-105" />
+<!-- Add this after the image in the static section -->
+<!-- Add this after the image in the dynamic JavaScript section -->
+${event.video_url ? `
+    <button class="absolute bottom-4 right-4 bg-primary/80 p-3 rounded-full hover:bg-primary transition-colors z-[100] pointer-events-auto"
+            onclick="playVideo('/${event.video_url}')">
+        <i class="fas fa-play text-white"></i>
+    </button>
+` : ''}
+
 
                   
         <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 to-transparent text-white">

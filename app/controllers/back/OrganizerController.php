@@ -3,6 +3,8 @@
 namespace App\controllers\back;
 use App\Core\Controller;
 use App\Core\Session;
+use App\Core\Auth;
+use App\enums\Role;
 use App\models\Event;
 use App\models\Promotion;
 use App\models\Ticket;
@@ -19,6 +21,8 @@ class OrganizerController extends Controller
 
         public function dashboard()
     {
+        Auth::requireAuth(Role::ORGANISATEUR);
+
         // session_start();
         //pour tester
         
@@ -63,7 +67,10 @@ class OrganizerController extends Controller
     }
 
     public function createEvent()
+
     {
+        Auth::requireAuth(Role::ORGANISATEUR);
+
         $category = new Category();
         $categories = $category->getAllCategories();
 
@@ -143,6 +150,8 @@ class OrganizerController extends Controller
     
     private function handleFileUploads($event)
     {
+        Auth::requireAuth(Role::ORGANISATEUR);
+
         $imageUploadDir = 'assets/images/';
         $videoUploadDir = 'assets/videos/';
     
@@ -174,6 +183,8 @@ class OrganizerController extends Controller
 
     public function salesStats($eventId)
     {
+        Auth::requireAuth(Role::ORGANISATEUR);
+
         $ticket = new Ticket();
         $stats = $ticket->getEventStats($eventId);
         $user = Session::getUser();
@@ -220,6 +231,8 @@ public function eventStats($eventId)
 use PDFGenerator;
 public function exportParticipantsPDF($eventId)
     {    
+        Auth::requireAuth(Role::ORGANISATEUR);
+
         $event = new Event();
         $participants = $event->getEventParticipants($eventId);
         $eventDetails = $event->getEventById($eventId);
@@ -260,6 +273,8 @@ public function exportParticipantsPDF($eventId)
     
     public function listPromoCodes($eventId)
     {
+        Auth::requireAuth(Role::ORGANISATEUR);
+
         $promotion = new Promotion();
         $promoCodes = $promotion->getPromotionsByEvent($eventId);
         $this->view('front/event/list-promocodes', [
@@ -270,6 +285,8 @@ public function exportParticipantsPDF($eventId)
 
     public function editEvent($eventId)
     {
+        Auth::requireAuth(Role::ORGANISATEUR);
+
         $event = new Event();
         $category = new Category();
         $tag = new Tag();
@@ -346,6 +363,8 @@ public function exportParticipantsPDF($eventId)
     //delete event 
     public function deleteEvent($id)
     {
+        Auth::requireAuth(Role::ORGANISATEUR);
+
         header('Content-Type: application/json');
         $event = new Event();
         
