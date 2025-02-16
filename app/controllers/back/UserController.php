@@ -127,7 +127,7 @@ class UserController extends Controller
                 Session::setFlashMessage('green', 'Login successful. Welcome back! ' . $user['name']);
 
                 if ($user['role'] === Role::ADMIN->value) {
-                    $this->redirect('/admin/dashboard');
+                    $this->redirect('/adminDashboard');
                 } else if($user['role']===Role::ORGANISATEUR->value) {
                     $this->redirect('/organizer/dashboard');
                 }else{
