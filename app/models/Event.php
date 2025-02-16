@@ -12,24 +12,26 @@ class Event extends Model
     public $title;
     public $description;
     public $date;
-    public $price;
-    public $capacity;
+    // public $price;
+    // public $capacity;
     public $organizer;
     public $location;
     public $category;
     public $status = 'en attente';
     public $image_url;
     public $video_url;
+    public $ticketTypes;
 
-    public function __construct($id=null,$title=null,$description=null,$date=null,$price = null,$capacity = null,$organizer = null,$location = null,$category = null,$status = null,$image_url = null,
+    public function __construct($id=null,$title=null,$description=null,$date=null,$ticketTypes=null,$organizer = null,$location = null,$category = null,$status = null,$image_url = null,
     $video_url = null)
     {
         $this->id = $id;
         $this->title = $title;
         $this->description = $description;
         $this->date = $date;
-        $this->price = $price;
-        $this->capacity = $capacity;
+        $this->ticketTypes = $ticketTypes;
+        // $this->price = $price;
+        // $this->capacity = $capacity;
         $this->organizer = $organizer;
         $this->location = $location;
         $this->category = $category;
@@ -520,22 +522,21 @@ public function getEventParticipants($eventId)
 
 
             $db = Database::getInstance();
-            $ticketSql = "SELECT price, total_quantity FROM event_ticket_types WHERE event_id = :event_id";
+            $ticketSql = "SELECT ticket_type , price, total_quantity FROM event_ticket_types WHERE event_id = :event_id";
             $ticketQuery = $db->getConnection()->prepare($ticketSql);
             $ticketQuery->bindParam(':event_id', $row['id']);
             $ticketQuery->execute();
-            $ticketRow = $ticketQuery->fetch();
-
-            $price = $ticketRow ? $ticketRow['price'] : null;
-            $capacity = $ticketRow ? $ticketRow['total_quantity'] : null;
-
+            $ticketRows = $ticketQuery->fetchAll();
+            $ticketTypes =[];
+            foreach($ticketRows as $item){
+                $ticketTypes[$item['ticket_type']] = ['price'=> $item['price'] ,'total_quantity' =>$item['total_quantity'] ];
+            }
             $events[] = new Event(
                 $row['id'],
                 $row['title'],
                 $row['description'],
                 $row['date'],
-                $price, // Updated price
-                $capacity, // Updated capacity
+                $ticketTypes,
                 $organizer,
                 $row['location'],
                 $category,
@@ -561,15 +562,19 @@ public function getEventParticipants($eventId)
             $organizer = User::read($row['organizer_id']) ?? new User();
             $category = Category::read($row['category_id']) ?? new Category();
 
-            $ticketSql = "SELECT price, total_quantity FROM event_ticket_types WHERE event_id = :event_id";
+            $ticketSql = "SELECT ticket_type , price, total_quantity FROM event_ticket_types WHERE event_id = :event_id";
             $ticketQuery = $db->getConnection()->prepare($ticketSql);
             $ticketQuery->bindParam(':event_id', $row['id']);
             $ticketQuery->execute();
-            $ticketRow = $ticketQuery->fetch();
-
-            $price = $ticketRow ? $ticketRow['price'] : null;
-            $capacity = $ticketRow ? $ticketRow['total_quantity'] : null;
-
+            $ticketRows = $ticketQuery->fetchAll();
+            $ticketTypes =[];
+            // echo("<pre>");
+            // var_dump($ticketRows);die;
+            foreach($ticketRows as $item){
+                $ticketTypes[$item['ticket_type']] = ['price'=> $item['price'] ,'total_quantity' =>$item['total_quantity'] ];
+            }
+            // echo("<pre>");
+            // var_dump($ticketTypes);die;
             // Fetch the image_url and video_url
             $imageUrl = $row['image_url'] ?? null;
             $videoUrl = $row['video_url'] ?? null;
@@ -580,8 +585,7 @@ public function getEventParticipants($eventId)
                 $row['title'],
                 $row['description'],
                 $row['date'],
-                $price, // Updated price
-                $capacity, // Updated capacity
+                $ticketTypes,
                 $organizer,
                 $row['location'],
                 $category,
@@ -593,17 +597,17 @@ public function getEventParticipants($eventId)
         return $event;
     }
 
-        public function addReservation($userId): bool
+        public function addReservation($userId,$ticketType): bool
         {
         if (!$this->isOpenForReservations()) {
             return false;
         }
 
-        if (!$this->hasAvailableSpots()) {
+        if (!$this->hasAvailableSpots($ticketType)) {
             return false; 
         }
 
-        $ticket = new Ticket(null, $this, User::read($userId), 'payant', $this->price, null, 'réservé');
+        $ticket = new Ticket(null, $this, User::read($userId),$ticketType, $this->ticketTypes[$ticketType]['price'], null, 'réservé');
         if (!$ticket->save()) {
             return false; 
         }
@@ -625,15 +629,15 @@ public function getEventParticipants($eventId)
      *
      * @return bool True if there are available spots, false otherwise.
      */
-    private function hasAvailableSpots(): bool
+    private function hasAvailableSpots($ticketType): bool
     {
         $db = Database::getInstance();
-        $sql = "SELECT COUNT(*) AS reserved_count FROM tickets WHERE event_id = :event_id";
+        $sql = "SELECT COUNT(t.id) AS reserved_count FROM tickets t  LEFT JOIN event_ticket_types ett ON t.ticket_type_id = ett.id WHERE t.event_id = :event_id AND ett.ticket_type = :t_type";
         $stmt = $db->getConnection()->prepare($sql);
-        $stmt->execute([':event_id' => $this->id]);
+        $stmt->execute([':event_id' => $this->id , ':t_type'=>$ticketType]);
         $reservedCount = $stmt->fetch(PDO::FETCH_ASSOC)['reserved_count'];
-
-        return $reservedCount < $this->capacity;
+        // var_dump($this->ticketTypes);die;
+        return $reservedCount < $this->ticketTypes[$ticketType]['total_quantity'];
     }
 
 

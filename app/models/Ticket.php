@@ -16,7 +16,7 @@ class Ticket extends Model
     public $qr_code;
     public $status;
 
-    public function __construct($id = null, $event = new Event(), $user = new User(), $ticket_type = null, $price = null, $qr_code = null, $status)
+    public function __construct($id = null, $event = new Event(), $user = new User(), $ticket_type = null, $price = null, $qr_code = null, $status=null)
     {
         $this->id = $id;
         $this->event = $event;

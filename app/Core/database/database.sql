@@ -133,3 +133,6 @@ DROP COLUMN price;
 
 ALTER TABLE tickets ADD COLUMN ticket_type_id INT REFERENCES event_ticket_types(id);
 
+ALTER TABLE tickets
+DROP COLUMN ticket_type,
+DROP COLUMN price ;

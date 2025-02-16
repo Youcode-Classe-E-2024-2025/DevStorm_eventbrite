@@ -58,7 +58,9 @@ class EventController extends Controller
         Auth::requireAuth(Role::PARTICIPANT);
         // echo "reserve $id";
 
-        if (empty($id) || !is_numeric($id)) {
+        $type= $_GET['ticket'] ?? 'hh';
+        $ticketsTypes = array("gratuit", "vip", "payant", "early bird");
+        if (!in_array(strtolower($type) ,$ticketsTypes) || empty($id) || !is_numeric($id)) { 
             $this->redirect('/404');
         }
 
@@ -74,8 +76,7 @@ class EventController extends Controller
         }
 
         $userId = Session::getUser()['id']; 
-        
-        if($event->addReservation($userId)){
+        if($event->addReservation($userId,'VIP')){
             Session::setFlashMessage('green',"event #{$event->title} has been successfully reserved.");
             $this->redirect("/cart");
         
